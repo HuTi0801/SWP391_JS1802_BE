@@ -29,11 +29,17 @@ public class DiamondShell {
     @Column(name = "SecondaryStoneType")
     private String secondaryStoneType;
 
+    @Column(name = "Material")
+    private String material;
+
     @Column(name = "Gender")
     private String gender;
 
     @Column(name = "Price")
     private double price;
+
+    @Column(name = "Image")
+    private String imageDiamondShell;
 
     @OneToMany(mappedBy = "diamondShell")
     private List<OrderDetail> orderDetailList;

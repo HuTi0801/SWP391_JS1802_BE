@@ -44,6 +44,9 @@ public class Diamond {
     @Column(name = "Quantity")
     private int quantity;
 
+    @Column(name = "Image")
+    private String imageDiamond;
+
     @OneToMany(mappedBy = "diamond")
     private List<OrderDetail> orderDetailList;
 
