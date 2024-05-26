@@ -27,7 +27,7 @@ public class Customer {
     private String phone;
 
     @Column(name = "Point")
-    private String point;
+    private int point;
 
     @Column(name = "MemberLevel")
     private String memberLevel;

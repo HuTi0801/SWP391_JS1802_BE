@@ -10,4 +10,6 @@ public interface IDiamondService {
 
     //getAll Diamond
     public List<Diamond> getAllDiamond();
+
+    public Diamond getADiamond(Integer id);
 }
