@@ -5,7 +5,6 @@ import com.js1802_team5.diamondShop.models.request_models.SizeRequest;
 import com.js1802_team5.diamondShop.services.SizeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -21,8 +20,7 @@ import java.util.Map;
 @RequestMapping("/size")
 @RequiredArgsConstructor
 public class SizeController {
-    @Autowired
-    private SizeService sizeService;
+    private final  SizeService sizeService;
 
     private SizeRequest toSizeRequest(Size size) {
         var sizeRequest = new SizeRequest();

@@ -16,8 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/image")
 @RequiredArgsConstructor
 public class FirebaseController {
-    @Autowired
-    public FirebaseStorageService firebaseStorageService;
+    public final FirebaseStorageService firebaseStorageService;
     @PostMapping("/upload-image")
     @Operation(summary = "Upload a file", description = "Allows users to upload a file")
     public ResponseEntity<String> uploadFile(
