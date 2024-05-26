@@ -32,7 +32,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void addToCart(int productID, ProductType productType, int customerID) {
+    public String addToCart(int productID, ProductType productType, int customerID) {
         Cart cart = null;
         if (cartStorage.isEmpty()) {
             String newCartID = generateCartId();
@@ -77,6 +77,7 @@ public class CartServiceImpl implements CartService {
             cart.getItems().add(newItem);
         }
         cartStorage.put(cart.getCartId(), cart);
+        return cart.getCartId();
     }
 
     @Override
