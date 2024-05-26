@@ -26,17 +26,20 @@ public class DiamondShell implements Product {
     @Column(name = "DiamondShellId")
     private Integer id;
 
-    @NotNull(message = "Quantity is mandatory")
-    @Min(value = 0, message = "Quantity should be at least 0")
+//    @NotNull(message = "Quantity is mandatory")
+//    @Min(value = 0, message = "Quantity should be at least 0")
     @Column(name = "Quantity")
     private int quantity;
 
-    @NotBlank(message = "Secondary Stone Type is mandatory")
+//    @NotBlank(message = "Secondary Stone Type is mandatory")
     @Column(name = "SecondaryStoneType")
     private String secondaryStoneType;
 
+<<<<<<< HEAD
+=======
 //    @NotBlank(message = "Material is mandatory and should not contain numbers or special characters")
 //    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Material should only contain letters and spaces")
+>>>>>>> d9341a406d86366f5dd0a2eedd61d248a76e54e9
     @Column(name = "Material")
     private String material;
 
@@ -44,8 +47,8 @@ public class DiamondShell implements Product {
     @Column(name = "Gender")
     private String gender;
 
-    @NotNull(message = "Price is mandatory")
-    @Positive(message = "Price should be a positive number")
+//    @NotNull(message = "Price is mandatory")
+//    @Positive(message = "Price should be a positive number")
     @Column(name = "Price")
     private double price;
 
