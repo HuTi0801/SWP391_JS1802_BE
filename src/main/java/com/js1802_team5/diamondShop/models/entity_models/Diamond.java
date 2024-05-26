@@ -59,10 +59,6 @@ public class Diamond implements Product {
     @Column(name = "Quantity")
     private int quantity;
 
-//    @Pattern(
-//            regexp = "^https://firebasestorage.googleapis.com/v0/b/[a-zA-Z0-9_-]+.appspot.com/o/[a-zA-Z0-9_-]+.png?alt=media&token=[a-zA-Z0-9_-]+$",
-//            message = "Image URL should be a valid Firebase Storage URL"
-//    )
     @Column(name = "Image")
     private String imageDiamond;
 

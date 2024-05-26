@@ -16,7 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/image")
 @RequiredArgsConstructor
 public class FirebaseController {
-    public final FirebaseStorageService firebaseStorageService;
+
+    private final FirebaseStorageService firebaseStorageService;
+
     @PostMapping("/upload-image")
     @Operation(summary = "Upload a file", description = "Allows users to upload a file")
     public ResponseEntity<String> uploadFile(
@@ -24,7 +26,6 @@ public class FirebaseController {
             @RequestParam("file") MultipartFile file)
     {
         try {
-
             String fileName = firebaseStorageService.uploadFile(file);
             return ResponseEntity.ok("File uploaded successfully: " + fileName);
         } catch (Exception e) {
