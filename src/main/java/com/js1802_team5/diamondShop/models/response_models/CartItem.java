@@ -1,5 +1,4 @@
-package com.js1802_team5.diamondShop.models.request_models;
-
+package com.js1802_team5.diamondShop.models.response_models;
 import com.js1802_team5.diamondShop.enums.ProductType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CartRequest {
-    private int productID;
+public class CartItem {
+    private int productId;
     private ProductType productType;
-    private int customerID;
-    private String CartID;
+    private int quantity;
+    private double unitPrice;
+    private double amount;
 }

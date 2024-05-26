@@ -12,8 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SizeServiceImpl implements SizeService {
-    @Autowired
-    private SizeRepo sizeRepo;
+    private final SizeRepo sizeRepo;
 
     //create size
     @Override
