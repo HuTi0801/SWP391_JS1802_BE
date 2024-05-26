@@ -34,8 +34,8 @@ public class DiamondShell {
     @Column(name = "SecondaryStoneType")
     private String secondaryStoneType;
 
-    @NotBlank(message = "Material is mandatory and should not contain numbers or special characters")
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Material should only contain letters and spaces")
+//    @NotBlank(message = "Material is mandatory and should not contain numbers or special characters")
+//    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Material should only contain letters and spaces")
     @Column(name = "Material")
     private String material;
 
