@@ -2,11 +2,9 @@ package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
-import com.js1802_team5.diamondShop.services.FirebaseStorageService;
 import com.js1802_team5.diamondShop.services.IDiamondService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -22,9 +20,7 @@ import java.util.Map;
 @RequestMapping("/diamond")
 @RequiredArgsConstructor
 public class DiamondController {
-
-    @Autowired
-    public IDiamondService diamondService;
+    public final IDiamondService diamondService;
 
     //API create Diamond
 //    @PostMapping("/create-diamond")
@@ -32,7 +28,7 @@ public class DiamondController {
 //        return diamondService.createDiamond(diamond);
 //    }
 
-    /// This function use to mapping from Diamond to DiamondDTO
+    //This function use to mapping from Diamond to DiamondDTO
     private DiamondRequest toDiamondRequest(Diamond diamond) {
         var diamondRequest = new DiamondRequest();
         diamondRequest.setId(diamond.getId());
@@ -48,7 +44,7 @@ public class DiamondController {
         return diamondRequest;
     }
 
-    /// This function use to mapping from List Diamond to List DiamondDTO
+    //This function use to mapping from List Diamond to List DiamondDTO
     private List<DiamondRequest> toListDiamondRequest(List<Diamond> diamonds) {
         List<DiamondRequest> diamondRequest = new ArrayList<>();
         for (Diamond diamond : diamonds) {
@@ -121,5 +117,10 @@ public class DiamondController {
         });
         // Trả về phản hồi HTTP 400 Bad Request cùng với bản đồ các lỗi
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @PostMapping("/searchDiamond")
+    public List<Diamond> searchDiamonds(@RequestBody DiamondRequest diamondRequest) {
+        return diamondService.searchDiamond(diamondRequest);
     }
 }
