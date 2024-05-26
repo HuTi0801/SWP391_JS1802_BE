@@ -35,6 +35,11 @@ public class DiamondShell implements Product {
     @Column(name = "SecondaryStoneType")
     private String secondaryStoneType;
 
+<<<<<<< HEAD
+=======
+//    @NotBlank(message = "Material is mandatory and should not contain numbers or special characters")
+//    @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Material should only contain letters and spaces")
+>>>>>>> d9341a406d86366f5dd0a2eedd61d248a76e54e9
     @Column(name = "Material")
     private String material;
 
