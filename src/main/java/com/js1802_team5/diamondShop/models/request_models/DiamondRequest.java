@@ -1,4 +1,4 @@
-package com.js1802_team5.diamondShop.models.entity_models;
+package com.js1802_team5.diamondShop.models.request_models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -8,15 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`Diamond`")
-public class Diamond {
+public class DiamondRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DiamondId")
@@ -58,20 +55,6 @@ public class Diamond {
     @Column(name = "Quantity")
     private int quantity;
 
-    //    @Pattern(
-//            regexp = "^https://firebasestorage.googleapis.com/v0/b/[a-zA-Z0-9_-]+.appspot.com/o/[a-zA-Z0-9_-]+.png?alt=media&token=[a-zA-Z0-9_-]+$",
-//            message = "Image URL should be a valid Firebase Storage URL"
-//    )
     @Column(name = "Image")
     private String imageDiamond;
-
-    @OneToMany(mappedBy = "diamond")
-    private List<OrderDetail> orderDetailList;
-
-    @ManyToOne
-    @JoinColumn(name = "AccountId")
-    private Account account;
-
-    @OneToMany(mappedBy = "diamond")
-    private List<PromotionDiamond> promotionDiamondList;
 }

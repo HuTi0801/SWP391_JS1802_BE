@@ -1,4 +1,4 @@
-package com.js1802_team5.diamondShop.models.entity_models;
+package com.js1802_team5.diamondShop.models.request_models;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -9,17 +9,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`DiamondShell`")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class DiamondShell {
+public class DiamondShellRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DiamondShellId")
@@ -50,17 +46,4 @@ public class DiamondShell {
 
     @Column(name = "Image")
     private String imageDiamondShell;
-
-    @OneToMany(mappedBy = "diamondShell")
-    private List<OrderDetail> orderDetailList;
-
-    @ManyToOne
-    @JoinColumn(name = "AccountId")
-    private Account account;
-
-    @OneToMany(mappedBy = "diamondShell")
-    private List<PromotionDiamondShell> promotionDiamondShellList;
-
-    @OneToMany(mappedBy = "diamondShell")
-    private List<SizeDiamondShell> sizeDiamondShellList;
 }
