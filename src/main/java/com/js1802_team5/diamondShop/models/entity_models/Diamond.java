@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.js1802_team5.diamondShop.models.request_models.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "`Diamond`")
-public class Diamond {
+public class Diamond implements Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DiamondId")
@@ -43,7 +44,7 @@ public class Diamond {
 
     @NotNull(message = "Color is mandatory")
     @Column(name = "Color")
-    private char color;
+    private String color;
 
     @NotBlank(message = "Cut is mandatory")
     @Column(name = "Cut")
@@ -58,7 +59,7 @@ public class Diamond {
     @Column(name = "Quantity")
     private int quantity;
 
-    //    @Pattern(
+//    @Pattern(
 //            regexp = "^https://firebasestorage.googleapis.com/v0/b/[a-zA-Z0-9_-]+.appspot.com/o/[a-zA-Z0-9_-]+.png?alt=media&token=[a-zA-Z0-9_-]+$",
 //            message = "Image URL should be a valid Firebase Storage URL"
 //    )

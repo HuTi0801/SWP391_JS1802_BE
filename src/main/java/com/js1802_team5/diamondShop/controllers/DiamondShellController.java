@@ -1,6 +1,8 @@
 package com.js1802_team5.diamondShop.controllers;
 
+import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
+import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.models.request_models.DiamondShellRequest;
 import com.js1802_team5.diamondShop.services.DiamondShellService;
 import jakarta.validation.Valid;
@@ -21,9 +23,7 @@ import java.util.Map;
 @RequestMapping("/diamond-shell")
 @RequiredArgsConstructor
 public class DiamondShellController {
-
-    @Autowired
-    private DiamondShellService diamondShellService;
+    private final DiamondShellService diamondShellService;
 
     /// This function use to mapping from DiamondShell to DiamondShellDTO
     private DiamondShellRequest toDiamondShellRequest(DiamondShell diamondShell) {
@@ -105,5 +105,10 @@ public class DiamondShellController {
         });
         // Trả về phản hồi HTTP 400 Bad Request cùng với bản đồ các lỗi
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @PostMapping("/searchDiamondShell")
+    public List<DiamondShell> searchDiamonds(@RequestBody DiamondShellRequest diamondShellRequest) {
+        return diamondShellService.searchDiamondShell(diamondShellRequest);
     }
 }
