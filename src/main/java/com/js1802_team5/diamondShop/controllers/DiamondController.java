@@ -1,6 +1,15 @@
 package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
+import com.js1802_team5.diamondShop.services.FirebaseStorageService;
+import com.js1802_team5.diamondShop.services.IDiamondService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.services.IDiamondService;
 import jakarta.validation.Valid;
@@ -20,8 +29,35 @@ import java.util.Map;
 @RequestMapping("/diamond")
 @RequiredArgsConstructor
 public class DiamondController {
-    public final IDiamondService diamondService;
+    private final IDiamondService diamondService;
 
+    private final FirebaseStorageService firebaseStorageService;
+
+    @GetMapping("/testapi")
+    public String testAPI(){
+        return "Hello";
+    }
+
+    //API create Diamond
+    @PostMapping("/create-diamond")
+    public Diamond createDiamond(@RequestBody Diamond diamond){
+        return diamondService.createDiamond(diamond);
+    }
+
+    @GetMapping("/get-all-diamond")
+    public List<Diamond> getAllDiamond(){
+        return diamondService.getAllDiamond();
+    }
+
+    @PostMapping("/upload-image")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            String fileName = firebaseStorageService.uploadFile(file);
+            return ResponseEntity.ok("File uploaded successfully: " + fileName);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("File upload failed: " + e.getMessage());
+        }
+    }
     //API create Diamond
 //    @PostMapping("/create-diamond")
 //    public String createDiamond(@RequestBody Diamond diamond) {
@@ -81,16 +117,6 @@ public class DiamondController {
             return ResponseEntity.ok("Diamond created successfully");
         }
         return ResponseEntity.status(500).body("Diamond create failed");
-    }
-
-    //Get Diamond list
-    @GetMapping("/get-all-diamond")
-    public List<DiamondRequest> getAllDiamond(){
-
-        // Using the function with same name above
-        var diamondRequest = toListDiamondRequest(diamondService.getAllDiamond());
-
-        return diamondRequest;
     }
 
     //Get A Diamond by id

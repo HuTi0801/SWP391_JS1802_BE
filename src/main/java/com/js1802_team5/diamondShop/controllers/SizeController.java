@@ -22,6 +22,7 @@ import java.util.Map;
 public class SizeController {
     private final  SizeService sizeService;
 
+
     private SizeRequest toSizeRequest(Size size) {
         var sizeRequest = new SizeRequest();
         sizeRequest.setId(size.getId());

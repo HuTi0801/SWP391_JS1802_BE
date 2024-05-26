@@ -1,6 +1,13 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
+import com.js1802_team5.diamondShop.repositories.DiamondRepo;
+import com.js1802_team5.diamondShop.services.IDiamondService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
 import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.repositories.DiamondRepo;

@@ -8,7 +8,7 @@ import com.js1802_team5.diamondShop.models.request_models.DiamondShellRequest;
 import java.util.List;
 
 public interface IDiamondService {
-    //create diamond
+
     Diamond createDiamond(Diamond diamond);
 
     //getAll Diamond
@@ -17,4 +17,5 @@ public interface IDiamondService {
     Diamond getADiamond(Integer id);
 
     List<Diamond> searchDiamond(DiamondRequest diamondRequest);
+
 }
