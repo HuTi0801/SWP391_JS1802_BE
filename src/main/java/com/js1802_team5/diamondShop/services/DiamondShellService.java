@@ -1,19 +1,22 @@
 package com.js1802_team5.diamondShop.services;
 
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
+import com.js1802_team5.diamondShop.models.request_models.DiamondShellRequest;
 
 import java.util.List;
 
 public interface DiamondShellService {
     //create Diamond Shell
-    public DiamondShell createDiamondShell(DiamondShell diamondShell);
+    DiamondShell createDiamondShell(DiamondShell diamondShell);
 
     //get all Diamond Shell
-    public List<DiamondShell> getAllDiamondShell();
+    List<DiamondShell> getAllDiamondShell();
 
     //add size to Diamond Shell
-    public DiamondShell addSizeToDiamondShell(Integer diamondShellId, Integer sizeId);
+    DiamondShell addSizeToDiamondShell(Integer diamondShellId, Integer sizeId);
 
     //Get a diamond shell
-    public DiamondShell getADiamondShell(Integer id);
+    DiamondShell getADiamondShell(Integer id);
+
+    List<DiamondShell> searchDiamondShell(DiamondShellRequest diamondShellRequest);
 }
