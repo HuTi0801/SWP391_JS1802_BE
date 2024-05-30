@@ -1,7 +1,9 @@
 package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
+import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.models.request_models.DiamondShellRequest;
+import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.DiamondShellService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +20,20 @@ public class DiamondShellController {
 
     //create diamond shell
     @PostMapping("/create-diamond-shell")
-    public ResponseEntity<String> createDiamondShell(@Valid @RequestBody DiamondShellRequest diamondShellRequest){
-        var diamondShell = diamondShellService.toDiamond(diamondShellRequest);
-        if(diamondShellService.createDiamondShell(diamondShell) != null){
-            return ResponseEntity.ok("Diamond shell created successfully");
-        }
-        return ResponseEntity.status(500).body("Diamond shell create failed");
+    public Response createDiamondShell(@Valid @RequestBody DiamondShellRequest diamondShellRequest){
+        return diamondShellService.createDiamondShell(diamondShellRequest);
     }
 
     //get all diamond shell
     @GetMapping("/get-all-diamond-shell")
-    public List<DiamondShellRequest> getAllDiamondShell(){
-        return diamondShellService.toListDiamondShellRequest(diamondShellService.getAllDiamondShell());
+    public Response getAllDiamondShell(){
+        return diamondShellService.getAllDiamondShell();
     }
 
     //get a diamond shell by id
     @GetMapping("/get-a-diamond-shell-{id}")
-    public DiamondShellRequest getADiamondShell(@PathVariable Integer id) {
-        return diamondShellService.toDiamondShellRequest(diamondShellService.getADiamondShell(id));
+    public Response getADiamondShell(@PathVariable Integer id) {
+        return diamondShellService.getADiamondShell(id);
     }
 
     //Add Size to Diamond Shell
@@ -46,8 +44,19 @@ public class DiamondShellController {
 //    }
 
     //search diamond shell
-    @PostMapping("/searchDiamondShell")
+    @PostMapping("/search-diamond-shell")
     public List<DiamondShell> searchDiamonds(@RequestBody DiamondShellRequest diamondShellRequest) {
         return diamondShellService.searchDiamondShell(diamondShellRequest);
+    }
+
+    @PostMapping("/update-diamond-shell-{id}")
+    public Response updateDiamondShell(@PathVariable Integer id, @RequestBody DiamondShellRequest updateDiamondShellRequest) {
+        return diamondShellService.updateDiamondShell(id, updateDiamondShellRequest);
+    }
+
+    //delete diamond
+    @PostMapping("/remove-diamond-shell-{id}")
+    public Response removeDiamondShell(@PathVariable Integer id) {
+        return diamondShellService.removeDiamondShell(id);
     }
 }
