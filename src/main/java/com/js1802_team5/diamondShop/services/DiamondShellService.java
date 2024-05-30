@@ -18,5 +18,15 @@ public interface DiamondShellService {
     //Get a diamond shell
     DiamondShell getADiamondShell(Integer id);
 
+    //search diamond shell
     List<DiamondShell> searchDiamondShell(DiamondShellRequest diamondShellRequest);
+
+    //convert diamondShell to diamondShellRequest
+    DiamondShellRequest toDiamondShellRequest(DiamondShell diamondShell);
+
+    //This function use to mapping from List Diamond shell to List Diamond shell request
+    List<DiamondShellRequest> toListDiamondShellRequest(List<DiamondShell> diamondShells);
+
+    //convert diamondShellRequest to diamondShell
+    DiamondShell toDiamond(DiamondShellRequest diamondShellRequest);
 }

@@ -67,6 +67,7 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         }
     }
 
+    //searcj diamond shell
     @Override
     public List<DiamondShell> searchDiamondShell(DiamondShellRequest diamondShellRequest) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -104,5 +105,40 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         cq.where(predicates.toArray(new Predicate[0]));
 
         return entityManager.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public DiamondShellRequest toDiamondShellRequest(DiamondShell diamondShell) {
+        var diamondShellRequest = new DiamondShellRequest();
+        diamondShellRequest.setId(diamondShell.getId());
+        diamondShellRequest.setGender(diamondShell.getGender());
+        diamondShellRequest.setQuantity(diamondShell.getQuantity());
+        diamondShellRequest.setSecondaryStoneType(diamondShell.getSecondaryStoneType());
+        diamondShellRequest.setMaterial(diamondShell.getMaterial());
+        diamondShellRequest.setImageDiamondShell(diamondShell.getImageDiamondShell());
+        diamondShellRequest.setPrice(diamondShell.getPrice());
+        return diamondShellRequest;
+    }
+
+    @Override
+    public List<DiamondShellRequest> toListDiamondShellRequest(List<DiamondShell> diamondShells) {
+        List<DiamondShellRequest> diamondShellRequest = new ArrayList<>();
+        for (DiamondShell diamondShell : diamondShells) {
+            diamondShellRequest.add(toDiamondShellRequest(diamondShell));
+        }
+        return diamondShellRequest;
+    }
+
+    @Override
+    public DiamondShell toDiamond(DiamondShellRequest diamondShellRequest) {
+        var diamondShell = new DiamondShell();
+        diamondShell.setId(diamondShellRequest.getId());
+        diamondShell.setGender(diamondShellRequest.getGender());
+        diamondShell.setQuantity(diamondShellRequest.getQuantity());
+        diamondShell.setSecondaryStoneType(diamondShellRequest.getSecondaryStoneType());
+        diamondShell.setMaterial(diamondShellRequest.getMaterial());
+        diamondShell.setImageDiamondShell(diamondShellRequest.getImageDiamondShell());
+        diamondShell.setPrice(diamondShellRequest.getPrice());
+        return diamondShell;
     }
 }
