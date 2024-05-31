@@ -1,13 +1,11 @@
 package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
-import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.models.request_models.DiamondShellRequest;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.DiamondShellService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -18,32 +16,32 @@ public class DiamondShellController {
 
     private final DiamondShellService diamondShellService;
 
-    //create diamond shell
+    //Create diamond shell
     @PostMapping("/create-diamond-shell")
     public Response createDiamondShell(@Valid @RequestBody DiamondShellRequest diamondShellRequest){
         return diamondShellService.createDiamondShell(diamondShellRequest);
     }
 
-    //get all diamond shell
+    //Get all diamond shell
     @GetMapping("/get-all-diamond-shell")
     public Response getAllDiamondShell(){
         return diamondShellService.getAllDiamondShell();
     }
 
-    //get a diamond shell by id
+    //Get a diamond shell by id
     @GetMapping("/get-a-diamond-shell-{id}")
     public Response getADiamondShell(@PathVariable Integer id) {
         return diamondShellService.getADiamondShell(id);
     }
 
-    //Add Size to Diamond Shell
+//      Add Size to Diamond Shell
 //    @PostMapping("/{diamondShellId}/add-size/{sizeId}")
 //    public ResponseEntity<DiamondShell> addSizeToDiamondShell(@PathVariable Integer diamondShellId, @PathVariable Integer sizeId) {
 //        DiamondShell updatedDiamondShell = diamondShellService.addSizeToDiamondShell(diamondShellId, sizeId);
 //        return ResponseEntity.ok(updatedDiamondShell);
 //    }
 
-    //search diamond shell
+    //Search diamond shell
     @PostMapping("/search-diamond-shell")
     public List<DiamondShell> searchDiamonds(@RequestBody DiamondShellRequest diamondShellRequest) {
         return diamondShellService.searchDiamondShell(diamondShellRequest);

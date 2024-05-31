@@ -1,6 +1,5 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
-import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
 import com.js1802_team5.diamondShop.models.entity_models.Size;
 import com.js1802_team5.diamondShop.models.entity_models.SizeDiamondShell;
