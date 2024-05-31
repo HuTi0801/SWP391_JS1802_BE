@@ -220,16 +220,16 @@ public class DiamondShellServiceImpl implements DiamondShellService {
 
     @Override
     public DiamondShellRequest toDiamondShellRequest(DiamondShell diamondShell) {
-        var diamondShellRequest = new DiamondShellRequest();
-        diamondShellRequest.setId(diamondShell.getId());
-        diamondShellRequest.setGender(diamondShell.getGender());
-        diamondShellRequest.setQuantity(diamondShell.getQuantity());
-        diamondShellRequest.setSecondaryStoneType(diamondShell.getSecondaryStoneType());
-        diamondShellRequest.setMaterial(diamondShell.getMaterial());
-        diamondShellRequest.setImageDiamondShell(diamondShell.getImageDiamondShell());
-        diamondShellRequest.setPrice(diamondShell.getPrice());
-        diamondShellRequest.setStatusDiamondShell(diamondShell.isStatusDiamondShell());
-        return diamondShellRequest;
+        return DiamondShellRequest.builder()
+                .id(diamondShell.getId())
+                .gender(diamondShell.getGender())
+                .quantity(diamondShell.getQuantity())
+                .secondaryStoneType(diamondShell.getSecondaryStoneType())
+                .material(diamondShell.getMaterial())
+                .imageDiamondShell(diamondShell.getImageDiamondShell())
+                .price(diamondShell.getPrice())
+                .statusDiamondShell(diamondShell.isStatusDiamondShell())
+                .build();
     }
 
     @Override
@@ -243,15 +243,15 @@ public class DiamondShellServiceImpl implements DiamondShellService {
 
     @Override
     public DiamondShell toDiamond(DiamondShellRequest diamondShellRequest) {
-        var diamondShell = new DiamondShell();
-        diamondShell.setId(diamondShellRequest.getId());
-        diamondShell.setGender(diamondShellRequest.getGender());
-        diamondShell.setQuantity(diamondShellRequest.getQuantity());
-        diamondShell.setSecondaryStoneType(diamondShellRequest.getSecondaryStoneType());
-        diamondShell.setMaterial(diamondShellRequest.getMaterial());
-        diamondShell.setImageDiamondShell(diamondShellRequest.getImageDiamondShell());
-        diamondShell.setPrice(diamondShellRequest.getPrice());
-        diamondShell.setStatusDiamondShell(diamondShellRequest.isStatusDiamondShell());
-        return diamondShell;
+        return DiamondShell.builder()
+                .id(diamondShellRequest.getId())
+                .gender(diamondShellRequest.getGender())
+                .quantity(diamondShellRequest.getQuantity())
+                .secondaryStoneType(diamondShellRequest.getSecondaryStoneType())
+                .material(diamondShellRequest.getMaterial())
+                .imageDiamondShell(diamondShellRequest.getImageDiamondShell())
+                .price(diamondShellRequest.getPrice())
+                .statusDiamondShell(diamondShellRequest.isStatusDiamondShell())
+                .build();
     }
 }

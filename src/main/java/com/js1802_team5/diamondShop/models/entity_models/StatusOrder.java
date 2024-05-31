@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "`Status`")
-public class Status {
+public class StatusOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "StatusId")
@@ -23,6 +23,6 @@ public class Status {
     @Column(name = "StatusName")
     private String statusName;
 
-    @OneToMany(mappedBy = "status")
+    @OneToMany(mappedBy = "statusOrder")
     private List<Order> orderList;
 }
