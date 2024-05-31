@@ -151,19 +151,19 @@ public class DiamondServiceImpl implements DiamondService {
         var response = new Response();
         try {
             var diamond = diamondRepo.findById(id);
-            if(diamond.isPresent()){
+            if (diamond.isPresent()) {
                 diamondRepo.softDeleteById(id);
                 response.setMessage("Remove diamond successfully!");
                 response.setResult(null);
                 response.setSuccess(true);
                 response.setStatusCode(200);
-            }else {
+            } else {
                 response.setMessage("There are no diamond!");
                 response.setResult(id);
                 response.setSuccess(false);
                 response.setStatusCode(404);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatusCode(500);
             response.setSuccess(false);
             response.setMessage(e.getMessage());
@@ -221,19 +221,19 @@ public class DiamondServiceImpl implements DiamondService {
 
     @Override
     public DiamondRequest toDiamondRequest(Diamond diamond) {
-        var diamondRequest = new DiamondRequest();
-        diamondRequest.setId(diamond.getId());
-        diamondRequest.setCut(diamond.getCut());
-        diamondRequest.setImageDiamond(diamond.getImageDiamond());
-        diamondRequest.setClarity(diamond.getClarity());
-        diamondRequest.setColor(diamond.getColor());
-        diamondRequest.setCaratWeight(diamond.getCaratWeight());
-        diamondRequest.setCertificateNumber(diamond.getCertificateNumber());
-        diamondRequest.setQuantity(diamond.getQuantity());
-        diamondRequest.setPrice(diamond.getPrice());
-        diamondRequest.setOrigin(diamond.getOrigin());
-        diamondRequest.setStatusDiamond(diamond.isStatusDiamond());
-        return diamondRequest;
+        return DiamondRequest.builder()
+                .id(diamond.getId())
+                .cut(diamond.getCut())
+                .imageDiamond(diamond.getImageDiamond())
+                .clarity(diamond.getClarity())
+                .color(diamond.getColor())
+                .caratWeight(diamond.getCaratWeight())
+                .certificateNumber(diamond.getCertificateNumber())
+                .quantity(diamond.getQuantity())
+                .price(diamond.getPrice())
+                .origin(diamond.getOrigin())
+                .statusDiamond(diamond.isStatusDiamond())
+                .build();
     }
 
     @Override
@@ -247,17 +247,18 @@ public class DiamondServiceImpl implements DiamondService {
 
     @Override
     public Diamond toDiamond(DiamondRequest diamondRequest) {
-        var diamond = new Diamond();
-        diamond.setCut(diamondRequest.getCut());
-        diamond.setImageDiamond(diamondRequest.getImageDiamond());
-        diamond.setClarity(diamondRequest.getClarity());
-        diamond.setColor(diamondRequest.getColor());
-        diamond.setCaratWeight(diamondRequest.getCaratWeight());
-        diamond.setCertificateNumber(diamondRequest.getCertificateNumber());
-        diamond.setQuantity(diamondRequest.getQuantity());
-        diamond.setPrice(diamondRequest.getPrice());
-        diamond.setOrigin(diamondRequest.getOrigin());
-        diamond.setStatusDiamond(diamondRequest.isStatusDiamond());
-        return diamond;
+        return Diamond.builder()
+                .id(diamondRequest.getId())
+                .cut(diamondRequest.getCut())
+                .imageDiamond(diamondRequest.getImageDiamond())
+                .clarity(diamondRequest.getClarity())
+                .color(diamondRequest.getColor())
+                .caratWeight(diamondRequest.getCaratWeight())
+                .certificateNumber(diamondRequest.getCertificateNumber())
+                .quantity(diamondRequest.getQuantity())
+                .price(diamondRequest.getPrice())
+                .origin(diamondRequest.getOrigin())
+                .statusDiamond(diamondRequest.isStatusDiamond())
+                .build();
     }
 }
