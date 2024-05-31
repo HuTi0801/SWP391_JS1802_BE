@@ -4,7 +4,6 @@ import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.IDiamondService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,19 +35,19 @@ public class DiamondController {
         return diamondService.getADiamond(id);
     }
 
-    //search diamond
+    //Search diamond
     @PostMapping("/search-diamond")
     public List<Diamond> searchDiamonds(@RequestBody DiamondRequest diamondRequest) {
         return diamondService.searchDiamond(diamondRequest);
     }
 
-    //update diamond
+    //Update diamond
     @PostMapping("/update-diamond-{id}")
     public Response updateDiamond(@PathVariable Integer id, @RequestBody DiamondRequest updateDiamondRequest) {
         return diamondService.updateDiamond(id, updateDiamondRequest);
     }
 
-    //delete diamond
+    //Delete diamond
     @PostMapping("/remove-diamond-{id}")
     public Response removeDiamond(@PathVariable Integer id) {
         return diamondService.removeDiamond(id);
