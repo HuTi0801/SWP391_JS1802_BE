@@ -1,8 +1,9 @@
 package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
+import com.js1802_team5.diamondShop.models.request_models.DiamondSearchRequest;
 import com.js1802_team5.diamondShop.models.response_models.Response;
-import com.js1802_team5.diamondShop.services.IDiamondService;
+import com.js1802_team5.diamondShop.services.DiamondService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ import jakarta.validation.Valid;
 @RequiredArgsConstructor
 public class DiamondController {
 
-    private final IDiamondService diamondService;
+    private final DiamondService diamondService;
 
     //create diamond
     @PostMapping("/create-diamond")
@@ -37,8 +38,8 @@ public class DiamondController {
 
     //Search diamond
     @PostMapping("/search-diamond")
-    public List<Diamond> searchDiamonds(@RequestBody DiamondRequest diamondRequest) {
-        return diamondService.searchDiamond(diamondRequest);
+    public List<Diamond> searchDiamonds(@RequestBody DiamondSearchRequest diamondSearchRequest) {
+        return diamondService.searchDiamond(diamondSearchRequest);
     }
 
     //Update diamond

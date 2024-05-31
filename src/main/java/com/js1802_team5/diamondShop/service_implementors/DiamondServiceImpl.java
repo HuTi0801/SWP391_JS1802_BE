@@ -1,9 +1,10 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
+import com.js1802_team5.diamondShop.models.request_models.DiamondSearchRequest;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.DiamondRepo;
-import com.js1802_team5.diamondShop.services.IDiamondService;
+import com.js1802_team5.diamondShop.services.DiamondService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class DiamondServiceImpl implements IDiamondService {
+public class DiamondServiceImpl implements DiamondService {
     private final DiamondRepo diamondRepo;
     @PersistenceContext
     private EntityManager entityManager;
@@ -172,7 +173,7 @@ public class DiamondServiceImpl implements IDiamondService {
     }
 
     @Override
-    public List<Diamond> searchDiamond(DiamondRequest diamondRequest) {
+    public List<Diamond> searchDiamond(DiamondSearchRequest diamondSearchRequest) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Diamond> cq = cb.createQuery(Diamond.class);
         Root<Diamond> diamond = cq.from(Diamond.class);
@@ -180,32 +181,32 @@ public class DiamondServiceImpl implements IDiamondService {
         List<Predicate> predicates = new ArrayList<>();
         boolean hasConditions = false;
 
-        if (diamondRequest.getCaratWeight() > 0) {
-            predicates.add(cb.equal(diamond.get("caratWeight"), diamondRequest.getCaratWeight()));
+        if (diamondSearchRequest.getCaratWeight() > 0) {
+            predicates.add(cb.equal(diamond.get("caratWeight"), diamondSearchRequest.getCaratWeight()));
             hasConditions = true;
         }
-        if (diamondRequest.getColor() != null && !diamondRequest.getColor().isEmpty()) {
-            predicates.add(cb.equal(diamond.get("color"), diamondRequest.getColor()));
+        if (diamondSearchRequest.getColor() != null && !diamondSearchRequest.getColor().isEmpty()) {
+            predicates.add(cb.equal(diamond.get("color"), diamondSearchRequest.getColor()));
             hasConditions = true;
         }
-        if (diamondRequest.getClarity() != null && !diamondRequest.getClarity().isEmpty()) {
-            predicates.add(cb.equal(diamond.get("clarity"), diamondRequest.getClarity()));
+        if (diamondSearchRequest.getClarity() != null && !diamondSearchRequest.getClarity().isEmpty()) {
+            predicates.add(cb.equal(diamond.get("clarity"), diamondSearchRequest.getClarity()));
             hasConditions = true;
         }
-        if (diamondRequest.getCut() != null && !diamondRequest.getCut().isEmpty()) {
-            predicates.add(cb.equal(diamond.get("cut"), diamondRequest.getCut()));
+        if (diamondSearchRequest.getCut() != null && !diamondSearchRequest.getCut().isEmpty()) {
+            predicates.add(cb.equal(diamond.get("cut"), diamondSearchRequest.getCut()));
             hasConditions = true;
         }
-        if (diamondRequest.getOrigin() != null && !diamondRequest.getOrigin().isEmpty()) {
-            predicates.add(cb.equal(diamond.get("origin"), diamondRequest.getOrigin()));
+        if (diamondSearchRequest.getOrigin() != null && !diamondSearchRequest.getOrigin().isEmpty()) {
+            predicates.add(cb.equal(diamond.get("origin"), diamondSearchRequest.getOrigin()));
             hasConditions = true;
         }
-        if (diamondRequest.getMin_price() > 0.0) {
-            predicates.add(cb.greaterThanOrEqualTo(diamond.get("price"), diamondRequest.getMin_price()));
+        if (diamondSearchRequest.getMin_price() > 0.0) {
+            predicates.add(cb.greaterThanOrEqualTo(diamond.get("price"), diamondSearchRequest.getMin_price()));
             hasConditions = true;
         }
-        if (diamondRequest.getMax_price() >= 0.0 && (diamondRequest.getMin_price() <= diamondRequest.getMax_price())) {
-            predicates.add(cb.lessThanOrEqualTo(diamond.get("price"), diamondRequest.getMax_price()));
+        if (diamondSearchRequest.getMax_price() > 0.0 && (diamondSearchRequest.getMin_price() <= diamondSearchRequest.getMax_price())) {
+            predicates.add(cb.lessThanOrEqualTo(diamond.get("price"), diamondSearchRequest.getMax_price()));
             hasConditions = true;
         }
 

@@ -21,8 +21,9 @@ public class CartController {
     @PostMapping("/add-to-cart")
     public ResponseEntity<Map<String, Object>> addToCart(@RequestParam("productID") int productID,
                                                          @RequestParam("productType") ProductType productType,
-                                                         @RequestParam("customerID") int customerID) {
-        String cartId = cartService.addToCart(productID, productType, customerID);
+                                                         @RequestParam("customerID") int customerID,
+                                                         @RequestParam(value = "size", required = false) Integer size) {
+        String cartId = cartService.addToCart(productID, productType, customerID, size);
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Product added to cart successfully");
         response.put("cartId", cartId);
