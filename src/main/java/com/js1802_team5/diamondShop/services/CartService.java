@@ -6,7 +6,7 @@ import com.js1802_team5.diamondShop.models.response_models.CartResponse;
 
 public interface CartService {
     String generateCartId();
-    String addToCart(int productID, ProductType productType, int customerID);
+    String addToCart(int productID, ProductType productType, int customerID, Integer size);
     CartResponse getCartByCustomerID(int customerID);
     Product findProductById(int productID, ProductType productType);
     CartResponse updateCart(int customerID, ProductType productType, int productID, int quantity);

@@ -1,13 +1,11 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
-import com.js1802_team5.diamondShop.models.entity_models.Size;
-import com.js1802_team5.diamondShop.models.entity_models.SizeDiamondShell;
 import com.js1802_team5.diamondShop.models.request_models.DiamondShellRequest;
+import com.js1802_team5.diamondShop.models.request_models.DiamondShellSearchRequest;
+import com.js1802_team5.diamondShop.models.response_models.DiamondShellResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.DiamondShellRepo;
-import com.js1802_team5.diamondShop.repositories.SizeDiamondShellRepo;
-import com.js1802_team5.diamondShop.repositories.SizeRepo;
 import com.js1802_team5.diamondShop.services.DiamondShellService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -21,14 +19,13 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DiamondShellServiceImpl implements DiamondShellService {
 
     private final DiamondShellRepo diamondShellRepo;
-    private final SizeRepo sizeRepo;
-    private final SizeDiamondShellRepo sizeDiamondShellRepo;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -73,21 +70,6 @@ public class DiamondShellServiceImpl implements DiamondShellService {
             response.setResult(null);
         }
         return response;
-    }
-
-    //add Size to Diamond Shell
-    @Override
-    public DiamondShell addSizeToDiamondShell(Integer diamondShellId, Integer sizeId) {
-        DiamondShell diamondShell = diamondShellRepo.findById(diamondShellId).orElseThrow();
-        Size size = sizeRepo.findById(sizeId).orElseThrow();
-
-        SizeDiamondShell sizeDiamondShell = new SizeDiamondShell();
-        sizeDiamondShell.setDiamondShell(diamondShell);
-        sizeDiamondShell.setSize(size);
-
-        sizeDiamondShellRepo.save(sizeDiamondShell);
-        diamondShell.getSizeDiamondShellList().add(sizeDiamondShell);
-        return diamondShellRepo.save(diamondShell);
     }
 
     //get a diamond shell
@@ -180,7 +162,7 @@ public class DiamondShellServiceImpl implements DiamondShellService {
 
     //search diamond shell
     @Override
-    public List<DiamondShell> searchDiamondShell(DiamondShellRequest diamondShellRequest) {
+    public List<DiamondShell> searchDiamondShell(DiamondShellSearchRequest diamondShellSearchRequest) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<DiamondShell> cq = cb.createQuery(DiamondShell.class);
         Root<DiamondShell> diamondShell = cq.from(DiamondShell.class);
@@ -188,24 +170,24 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         List<Predicate> predicates = new ArrayList<>();
         boolean hasConditions = false;
 
-        if (diamondShellRequest.getSecondaryStoneType() != null && !diamondShellRequest.getSecondaryStoneType().isEmpty()) {
-            predicates.add(cb.equal(diamondShell.get("secondaryStoneType"), diamondShellRequest.getSecondaryStoneType()));
+        if (diamondShellSearchRequest.getSecondaryStoneType() != null && !diamondShellSearchRequest.getSecondaryStoneType().isEmpty()) {
+            predicates.add(cb.equal(diamondShell.get("secondaryStoneType"), diamondShellSearchRequest.getSecondaryStoneType()));
             hasConditions = true;
         }
-        if (diamondShellRequest.getMaterial() != null && !diamondShellRequest.getMaterial().isEmpty()) {
-            predicates.add(cb.equal(diamondShell.get("material"), diamondShellRequest.getMaterial()));
+        if (diamondShellSearchRequest.getMaterial() != null && !diamondShellSearchRequest.getMaterial().isEmpty()) {
+            predicates.add(cb.equal(diamondShell.get("material"), diamondShellSearchRequest.getMaterial()));
             hasConditions = true;
         }
-        if (diamondShellRequest.getGender() != null && !diamondShellRequest.getGender().isEmpty()) {
-            predicates.add(cb.equal(diamondShell.get("gender"), diamondShellRequest.getGender()));
+        if (diamondShellSearchRequest.getGender() != null && !diamondShellSearchRequest.getGender().isEmpty()) {
+            predicates.add(cb.equal(diamondShell.get("gender"), diamondShellSearchRequest.getGender()));
             hasConditions = true;
         }
-        if (diamondShellRequest.getMin_price() > 0) {
-            predicates.add(cb.greaterThanOrEqualTo(diamondShell.get("price"), diamondShellRequest.getMin_price()));
+        if (diamondShellSearchRequest.getMin_price() > 0) {
+            predicates.add(cb.greaterThanOrEqualTo(diamondShell.get("price"), diamondShellSearchRequest.getMin_price()));
             hasConditions = true;
         }
-        if (diamondShellRequest.getMax_price() > 0 && (diamondShellRequest.getMin_price() <= diamondShellRequest.getMax_price())) {
-            predicates.add(cb.lessThanOrEqualTo(diamondShell.get("price"), diamondShellRequest.getMax_price()));
+        if (diamondShellSearchRequest.getMax_price() > 0 && (diamondShellSearchRequest.getMin_price() <= diamondShellSearchRequest.getMax_price())) {
+            predicates.add(cb.lessThanOrEqualTo(diamondShell.get("price"), diamondShellSearchRequest.getMax_price()));
             hasConditions = true;
         }
 
@@ -216,6 +198,26 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         cq.where(predicates.toArray(new Predicate[0]));
 
         return entityManager.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public DiamondShellResponse convertToDiamondShellResponse(DiamondShell diamondShell) {
+        DiamondShellResponse response = new DiamondShellResponse();
+        response.setId(diamondShell.getId());
+        response.setQuantity(diamondShell.getQuantity());
+        response.setSecondaryStoneType(diamondShell.getSecondaryStoneType());
+        response.setMaterial(diamondShell.getMaterial());
+        response.setGender(diamondShell.getGender());
+        response.setPrice(diamondShell.getPrice());
+        response.setImageDiamondShell(diamondShell.getImageDiamondShell());
+
+        // Lấy danh sách size từ SizeDiamondShellList
+        List<Integer> sizes = diamondShell.getSizeDiamondShellList().stream()
+                .map(sizeDiamondShell -> sizeDiamondShell.getSize().getSize())
+                .collect(Collectors.toList());
+        response.setSize(sizes);
+
+        return response;
     }
 
     @Override
@@ -231,6 +233,8 @@ public class DiamondShellServiceImpl implements DiamondShellService {
                 .statusDiamondShell(diamondShell.isStatusDiamondShell())
                 .build();
     }
+
+
 
     @Override
     public List<DiamondShellRequest> toListDiamondShellRequest(List<DiamondShell> diamondShells) {

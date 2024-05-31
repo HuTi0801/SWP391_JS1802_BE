@@ -49,8 +49,4 @@ public class DiamondRequest {
 
     @Pattern(regexp = "^(true|false)$", message = "Status must be either true or false")
     private boolean statusDiamond;
-
-    private double min_price;
-
-    private double max_price;
 }
