@@ -1,7 +1,7 @@
 package com.js1802_team5.diamondShop.repositories;
 
-import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface DiamondShellRepo extends JpaRepository<DiamondShell, Integer> {
-    Optional<DiamondShell> findById(Integer id);
+    @NonNull
+    Optional<DiamondShell> findById(@NonNull Integer id);
+
     @Transactional
     @Modifying
     @Query("UPDATE DiamondShell d SET d.statusDiamondShell = false WHERE d.id = :id")
