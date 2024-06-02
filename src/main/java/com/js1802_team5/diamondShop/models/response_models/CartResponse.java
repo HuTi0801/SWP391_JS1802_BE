@@ -10,8 +10,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Cart {
+public class CartResponse {
     private String cartId;
     private Integer customerID;
-    private List<CartItem> items;
+    private List<CartItemResponse> items;
+
+    //tự động tính giá tiền tổng
+    public double getTotalPrice() {
+        return items.stream().mapToDouble(item -> item.getUnitPrice() * item.getQuantity()).sum();
+    }
 }

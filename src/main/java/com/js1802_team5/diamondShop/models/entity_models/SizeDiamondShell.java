@@ -25,7 +25,7 @@ public class SizeDiamondShell {
     @JoinColumn(name = "DiamondShellId")
     private DiamondShell diamondShell;
 
-    @ManyToOne
-    @JoinColumn(name = "SizeId")
-    private Size size;
+//    @ManyToOne
+//    @JoinColumn(name = "SizeId")
+//    private Size size;
 }

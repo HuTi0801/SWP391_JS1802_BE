@@ -14,7 +14,7 @@ public interface DiamondShellService {
     Response getAllDiamondShell();
 
     //add size to Diamond Shell
-    DiamondShell addSizeToDiamondShell(Integer diamondShellId, Integer sizeId);
+    //DiamondShell addSizeToDiamondShell(Integer diamondShellId, Integer sizeId);
 
     //Get a diamond shell
     Response getADiamondShell(Integer id);
@@ -31,7 +31,7 @@ public interface DiamondShellService {
     //convert diamondShell to diamondShellRequest
     DiamondShellRequest toDiamondShellRequest(DiamondShell diamondShell);
 
-    //This function use to mapping from List Diamond shell to List Diamond shell request
+    //This function use to mapping from List Diamond shell to List Diamondshell request
     List<DiamondShellRequest> toListDiamondShellRequest(List<DiamondShell> diamondShells);
 
     //convert diamondShellRequest to diamondShell

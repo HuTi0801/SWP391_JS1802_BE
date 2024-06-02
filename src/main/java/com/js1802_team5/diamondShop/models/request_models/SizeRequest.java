@@ -16,5 +16,5 @@ import org.hibernate.validator.constraints.Range;
 @Builder
 public class SizeRequest {
     private Integer id;
-    private float size;
+    private int size;
 }

@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Table(name = "`Order`") // lí do có `...` là do Order bị trùng tên
 public class Order {
@@ -48,6 +50,6 @@ public class Order {
     @JoinColumn(name = "StatusId")
     private StatusOrder statusOrder;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) //, fetch = FetchType.LAZY
     private List<OrderDetail> orderDetailList;
 }

@@ -1,5 +1,7 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties("customer")
 @Entity
 @Table(name = "`Customer`")
 public class Customer {
@@ -37,5 +40,6 @@ public class Customer {
     private Account account;
 
     @OneToMany(mappedBy = "customer")
+    @JsonManagedReference
     private List<Order> orderList;
 }

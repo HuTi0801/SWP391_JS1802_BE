@@ -28,8 +28,8 @@ public class Size {
     @NotNull(message = "Size Weight is mandatory")
     @Range(min = 1, max = 32, message = "Size Weight should be a positive number")
     @Column(name = "Size")
-    private float size;
+    private int size;
 
-    @OneToMany(mappedBy = "size")
-    private List<SizeDiamondShell> sizeDiamondShellList;
+//    @OneToMany(mappedBy = "size")
+//    private List<SizeDiamondShell> sizeDiamondShellList;
 }

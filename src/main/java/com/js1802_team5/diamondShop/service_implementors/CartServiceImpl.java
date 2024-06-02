@@ -1,7 +1,6 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.enums.ProductType;
-import com.js1802_team5.diamondShop.exceptions.IllegalArgumentException;
 import com.js1802_team5.diamondShop.exceptions.OutOfStockException;
 import com.js1802_team5.diamondShop.exceptions.ProductNotFoundException;
 import com.js1802_team5.diamondShop.models.request_models.Product;
@@ -28,7 +27,6 @@ public class CartServiceImpl implements CartService {
         cartCounter++;
         return cartId;
     }
-
     @Override
     public String addToCart(int productID, ProductType productType, int customerID) {
         CartResponse cartResponse = null;
@@ -84,6 +82,8 @@ public class CartServiceImpl implements CartService {
                 .findFirst();
         return optionalCart.orElse(null);
     }
+
+
 
     @Override
     public Product findProductById(int productID, ProductType productType) {

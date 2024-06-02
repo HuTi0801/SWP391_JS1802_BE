@@ -1,13 +1,16 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
+import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.entity_models.Size;
 import com.js1802_team5.diamondShop.models.request_models.SizeRequest;
+import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.SizeRepo;
 import com.js1802_team5.diamondShop.services.SizeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,14 +19,55 @@ public class SizeServiceImpl implements SizeService {
 
     //create size
     @Override
-    public Size createSize(Size size) {
-        return sizeRepo.save(size);
+    public Response createSize(SizeRequest sizeRequest) {
+        Response response = new Response();
+        try {
+            Optional<Size> existingSize = sizeRepo.findBySize(sizeRequest.getSize());
+            if (existingSize.isPresent()) {
+                response.setSuccess(false);
+                response.setMessage("Size is duplicated!");
+                response.setStatusCode(404);
+                response.setResult(sizeRequest);
+            } else {
+                response.setMessage("Create size successfully!");
+                response.setResult(sizeRequest);
+                response.setSuccess(true);
+                response.setStatusCode(200);
+                sizeRepo.save(toSize(sizeRequest));
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
     }
 
     //get all size
     @Override
-    public List<Size> getAllSize() {
-        return sizeRepo.findAll();
+    public Response getAllSize() {
+        Response response = new Response();
+        try {
+            var sizes = sizeRepo.findAll();
+            if (sizes.isEmpty()) {
+                response.setSuccess(false);
+                response.setMessage("There are no size!");
+                response.setStatusCode(404);
+                response.setResult(null);
+            } else {
+                response.setMessage("Get all size successfully!");
+                response.setResult(toListSizeRequest(sizes));
+                response.setSuccess(true);
+                response.setStatusCode(200);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
     }
 
     //convert size to sizeRequest
