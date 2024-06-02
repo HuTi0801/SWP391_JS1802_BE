@@ -28,7 +28,7 @@ public class CartServiceImpl implements CartService {
         return cartId;
     }
     @Override
-    public String addToCart(int productID, ProductType productType, int customerID) {
+    public String addToCart(int productID, ProductType productType, int customerID, Integer size) {
         CartResponse cartResponse = null;
         if (cartStorage.isEmpty()) {
             String newCartID = generateCartId();
@@ -70,6 +70,9 @@ public class CartServiceImpl implements CartService {
             newItem.setQuantity(1);
             newItem.setUnitPrice(product.getPrice());
             newItem.setAmount(product.getPrice());
+            if (productType == ProductType.DIAMOND_SHELL && size != null) {
+                newItem.setSize(size);
+            }
             cartResponse.getItems().add(newItem);
         }
         cartStorage.put(cartResponse.getCartId(), cartResponse);
