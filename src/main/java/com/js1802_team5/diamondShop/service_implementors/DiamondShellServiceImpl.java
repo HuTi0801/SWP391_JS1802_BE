@@ -183,36 +183,29 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         Root<DiamondShell> diamondShell = cq.from(DiamondShell.class);
 
         List<Predicate> predicates = new ArrayList<>();
-        boolean hasConditions = false;
+
+        predicates.add(cb.isTrue(diamondShell.get("statusDiamondShell")));
+
 
         if (diamondShellSearchRequest.getSecondaryStoneType() != null && !diamondShellSearchRequest.getSecondaryStoneType().isEmpty()) {
             predicates.add(cb.equal(diamondShell.get("secondaryStoneType"), diamondShellSearchRequest.getSecondaryStoneType()));
-            hasConditions = true;
         }
         if (diamondShellSearchRequest.getMaterial() != null && !diamondShellSearchRequest.getMaterial().isEmpty()) {
             predicates.add(cb.equal(diamondShell.get("material"), diamondShellSearchRequest.getMaterial()));
-            hasConditions = true;
         }
         if (diamondShellSearchRequest.getGender() != null && !diamondShellSearchRequest.getGender().isEmpty()) {
             predicates.add(cb.equal(diamondShell.get("gender"), diamondShellSearchRequest.getGender()));
-            hasConditions = true;
         }
         if (diamondShellSearchRequest.getMin_price() > 0) {
             predicates.add(cb.greaterThanOrEqualTo(diamondShell.get("price"), diamondShellSearchRequest.getMin_price()));
-            hasConditions = true;
         }
         if (diamondShellSearchRequest.getMax_price() > 0 && (diamondShellSearchRequest.getMin_price() <= diamondShellSearchRequest.getMax_price())) {
             predicates.add(cb.lessThanOrEqualTo(diamondShell.get("price"), diamondShellSearchRequest.getMax_price()));
-            hasConditions = true;
-        }
-
-        if (!hasConditions) {
-            return entityManager.createQuery(cq.select(diamondShell)).getResultList();
         }
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-        return entityManager.createQuery(cq).getResultList();
+        return entityManager.createQuery(cq.select(diamondShell)).getResultList();
     }
 
     @Override
