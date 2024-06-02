@@ -1,6 +1,7 @@
 package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.request_models.SizeRequest;
+import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.SizeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,18 +18,14 @@ public class SizeController {
 
     //create size
     @PostMapping("/create-size")
-    public ResponseEntity<String> createSize(@Valid @RequestBody SizeRequest sizeRequest){
-        var size = sizeService.toSize(sizeRequest);
-        if(sizeService.createSize(size) != null){
-            return ResponseEntity.ok("Size created successfully");
-        }
-        return ResponseEntity.status(500).body("Size create failed");
+    public Response createSize(@Valid @RequestBody SizeRequest sizeRequest){
+        return sizeService.createSize(sizeRequest);
     }
 
     //get All size
     @GetMapping("/get-all-size")
-    public List<SizeRequest> getAllSize(){
-        return sizeService.toListSizeRequest(sizeService.getAllSize());
+    public Response getAllSize(){
+        return sizeService.getAllSize();
     }
 
 }

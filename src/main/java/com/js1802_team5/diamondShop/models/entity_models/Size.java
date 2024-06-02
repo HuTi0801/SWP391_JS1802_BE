@@ -30,6 +30,6 @@ public class Size {
     @Column(name = "Size")
     private int size;
 
-    @OneToMany(mappedBy = "size")
-    private List<SizeDiamondShell> sizeDiamondShellList;
+//    @OneToMany(mappedBy = "size")
+//    private List<SizeDiamondShell> sizeDiamondShellList;
 }

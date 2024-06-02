@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class DiamondShellRequest {
     private Integer id;
 
@@ -25,7 +24,7 @@ public class DiamondShellRequest {
 
     private String material;
 
-    @Pattern(regexp = "^(male|female)$", message = "Gender must be either male or female")
+    //@Pattern(regexp = "^(male|female)$", message = "Gender must be either male or female")
     private String gender;
 
     @NotNull(message = "Price is mandatory")
@@ -34,7 +33,7 @@ public class DiamondShellRequest {
 
     private String imageDiamondShell;
 
-    @Pattern(regexp = "^(true|false)$", message = "Status must be either true or false")
+    //@Pattern(regexp = "^(true|false)$", message = "Status must be either true or false")
     private boolean statusDiamondShell;
 
     private double min_price;

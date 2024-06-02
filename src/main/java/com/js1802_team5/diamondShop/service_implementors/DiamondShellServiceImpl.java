@@ -72,6 +72,21 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         return response;
     }
 
+    //add Size to Diamond Shell
+//    @Override
+//    public DiamondShell addSizeToDiamondShell(Integer diamondShellId, Integer sizeId) {
+//        DiamondShell diamondShell = diamondShellRepo.findById(diamondShellId).orElseThrow();
+//        Size size = sizeRepo.findById(sizeId).orElseThrow();
+//
+//        SizeDiamondShell sizeDiamondShell = new SizeDiamondShell();
+//        sizeDiamondShell.setDiamondShell(diamondShell);
+//        sizeDiamondShell.setSize(size);
+//
+//        sizeDiamondShellRepo.save(sizeDiamondShell);
+//        diamondShell.getSizeDiamondShellList().add(sizeDiamondShell);
+//        return diamondShellRepo.save(diamondShell);
+//    }
+
     //get a diamond shell
     @Override
     public Response getADiamondShell(Integer id) {
