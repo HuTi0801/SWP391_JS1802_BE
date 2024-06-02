@@ -30,6 +30,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public String addToCart(int productID, ProductType productType, int customerID, Integer size) {
         CartResponse cartResponse = null;
+
         if (cartStorage.isEmpty()) {
             String newCartID = generateCartId();
             cartResponse = new CartResponse(newCartID, customerID, new ArrayList<>());
@@ -43,7 +44,6 @@ public class CartServiceImpl implements CartService {
                 } else {
                     String newCartID = generateCartId();
                     cartResponse = new CartResponse(newCartID, customerID, new ArrayList<>());
-                    cartResponse.setCustomerID(customerID);
                     cartStorage.put(newCartID, cartResponse);
                 }
             }
@@ -55,25 +55,47 @@ public class CartServiceImpl implements CartService {
             throw new OutOfStockException("Product out of stock");
         }
 
-        Optional<CartItemResponse> existingItemOptional = cartResponse.getItems().stream()
-                .filter(item -> item.getProductId() == (productID) && item.getProductType() == productType)
-                .findFirst();
+        boolean itemAdded = false;
 
-        if (existingItemOptional.isPresent()) {
-            CartItemResponse existingItem = existingItemOptional.get();
-            existingItem.setQuantity(existingItem.getQuantity() + 1);
-            existingItem.setAmount(existingItem.getAmount() + existingItem.getUnitPrice());
-        } else {
-            CartItemResponse newItem = new CartItemResponse();
-            newItem.setProductId(productID);
-            newItem.setProductType(productType);
-            newItem.setQuantity(1);
-            newItem.setUnitPrice(product.getPrice());
-            newItem.setAmount(product.getPrice());
-            if (productType == ProductType.DIAMOND_SHELL && size != null) {
-                newItem.setSize(size);
+        if (productType == ProductType.DIAMOND_SHELL) {
+            for (CartItemResponse item : cartResponse.getItems()) {
+                if (item.getProductId() == productID && item.getProductType() == productType) {
+                    if (item.getSize() == size) {
+                        item.setQuantity(item.getQuantity() + 1);
+                        item.setAmount(item.getAmount() + item.getUnitPrice());
+                        itemAdded = true;
+                        break;
+                    }
+                }
             }
-            cartResponse.getItems().add(newItem);
+            if (!itemAdded) {
+                CartItemResponse newItem = new CartItemResponse();
+                newItem.setProductId(productID);
+                newItem.setProductType(productType);
+                newItem.setQuantity(1);
+                newItem.setUnitPrice(product.getPrice());
+                newItem.setAmount(product.getPrice());
+                newItem.setSize(size);
+                cartResponse.getItems().add(newItem);
+            }
+        } else {
+            Optional<CartItemResponse> existingItemOptional = cartResponse.getItems().stream()
+                    .filter(item -> item.getProductId() == productID && item.getProductType() == productType)
+                    .findFirst();
+
+            if (existingItemOptional.isPresent()) {
+                CartItemResponse existingItem = existingItemOptional.get();
+                existingItem.setQuantity(existingItem.getQuantity() + 1);
+                existingItem.setAmount(existingItem.getAmount() + existingItem.getUnitPrice());
+            } else {
+                CartItemResponse newItem = new CartItemResponse();
+                newItem.setProductId(productID);
+                newItem.setProductType(productType);
+                newItem.setQuantity(1);
+                newItem.setUnitPrice(product.getPrice());
+                newItem.setAmount(product.getPrice());
+                cartResponse.getItems().add(newItem);
+            }
         }
         cartStorage.put(cartResponse.getCartId(), cartResponse);
         return cartResponse.getCartId();
