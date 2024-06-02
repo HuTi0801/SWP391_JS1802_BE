@@ -179,44 +179,41 @@ public class DiamondServiceImpl implements DiamondService {
         Root<Diamond> diamond = cq.from(Diamond.class);
 
         List<Predicate> predicates = new ArrayList<>();
-        boolean hasConditions = false;
+        predicates.add(cb.isTrue(diamond.get("statusDiamond")));
+
 
         if (diamondSearchRequest.getCaratWeight() > 0) {
             predicates.add(cb.equal(diamond.get("caratWeight"), diamondSearchRequest.getCaratWeight()));
-            hasConditions = true;
+
         }
         if (diamondSearchRequest.getColor() != null && !diamondSearchRequest.getColor().isEmpty()) {
             predicates.add(cb.equal(diamond.get("color"), diamondSearchRequest.getColor()));
-            hasConditions = true;
+
         }
         if (diamondSearchRequest.getClarity() != null && !diamondSearchRequest.getClarity().isEmpty()) {
             predicates.add(cb.equal(diamond.get("clarity"), diamondSearchRequest.getClarity()));
-            hasConditions = true;
+
         }
         if (diamondSearchRequest.getCut() != null && !diamondSearchRequest.getCut().isEmpty()) {
             predicates.add(cb.equal(diamond.get("cut"), diamondSearchRequest.getCut()));
-            hasConditions = true;
+
         }
         if (diamondSearchRequest.getOrigin() != null && !diamondSearchRequest.getOrigin().isEmpty()) {
             predicates.add(cb.equal(diamond.get("origin"), diamondSearchRequest.getOrigin()));
-            hasConditions = true;
+
         }
         if (diamondSearchRequest.getMin_price() > 0.0) {
             predicates.add(cb.greaterThanOrEqualTo(diamond.get("price"), diamondSearchRequest.getMin_price()));
-            hasConditions = true;
+
         }
         if (diamondSearchRequest.getMax_price() > 0.0 && (diamondSearchRequest.getMin_price() <= diamondSearchRequest.getMax_price())) {
             predicates.add(cb.lessThanOrEqualTo(diamond.get("price"), diamondSearchRequest.getMax_price()));
-            hasConditions = true;
-        }
 
-        if (!hasConditions) {
-            return entityManager.createQuery(cq.select(diamond)).getResultList();
         }
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-        return entityManager.createQuery(cq).getResultList();
+        return entityManager.createQuery(cq.select(diamond)).getResultList();
     }
 
     @Override
