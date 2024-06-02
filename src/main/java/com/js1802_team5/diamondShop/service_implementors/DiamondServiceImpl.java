@@ -59,6 +59,11 @@ public class DiamondServiceImpl implements DiamondService {
         Response response = new Response();
         try {
             var diamonds = diamondRepo.findAll();
+
+            List<Diamond> filteredDiamonds = diamonds.stream()
+                    .filter(Diamond::isStatusDiamond)
+                    .toList();
+
             if (diamonds.isEmpty()) {
                 response.setSuccess(false);
                 response.setMessage("There are no diamond!");
@@ -66,7 +71,7 @@ public class DiamondServiceImpl implements DiamondService {
                 response.setResult(null);
             } else {
                 response.setMessage("Get all diamonds successfully!");
-                response.setResult(toListDiamondRequest(diamonds));
+                response.setResult(toListDiamondRequest(filteredDiamonds));
                 response.setSuccess(true);
                 response.setStatusCode(200);
             }
@@ -84,7 +89,7 @@ public class DiamondServiceImpl implements DiamondService {
         Response response = new Response();
         try {
             Optional<Diamond> diamonds = diamondRepo.findById(id);
-            if (diamonds.isEmpty()) {
+            if (diamonds.isEmpty() || !diamonds.get().isStatusDiamond()) {
                 response.setSuccess(false);
                 response.setMessage("There are no diamond!");
                 response.setStatusCode(404);

@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
+import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
 import com.js1802_team5.diamondShop.models.request_models.DiamondShellRequest;
 import com.js1802_team5.diamondShop.models.request_models.DiamondShellSearchRequest;
@@ -52,6 +53,11 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         Response response = new Response();
         try {
             var diamondShells = diamondShellRepo.findAll();
+
+            List<DiamondShell> filteredDiamondShells = diamondShells.stream()
+                    .filter(DiamondShell::isStatusDiamondShell)
+                    .toList();
+
             if (diamondShells.isEmpty()) {
                 response.setSuccess(false);
                 response.setMessage("There are no diamond shell!");
@@ -59,7 +65,7 @@ public class DiamondShellServiceImpl implements DiamondShellService {
                 response.setResult(null);
             } else {
                 response.setMessage("Get all diamond shell successfully!");
-                response.setResult(toListDiamondShellRequest(diamondShells));
+                response.setResult(toListDiamondShellRequest(filteredDiamondShells));
                 response.setSuccess(true);
                 response.setStatusCode(200);
             }
@@ -92,15 +98,15 @@ public class DiamondShellServiceImpl implements DiamondShellService {
     public Response getADiamondShell(Integer id) {
         Response response = new Response();
         try {
-            Optional<DiamondShell> diamondShell1 = diamondShellRepo.findById(id);
-            if (diamondShell1.isEmpty()) {
+            Optional<DiamondShell> diamondShell = diamondShellRepo.findById(id);
+            if (diamondShell.isEmpty() || !diamondShell.get().isStatusDiamondShell()) {
                 response.setSuccess(false);
                 response.setMessage("There are no diamond!");
                 response.setStatusCode(404);
                 response.setResult(null);
             } else {
                 response.setMessage("Get a diamond shell successfully!");
-                response.setResult(toDiamondShellRequest(diamondShell1.get()));
+                response.setResult(toDiamondShellRequest(diamondShell.get()));
                 response.setSuccess(true);
                 response.setStatusCode(200);
             }
