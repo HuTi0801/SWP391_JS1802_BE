@@ -108,8 +108,58 @@ public class OrderServiceImpl implements OrderService {
             response.setMessage(e.getMessage());
             response.setStatusCode(500);
         }
-
         return response;
-
     }
+
+    @Override
+    public Response getAllOrder() {
+        Response response = new Response();
+        try {
+            var orders = orderRepository.findAll();
+            if (orders.isEmpty()) {
+                response.setSuccess(false);
+                response.setMessage("There are no order!");
+                response.setStatusCode(404);
+                response.setResult(null);
+            } else {
+                response.setMessage("Get all orders successfully!");
+                response.setResult(orderMapper.toListOrderRequest(orders));
+                response.setSuccess(true);
+                response.setStatusCode(200);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
+    }
+
+    @Override
+    public Response getOrder(Integer id) {
+        Response response = new Response();
+        try {
+            var orders = orderRepository.findById(id);
+            if (orders.isEmpty()) {
+                response.setSuccess(false);
+                response.setMessage("There are no order!");
+                response.setStatusCode(404);
+                response.setResult(null);
+            } else {
+                response.setMessage("Get order successfully!");
+                response.setResult(orderMapper.toOrderRequest(orders.get()));
+                response.setSuccess(true);
+                response.setStatusCode(200);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
+    }
+
+
 }
