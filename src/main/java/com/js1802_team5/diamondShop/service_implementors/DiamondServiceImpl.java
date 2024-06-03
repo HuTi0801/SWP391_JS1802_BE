@@ -133,6 +133,7 @@ public class DiamondServiceImpl implements DiamondService {
                 response.setResult(updateDiamond);
                 response.setSuccess(true);
                 response.setStatusCode(200);
+
             } else {
                 //Set response to return when the diamond to update is null
                 response.setMessage("There are no diamond!");

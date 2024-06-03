@@ -10,6 +10,7 @@ import com.js1802_team5.diamondShop.repositories.DiamondShellRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +57,14 @@ public class OrderMapper {
         order.setOrderDetailList(orderDetails);
 
         return order;
+    }
+
+    public List<OrderRequest> toListOrderRequest(List<Order> orders) {
+        List<OrderRequest> orderRequest = new ArrayList<>();
+        for (Order order : orders) {
+            orderRequest.add(toOrderRequest(order));
+        }
+        return orderRequest;
     }
 
     public OrderDetailRequest toOrderDetailRequest(OrderDetail orderDetail) {
