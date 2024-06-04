@@ -1,11 +1,11 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.enums.ProductType;
-import com.js1802_team5.diamondShop.exceptions.OutOfStockException;
 import com.js1802_team5.diamondShop.exceptions.ProductNotFoundException;
 import com.js1802_team5.diamondShop.models.request_models.Product;
 import com.js1802_team5.diamondShop.models.response_models.CartResponse;
 import com.js1802_team5.diamondShop.models.response_models.CartItemResponse;
+import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.DiamondRepo;
 import com.js1802_team5.diamondShop.repositories.DiamondShellRepo;
 import com.js1802_team5.diamondShop.services.CartService;
@@ -28,77 +28,102 @@ public class CartServiceImpl implements CartService {
         return cartId;
     }
     @Override
-    public String addToCart(int productID, ProductType productType, int customerID, Integer size) {
-        CartResponse cartResponse = null;
+    public Response addToCart(int productID, ProductType productType, int customerID, Integer size) {
+        Response response = new Response();
+        try {
+            if (productType == ProductType.DIAMOND_SHELL && size == null) {
+                response.setSuccess(false);
+                response.setMessage("Need to select ring size before adding to Cart");
+                response.setStatusCode(400);
+                response.setResult(null);
+                return response;
+            }
 
-        if (cartStorage.isEmpty()) {
-            String newCartID = generateCartId();
-            cartResponse = new CartResponse(newCartID, customerID, new ArrayList<>());
-            cartStorage.put(newCartID, cartResponse);
-        } else {
-            for (Map.Entry<String, CartResponse> entry : cartStorage.entrySet()) {
-                CartResponse storedCartResponse = entry.getValue();
-                if (storedCartResponse.getCustomerID().equals(customerID)) {
-                    cartResponse = storedCartResponse;
-                    break;
-                } else {
+            CartResponse cartResponse = null;
+            if (cartStorage.isEmpty()) {
+                String newCartID = generateCartId();
+                cartResponse = new CartResponse(newCartID, customerID, new ArrayList<>());
+                cartStorage.put(newCartID, cartResponse);
+            } else {
+                boolean found = false;
+                for (Map.Entry<String, CartResponse> entry : cartStorage.entrySet()) {
+                    CartResponse storedCartResponse = entry.getValue();
+                    if (storedCartResponse.getCustomerID() == customerID) {
+                        cartResponse = storedCartResponse;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
                     String newCartID = generateCartId();
                     cartResponse = new CartResponse(newCartID, customerID, new ArrayList<>());
                     cartStorage.put(newCartID, cartResponse);
                 }
             }
-        }
 
-        Product product = findProductById(productID, productType);
+            Product product = findProductById(productID, productType);
+            if (product.getQuantity() == 0) {
+                response.setSuccess(false);
+                response.setMessage("Product out of stock");
+                response.setStatusCode(400);
+                response.setResult(null);
+                return response;
+            }
 
-        if (product.getQuantity() == 0) {
-            throw new OutOfStockException("Product out of stock");
-        }
-
-        boolean itemAdded = false;
-
-        if (productType == ProductType.DIAMOND_SHELL) {
-            for (CartItemResponse item : cartResponse.getItems()) {
-                if (item.getProductId() == productID && item.getProductType() == productType) {
-                    if (item.getSize() == size) {
-                        item.setQuantity(item.getQuantity() + 1);
-                        item.setAmount(item.getAmount() + item.getUnitPrice());
-                        itemAdded = true;
-                        break;
+            boolean itemAdded = false;
+            if (productType == ProductType.DIAMOND_SHELL) {
+                for (CartItemResponse item : cartResponse.getItems()) {
+                    if (item.getProductId() == productID && item.getProductType() == productType) {
+                        if (item.getSize() == (size)) {
+                            item.setQuantity(item.getQuantity() + 1);
+                            item.setAmount(item.getAmount() + item.getUnitPrice());
+                            itemAdded = true;
+                            break;
+                        }
                     }
                 }
-            }
-            if (!itemAdded) {
-                CartItemResponse newItem = new CartItemResponse();
-                newItem.setProductId(productID);
-                newItem.setProductType(productType);
-                newItem.setQuantity(1);
-                newItem.setUnitPrice(product.getPrice());
-                newItem.setAmount(product.getPrice());
-                newItem.setSize(size);
-                cartResponse.getItems().add(newItem);
-            }
-        } else {
-            Optional<CartItemResponse> existingItemOptional = cartResponse.getItems().stream()
-                    .filter(item -> item.getProductId() == productID && item.getProductType() == productType)
-                    .findFirst();
-
-            if (existingItemOptional.isPresent()) {
-                CartItemResponse existingItem = existingItemOptional.get();
-                existingItem.setQuantity(existingItem.getQuantity() + 1);
-                existingItem.setAmount(existingItem.getAmount() + existingItem.getUnitPrice());
+                if (!itemAdded) {
+                    CartItemResponse newItem = new CartItemResponse();
+                    newItem.setProductId(productID);
+                    newItem.setProductType(productType);
+                    newItem.setQuantity(1);
+                    newItem.setUnitPrice(product.getPrice());
+                    newItem.setAmount(product.getPrice());
+                    newItem.setSize(size);
+                    cartResponse.getItems().add(newItem);
+                }
             } else {
-                CartItemResponse newItem = new CartItemResponse();
-                newItem.setProductId(productID);
-                newItem.setProductType(productType);
-                newItem.setQuantity(1);
-                newItem.setUnitPrice(product.getPrice());
-                newItem.setAmount(product.getPrice());
-                cartResponse.getItems().add(newItem);
+                Optional<CartItemResponse> existingItemOptional = cartResponse.getItems().stream()
+                        .filter(item -> item.getProductId() == productID && item.getProductType() == productType)
+                        .findFirst();
+
+                if (existingItemOptional.isPresent()) {
+                    CartItemResponse existingItem = existingItemOptional.get();
+                    existingItem.setQuantity(existingItem.getQuantity() + 1);
+                    existingItem.setAmount(existingItem.getAmount() + existingItem.getUnitPrice());
+                } else {
+                    CartItemResponse newItem = new CartItemResponse();
+                    newItem.setProductId(productID);
+                    newItem.setProductType(productType);
+                    newItem.setQuantity(1);
+                    newItem.setUnitPrice(product.getPrice());
+                    newItem.setAmount(product.getPrice());
+                    cartResponse.getItems().add(newItem);
+                }
             }
+
+            cartStorage.put(cartResponse.getCartId(), cartResponse);
+            response.setSuccess(true);
+            response.setMessage("Item added to cart successfully!");
+            response.setStatusCode(200);
+            response.setResult(cartResponse);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(500);
+            response.setResult(null);
         }
-        cartStorage.put(cartResponse.getCartId(), cartResponse);
-        return cartResponse.getCartId();
+        return response;
     }
 
     public CartResponse getCartByCustomerID(int customerID) {
@@ -107,7 +132,6 @@ public class CartServiceImpl implements CartService {
                 .findFirst();
         return optionalCart.orElse(null);
     }
-
 
 
     @Override
@@ -122,23 +146,47 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse updateCart(int customerID, ProductType productType, int productID, int quantity) {
-        CartResponse cartResponse = getCartByCustomerID(customerID);
-        if (cartResponse == null) {
-            throw new IllegalArgumentException("Cart not found for customerID: " + customerID);
+    public Response updateCart(int customerID, ProductType productType, int productID, int quantity) {
+        Response response = new Response();
+        try {
+            CartResponse cartResponse = getCartByCustomerID(customerID);
+            if (cartResponse == null) {
+                response.setSuccess(false);
+                response.setMessage("Cart not found for customerID: " + customerID);
+                response.setStatusCode(404);
+                response.setResult(null);
+                return response;
+            }
+            switch (productType) {
+                case DIAMOND:
+                    updateDiamondQuantity(cartResponse, productID, quantity);
+                    break;
+                case DIAMOND_SHELL:
+                    updateDiamondShellQuantity(cartResponse, productID, quantity);
+                    break;
+                default:
+                    response.setSuccess(false);
+                    response.setMessage("Invalid product type: " + productType);
+                    response.setStatusCode(400);
+                    response.setResult(null);
+                    return response;
+            }
+            response.setSuccess(true);
+            response.setMessage("Cart updated successfully!");
+            response.setStatusCode(200);
+            response.setResult(cartResponse);
+        } catch (IllegalArgumentException e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(400);
+            response.setResult(null);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(500);
+            response.setResult(null);
         }
-        switch (productType) {
-            case DIAMOND:
-                updateDiamondQuantity(cartResponse, productID, quantity);
-                break;
-            case DIAMOND_SHELL:
-                updateDiamondShellQuantity(cartResponse, productID, quantity);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid product type: " + productType);
-        }
-        //Return an updated cart
-        return cartResponse;
+        return response;
     }
 
     @Override
@@ -164,7 +212,7 @@ public class CartServiceImpl implements CartService {
                 cartItemResponse.setQuantity(quantity);
                 cartItemResponse.setAmount(cartItemResponse.getUnitPrice() * quantity);
             } else {
-                throw new IllegalArgumentException("Invalid quantity: " + quantity);
+                throw new IllegalArgumentException("Invalid quantity: " + quantity + " (product quantity not exceed: " + product.getQuantity() + ")");
             }
         } else {
             throw new IllegalArgumentException("Product not found in cart: productID=" + productID + ", productType=" + productType);
@@ -172,29 +220,54 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void deleteCart(int customerID, int productID, ProductType productType) {
-        CartResponse cartResponse = getCartByCustomerID(customerID);
-        if (cartResponse == null) {
-            throw new IllegalArgumentException("Cart not found for customerID: " + customerID);
-        }
-        boolean found = false;
-        List<CartItemResponse> cartItems = cartResponse.getItems();
-        Iterator<CartItemResponse> iterator = cartItems.iterator();
-        while (iterator.hasNext()) {
-            CartItemResponse cartItem = iterator.next();
-            if (cartItem.getProductId() == productID && cartItem.getProductType() == productType) {
-                iterator.remove();
-                found = true;
-                break; // Exit the loop after deleting the item
+    public Response deleteCart(int customerID, int productID, ProductType productType) {
+        Response response = new Response();
+        try {
+            CartResponse cartResponse = getCartByCustomerID(customerID);
+            if (cartResponse == null) {
+                response.setSuccess(false);
+                response.setMessage("Cart not found for customerID: " + customerID);
+                response.setStatusCode(404);
+                response.setResult(null);
+                return response;
             }
+            boolean found = false;
+            List<CartItemResponse> cartItems = cartResponse.getItems();
+            Iterator<CartItemResponse> iterator = cartItems.iterator();
+            while (iterator.hasNext()) {
+                CartItemResponse cartItem = iterator.next();
+                if (cartItem.getProductId() == productID && cartItem.getProductType() == productType) {
+                    iterator.remove();
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                response.setSuccess(false);
+                response.setMessage("Product not found in cart: productID=" + productID + ", productType=" + productType);
+                response.setStatusCode(404);
+                response.setResult(null);
+                return response;
+            }
+            if (cartItems.isEmpty()) {
+                resetCart(customerID);
+            }
+            response.setSuccess(true);
+            response.setMessage("Product removed from cart successfully");
+            response.setStatusCode(200);
+            response.setResult(cartResponse);
+        } catch (IllegalArgumentException e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(400);
+            response.setResult(null);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(500);
+            response.setResult(null);
         }
-        if (!found) {
-            throw new IllegalArgumentException("Product not found in cart: productID=" + productID + ", productType=" + productType);
-        }
-        // If cart is empty after deleting an item, reset the cart to null
-        if (cartItems.isEmpty()) {
-            resetCart(customerID);
-        }
+        return response;
     }
 
     @Override
