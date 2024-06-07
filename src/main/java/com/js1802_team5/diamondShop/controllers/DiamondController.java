@@ -12,7 +12,7 @@ import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/diamond")
+@RequestMapping("/auth/diamond")
 @RequiredArgsConstructor
 public class DiamondController {
 
