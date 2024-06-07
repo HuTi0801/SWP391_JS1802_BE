@@ -7,6 +7,7 @@ import com.js1802_team5.diamondShop.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class CartController {
     public final CartService cartService;
 
     @PostMapping("/add-to-cart")
+    @PreAuthorize("hasAuthority('customer:create')")
     public ResponseEntity<Map<String, Object>> addToCart(@RequestParam("productID") int productID,
                                                          @RequestParam("productType") ProductType productType,
                                                          @RequestParam("customerID") int customerID,
