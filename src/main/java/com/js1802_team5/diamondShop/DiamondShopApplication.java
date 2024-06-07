@@ -21,15 +21,12 @@ import java.util.List;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class DiamondShopApplication {
-
-
 //	private final CustomerRepo customerRepo;
 //	private final DiamondRepo diamondRepo;
 //	private final DiamondShellRepo diamondShellRepo;
 //	private final SizeRepo sizeRepo;
 //	private final StatusOrderRepo statusOrderRepo;
 //	private final SizeDiamondShellRepo sizeDiamondShellRepo;
-
 //	public static void main(String[] args) {
 //		SpringApplication.run(DiamondShopApplication.class, args);
 //	}
@@ -909,9 +906,10 @@ public class DiamondShopApplication {
 //			sizeDiamondShellRepo.save(sizeDiamondShell);
 //		}
 //	}
-	private final AccountRepo accountRepo;
-	private final CustomerRepo customerRepo;
-	private final PasswordEncoder passwordEncoder;
+
+//	private final AccountRepo accountRepo;
+//	private final CustomerRepo customerRepo;
+//	private final PasswordEncoder passwordEncoder;
 	public static void main(String[] args) {
 		SpringApplication.run(DiamondShopApplication.class, args);
 	}
@@ -979,9 +977,7 @@ public class DiamondShopApplication {
 //				accountRepo.save(sale_staff);
 //				accountRepo.save(delivery_staff);
 //				accountRepo.save(manager);
-//
 //				customerRepo.save(customer_1);
-
 			}
 		};
 	}

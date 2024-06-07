@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/diamond-shell")
+@RequestMapping("/auth/diamond-shell")
 @RequiredArgsConstructor
 public class DiamondShellController {
 
