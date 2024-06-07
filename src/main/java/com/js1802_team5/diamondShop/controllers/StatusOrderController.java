@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/status-order")
+@RequestMapping("/auth/status-order")
 @RequiredArgsConstructor
 public class StatusOrderController {
     private final StatusOrderService statusOrderService;

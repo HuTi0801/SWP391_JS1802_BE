@@ -14,14 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/auth/cart")
 @RequiredArgsConstructor
 public class CartController {
 
     public final CartService cartService;
 
     @PostMapping("/add-to-cart")
-    @PreAuthorize("hasAuthority('customer:create')")
+//    @PreAuthorize("hasAuthority('customer:create')")
     public ResponseEntity<Map<String, Object>> addToCart(@RequestParam("productID") int productID,
                                                          @RequestParam("productType") ProductType productType,
                                                          @RequestParam("customerID") int customerID,

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/auth/orders")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;

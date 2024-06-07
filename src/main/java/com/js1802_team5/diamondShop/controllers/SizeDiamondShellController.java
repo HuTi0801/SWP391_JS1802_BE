@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/size-diamond-shell")
+@RequestMapping("/auth/size-diamond-shell")
 @RequiredArgsConstructor
 public class SizeDiamondShellController {
     private final SizeDiamondShellService sizeDiamondShellService;
