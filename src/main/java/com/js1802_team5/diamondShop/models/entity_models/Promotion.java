@@ -14,32 +14,31 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`Promotion`")
+@Table(name = "`promotion`")
 public class Promotion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PromotionId")
     private Integer id;
 
-    @Column(name = "PromotionName")
+    @Column(name = "promotion_name")
     private String promotionName;
 
-    @Column(name = "StartDate")
+    @Column(name = "start_date")
     private Date startDate;
 
-    @Column(name = "EndDate")
+    @Column(name = "end_date")
     private Date endDate;
 
-    @Column(name = "Description")
+    @Column(name = "description")
     private String description;
 
-    @Column(name = "Type")
+    @Column(name = "type")
     private String type;
 
-    @Column(name = "MemberLevelPromotion")
+    @Column(name = "member_level_promotion")
     private String memberLevelPromotion;
 
-    @Column(name = "DiscountPercent")
+    @Column(name = "discount_percent")
     private float discountPercent;
 
     @OneToMany(mappedBy = "promotion")
@@ -49,6 +48,6 @@ public class Promotion {
     private List<PromotionDiamond> promotionDiamondList;
 
     @ManyToOne
-    @JoinColumn(name = "AccountId")
+    @JoinColumn(name = "account_id")
     private Account account;
 }

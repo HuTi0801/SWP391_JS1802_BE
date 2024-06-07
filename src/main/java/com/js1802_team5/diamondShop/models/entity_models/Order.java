@@ -16,40 +16,37 @@ import java.util.List;
 @Builder
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
-@Table(name = "`Order`") // lí do có `...` là do Order bị trùng tên
+@Table(name = "`order`") // lí do có `...` là do Order bị trùng tên
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "OrderId")
     private Integer id;
-
-    @Column(name = "TotalPrice")
     private double totalPrice;
-
-    @Column(name = "Address")
     private String address;
+    @Column(name = "number_phone")
+    private String phone;
+    @Column(name = "customer_name")
+    private String cusName;
 
-    @Column(name = "PurchaseDate")
-    private Date purchaseDate;
+//    private Date purchaseDate;
 
-    @Column(name = "WarrantyStartDate")
     private Date warrantyStartDate;
-
-    @Column(name = "WarrantyEndDate")
     private Date warrantyEndDate;
+    private boolean isCancel;
 
+    @OneToMany(mappedBy = "order")
+    private List<AccountOrder> accountOrderList;
     @ManyToOne
-    @JoinColumn(name = "AccountId")
-    private Account account;
-
-    @ManyToOne
-    @JoinColumn(name = "CustomerId")
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "StatusId")
+    @JoinColumn(name = "status_id")
     private StatusOrder statusOrder;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) //, fetch = FetchType.LAZY
     private List<OrderDetail> orderDetailList;
+
+    @OneToMany(mappedBy = "order")
+    private List<DateStatusOrder> dateStatusOrderList;
 }

@@ -17,26 +17,25 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`Account`")
+@Table(name = "`account`")
 public class Account implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "AccountId")
     private Integer id;
 
-    @Column(name = "Username")
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "Password")
+    @Column(name = "password")
     private String pass;
 
-    @Column(name = "FirstName")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "LastName")
+    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "IsActive")
+    @Column(name = "is_active")
     private boolean isActive;
 
     @Column(name = "roles")
@@ -44,7 +43,7 @@ public class Account implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "account")
-    private List<Order> orderList;
+    private List<AccountOrder> accountOrderList;
 
     @OneToMany(mappedBy = "account")
     private List<Diamond> diamondList;

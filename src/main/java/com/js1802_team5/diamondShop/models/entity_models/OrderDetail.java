@@ -16,28 +16,30 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
-@Table(name = "`OrderDetail`")
+@Table(name = "`order_detail`")
 public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "OrderDetailId")
     private Integer id;
 
-    @Column(name = "Quantity")
+    @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "Price")
+    @Column(name = "price")
     private double price;
 
+    @Column(name = "size")
+    private int size;
+
     @ManyToOne
-    @JoinColumn(name = "OrderId")
+    @JoinColumn(name = "order_id")
     private Order order;
 
     @ManyToOne
-    @JoinColumn(name = "DiamondId")
+    @JoinColumn(name = "diamond_id")
     private Diamond diamond;
 
     @ManyToOne
-    @JoinColumn(name = "DiamondShellId")
+    @JoinColumn(name = "diamondShell_id")
     private DiamondShell diamondShell;
 }

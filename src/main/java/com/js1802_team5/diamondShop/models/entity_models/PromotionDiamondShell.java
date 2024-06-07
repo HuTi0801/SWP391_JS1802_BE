@@ -11,18 +11,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`PromotionDiamondShell`")
+@Table(name = "`promotion_diamond_shell`")
 public class PromotionDiamondShell {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PromotionDiamondShellId")
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "DiamondShellId")
+    @JoinColumn(name = "diamond_shell_id")
     private DiamondShell diamondShell;
 
     @ManyToOne
-    @JoinColumn(name = "PromotionId")
+    @JoinColumn(name = "promotion_id")
     private Promotion promotion;
 }

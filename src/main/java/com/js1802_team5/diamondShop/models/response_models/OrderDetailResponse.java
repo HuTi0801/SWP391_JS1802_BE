@@ -9,6 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RolesResponse {
-    private String roleName;
+public class OrderDetailResponse {
+    private Integer productId;
+    private int quantity;
+    private double price;
+    private int size;
+    private String diamondId;
+    private String diamondShellId;
 }

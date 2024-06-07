@@ -16,48 +16,47 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`Diamond`")
+@Table(name = "`diamond`")
 public class Diamond implements Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DiamondId")
     private Integer id;
 
-    @Column(name = "Origin")
+    @Column(name = "origin")
     private String origin;
 
-    @Column(name = "Clarity")
+    @Column(name = "clarity")
     private String clarity;
 
-    @Column(name = "CaratWeight")
+    @Column(name = "carat_weight")
     private float caratWeight;
 
-    @Column(name = "Price")
+    @Column(name = "price")
     private double price;
 
-    @Column(name = "Color")
+    @Column(name = "color")
     private String color;
 
-    @Column(name = "Cut")
+    @Column(name = "cut")
     private String cut;
 
-    @Column(name = "CertificateNumber")
+    @Column(name = "certificate_number")
     private String certificateNumber;
 
-    @Column(name = "Quantity")
+    @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "Image")
+    @Column(name = "image")
     private String imageDiamond;
 
-    @Column(name = "Status")
+    @Column(name = "status")
     private boolean statusDiamond;
 
     @OneToMany(mappedBy = "diamond")
     private List<OrderDetail> orderDetailList;
 
     @ManyToOne
-    @JoinColumn(name = "AccountId")
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @OneToMany(mappedBy = "diamond")

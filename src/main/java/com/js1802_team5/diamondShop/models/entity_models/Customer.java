@@ -16,27 +16,26 @@ import java.util.List;
 @Builder
 @JsonIgnoreProperties("customer")
 @Entity
-@Table(name = "`Customer`")
+@Table(name = "`customer`")
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CustomerId")
     private Integer id;
 
-    @Column(name = "Email")
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "PhoneNumber")
+    @Column(name = "phone_number")
     private String phone;
 
-    @Column(name = "Point")
+    @Column(name = "point")
     private int point;
 
-    @Column(name = "MemberLevel")
+    @Column(name = "member_level")
     private String memberLevel;
 
     @OneToOne
-    @JoinColumn(name = "AccountId")
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @OneToMany(mappedBy = "customer")

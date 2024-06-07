@@ -13,11 +13,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class OrderRequest {
+    private Integer id;
     private Integer customerId;
     private double totalPrice;
     private String address;
-    private Date purchaseDate;
-    private Date warrantyStartDate;
-    private Date warrantyEndDate;
+    private String phone;
+    private String cusName;
+//    private Date warrantyStartDate;
+//    private Date warrantyEndDate;
+    private boolean isCancel;
     private List<OrderDetailRequest> orderDetails;
 }
