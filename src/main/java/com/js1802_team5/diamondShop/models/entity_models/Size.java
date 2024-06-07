@@ -17,19 +17,16 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`Size`")
+@Table(name = "`size`")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SizeId")
     private Integer id;
 
     @NotNull(message = "Size Weight is mandatory")
     @Range(min = 1, max = 32, message = "Size Weight should be a positive number")
-    @Column(name = "Size")
+    @Column(name = "size")
     private int size;
 
-//    @OneToMany(mappedBy = "size")
-//    private List<SizeDiamondShell> sizeDiamondShellList;
 }

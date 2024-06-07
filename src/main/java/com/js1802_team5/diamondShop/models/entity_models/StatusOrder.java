@@ -13,14 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`Status`")
+@Table(name = "`status_order`")
 public class StatusOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "StatusId")
     private Integer id;
 
-    @Column(name = "StatusName")
+    @Column(name = "status_name")
     private String statusName;
 
     @OneToMany(mappedBy = "statusOrder")

@@ -13,19 +13,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`SizeDiamondShell`")
+@Table(name = "`size_diamond_shell`")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class SizeDiamondShell {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "SizeDiamondShellId")
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "DiamondShellId")
+    @JoinColumn(name = "diamond_shell_id")
     private DiamondShell diamondShell;
 
     @ManyToOne
-    @JoinColumn(name = "SizeId")
+    @JoinColumn(name = "size_id")
     private Size size;
 }

@@ -6,23 +6,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`Roles`")
-public class Roles {
+@Table(name = "`account_order`")
+public class AccountOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "RoleId")
     private Integer id;
 
-    @Column(name = "RoleName")
-    private String roleName;
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 
-    @OneToMany(mappedBy = "roles")
-    private List<Account> accountList;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 }

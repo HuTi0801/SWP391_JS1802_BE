@@ -18,39 +18,38 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`DiamondShell`")
+@Table(name = "`diamond_shell`")
 public class DiamondShell implements Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "DiamondShellId")
     private Integer id;
 
-    @Column(name = "Quantity")
+    @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "SecondaryStoneType")
+    @Column(name = "secondary_stone_type")
     private String secondaryStoneType;
 
-    @Column(name = "Material")
+    @Column(name = "material")
     private String material;
 
-    @Column(name = "Gender")
+    @Column(name = "gender")
     private String gender;
 
-    @Column(name = "Price")
+    @Column(name = "price")
     private double price;
 
-    @Column(name = "Image")
+    @Column(name = "image")
     private String imageDiamondShell;
 
-    @Column(name = "Status")
+    @Column(name = "status")
     private boolean statusDiamondShell;
 
     @OneToMany(mappedBy = "diamondShell")
     private List<OrderDetail> orderDetailList;
 
     @ManyToOne
-    @JoinColumn(name = "AccountId")
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @OneToMany(mappedBy = "diamondShell")

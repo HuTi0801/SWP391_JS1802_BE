@@ -20,7 +20,7 @@ public class OrderDetailRequest {
     private Integer productId;
     private int quantity;
     private double price;
+    private int size;
     private Integer diamondId;
     private Integer diamondShellId;
-
 }

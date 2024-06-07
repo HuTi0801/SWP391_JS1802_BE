@@ -1,8 +1,11 @@
 package com.js1802_team5.diamondShop.mappers;
 
 import com.js1802_team5.diamondShop.models.entity_models.*;
+import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.models.request_models.OrderDetailRequest;
 import com.js1802_team5.diamondShop.models.request_models.OrderRequest;
+import com.js1802_team5.diamondShop.models.response_models.DateStatusOrderResponse;
+import com.js1802_team5.diamondShop.models.response_models.OrderDetailResponse;
 import com.js1802_team5.diamondShop.models.response_models.OrderResponse;
 import com.js1802_team5.diamondShop.repositories.CustomerRepo;
 import com.js1802_team5.diamondShop.repositories.DiamondRepo;
@@ -21,32 +24,16 @@ public class OrderMapper {
     private final DiamondRepo diamondRepository;
     private final DiamondShellRepo diamondShellRepository;
 
-    public OrderRequest toOrderRequest(Order order) {
-        List<OrderDetailRequest> orderDetailRequests = order.getOrderDetailList().stream()
-                .map(this::toOrderDetailRequest)
-                .collect(Collectors.toList());
-
-        return OrderRequest.builder()
-                .purchaseDate(order.getPurchaseDate())
-                .address(order.getAddress())
-                .customerId(order.getCustomer().getId())
-                .warrantyEndDate(order.getWarrantyEndDate())
-                .warrantyStartDate(order.getWarrantyStartDate())
-                .totalPrice(order.getTotalPrice())
-                .orderDetails(orderDetailRequests)
-                .build();
-    }
-
     public Order toOrder(OrderRequest orderRequest) {
         Customer customer = customerRepository.findById(orderRequest.getCustomerId())
                 .orElseThrow(() -> new IllegalArgumentException("Customer's is not exist"));
 
         Order order = Order.builder()
-                .purchaseDate(orderRequest.getPurchaseDate())
                 .address(orderRequest.getAddress())
-                .warrantyEndDate(orderRequest.getWarrantyEndDate())
-                .warrantyStartDate(orderRequest.getWarrantyStartDate())
+                .phone(orderRequest.getPhone())
+                .cusName(orderRequest.getCusName())
                 .totalPrice(orderRequest.getTotalPrice())
+                .isCancel(false) // mặc định là false khi tạo mới
                 .customer(customer)
                 .build();
 
@@ -59,29 +46,12 @@ public class OrderMapper {
         return order;
     }
 
-    public List<OrderRequest> toListOrderRequest(List<Order> orders) {
-        List<OrderRequest> orderRequest = new ArrayList<>();
-        for (Order order : orders) {
-            orderRequest.add(toOrderRequest(order));
-        }
-        return orderRequest;
-    }
-
-    public OrderDetailRequest toOrderDetailRequest(OrderDetail orderDetail) {
-        return OrderDetailRequest.builder()
-                .productId(orderDetail.getDiamond() != null ? orderDetail.getDiamond().getId() : orderDetail.getDiamondShell().getId())
-                .quantity(orderDetail.getQuantity())
-                .price(orderDetail.getPrice())
-                .diamondId(orderDetail.getDiamond() != null ? orderDetail.getDiamond().getId() : null)
-                .diamondShellId(orderDetail.getDiamondShell() != null ? orderDetail.getDiamondShell().getId() : null)
-                .build();
-    }
-
     public OrderDetail toOrderDetail(OrderDetailRequest detailRequest, Order order) {
         OrderDetail orderDetail = new OrderDetail();
         orderDetail.setOrder(order);
         orderDetail.setQuantity(detailRequest.getQuantity());
         orderDetail.setPrice(detailRequest.getPrice());
+        orderDetail.setSize(detailRequest.getSize());
 
         if (detailRequest.getDiamondId() != null) {
             Diamond diamond = diamondRepository.findById(detailRequest.getDiamondId())
@@ -98,20 +68,54 @@ public class OrderMapper {
         return orderDetail;
     }
 
-    //Response
-    public OrderResponse toOrderResponse(Order order){
-        List<OrderDetailRequest> orderDetailRequests = order.getOrderDetailList().stream()
-                .map(this::toOrderDetailRequest)
+    public OrderResponse toOrderResponse(Order order) {
+        List<OrderDetailResponse> orderDetails = order.getOrderDetailList().stream()
+                .map(this::toOrderDetailResponse)
                 .collect(Collectors.toList());
 
+        List<DateStatusOrderResponse> dateStatusOrderResponses = order.getDateStatusOrderList().stream()
+                .map(dateStatusOrder -> DateStatusOrderResponse.builder()
+                        .dateStatus(dateStatusOrder.getDateStatus())
+                        .status(dateStatusOrder.getStatus())
+                        .build())
+                .toList();
+
         return OrderResponse.builder()
-                .purchaseDate(order.getPurchaseDate())
+                .id(order.getId())
+                .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null) // Cập nhật phần này
                 .address(order.getAddress())
-                .customerId(order.getCustomer().getId())
-                .warrantyEndDate(order.getWarrantyEndDate())
-                .warrantyStartDate(order.getWarrantyStartDate())
+                .phone(order.getPhone())
+                .cusName(order.getCusName())
                 .totalPrice(order.getTotalPrice())
-                .orderDetails(orderDetailRequests)
+                .isCancel(order.isCancel())
+                .orderDetails(orderDetails)
+                .dateStatusOrders(dateStatusOrderResponses)
                 .build();
     }
+
+    public OrderDetailResponse toOrderDetailResponse(OrderDetail orderDetail) {
+        return OrderDetailResponse.builder()
+                .productId(orderDetail.getDiamond() != null ? orderDetail.getDiamond().getId() : orderDetail.getDiamondShell().getId())
+                .quantity(orderDetail.getQuantity())
+                .price(orderDetail.getPrice())
+                .size(orderDetail.getSize())
+                .diamondId(orderDetail.getDiamond() != null ? "Diamond" : null) // Cập nhật phần này
+                .diamondShellId(orderDetail.getDiamondShell() != null ? "Diamond Shell" : null) // Cập nhật phần này
+                .build();
+    }
+
+    public DateStatusOrderResponse toDateStatusOrderResponse(DateStatusOrder dateStatusOrder) {
+        return DateStatusOrderResponse.builder()
+                .dateStatus(dateStatusOrder.getDateStatus())
+                .status(dateStatusOrder.getStatus())
+                .build();
+    }
+
+    public List<OrderResponse> toListOrderResponse(List<Order> orders) {
+        return orders.stream()
+                .map(this::toOrderResponse)
+                .collect(Collectors.toList());
+    }
+
+
 }

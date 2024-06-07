@@ -6,22 +6,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "`promotion_diamond`")
-public class PromotionDiamond {
+@Table(name = "`date_status_order`")
+public class DateStatusOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    private Date dateStatus;
+    private String status;
     @ManyToOne
-    @JoinColumn(name = "diamond_id")
-    private Diamond diamond;
-
-    @ManyToOne
-    @JoinColumn(name = "promotion_id")
-    private Promotion promotion;
+    @JoinColumn(name = "order_id")
+    private Order order;
 }
