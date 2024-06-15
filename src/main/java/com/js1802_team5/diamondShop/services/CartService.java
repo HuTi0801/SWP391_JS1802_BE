@@ -16,4 +16,5 @@ public interface CartService {
     void updateProductQuantity(CartResponse cartResponse, int productID, int quantity, ProductType productType);
     Response deleteCart(int customerID, int productID, ProductType productType);
     void resetCart(int customerID);
+    Response applyPromotion(String cartId, String promotionCode);
 }

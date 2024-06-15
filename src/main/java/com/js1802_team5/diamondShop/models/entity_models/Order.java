@@ -28,14 +28,14 @@ public class Order {
     @Column(name = "customer_name")
     private String cusName;
 
-//    private Date purchaseDate;
-
     private Date warrantyStartDate;
     private Date warrantyEndDate;
     private boolean isCancel;
 
     @OneToMany(mappedBy = "order")
+    @JsonManagedReference
     private List<AccountOrder> accountOrderList;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
