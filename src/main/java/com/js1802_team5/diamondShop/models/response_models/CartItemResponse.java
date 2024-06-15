@@ -11,9 +11,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CartItemResponse {
     private int productId;
+    private String productName;
     private ProductType productType;
     private int quantity;
-    private int size; //Diamond Shell
+    private int size;
     private double unitPrice;
     private double amount;
 }

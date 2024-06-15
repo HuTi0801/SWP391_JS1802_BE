@@ -2,12 +2,12 @@ package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.enums.ProductType;
 import com.js1802_team5.diamondShop.exceptions.ProductNotFoundException;
+import com.js1802_team5.diamondShop.models.entity_models.Promotion;
 import com.js1802_team5.diamondShop.models.request_models.Product;
 import com.js1802_team5.diamondShop.models.response_models.CartResponse;
 import com.js1802_team5.diamondShop.models.response_models.CartItemResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
-import com.js1802_team5.diamondShop.repositories.DiamondRepo;
-import com.js1802_team5.diamondShop.repositories.DiamondShellRepo;
+import com.js1802_team5.diamondShop.repositories.*;
 import com.js1802_team5.diamondShop.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,14 +19,19 @@ import java.util.*;
 public class CartServiceImpl implements CartService {
     private final DiamondShellRepo diamondShellRepo;
     private final DiamondRepo diamondRepo;
+    private final PromotionRepo promotionRepo;
+    private final PromotionDiamondRepo promotionDiamondRepo;
+    private final PromotionDiamondShellRepo promotionDiamondShellRepo;
     private final Map<String, CartResponse> cartStorage = new HashMap<>();
     private static int cartCounter = 1;
+
     @Override
     public String generateCartId() {
         String cartId = String.format("CA%06d", cartCounter);
         cartCounter++;
         return cartId;
     }
+
     @Override
     public Response addToCart(int productID, ProductType productType, int customerID, Integer size) {
         Response response = new Response();
@@ -76,7 +81,7 @@ public class CartServiceImpl implements CartService {
                     if (item.getProductId() == productID && item.getProductType() == productType) {
                         if (item.getSize() == (size)) {
                             item.setQuantity(item.getQuantity() + 1);
-                            item.setAmount(item.getAmount() + item.getUnitPrice());
+                            item.setAmount(item.getAmount() * item.getUnitPrice());
                             itemAdded = true;
                             break;
                         }
@@ -85,6 +90,7 @@ public class CartServiceImpl implements CartService {
                 if (!itemAdded) {
                     CartItemResponse newItem = new CartItemResponse();
                     newItem.setProductId(productID);
+                    newItem.setProductName(product.getName());
                     newItem.setProductType(productType);
                     newItem.setQuantity(1);
                     newItem.setUnitPrice(product.getPrice());
@@ -104,6 +110,7 @@ public class CartServiceImpl implements CartService {
                 } else {
                     CartItemResponse newItem = new CartItemResponse();
                     newItem.setProductId(productID);
+                    newItem.setProductName(product.getName());
                     newItem.setProductType(productType);
                     newItem.setQuantity(1);
                     newItem.setUnitPrice(product.getPrice());
@@ -126,13 +133,13 @@ public class CartServiceImpl implements CartService {
         return response;
     }
 
+    @Override
     public CartResponse getCartByCustomerID(int customerID) {
         Optional<CartResponse> optionalCart = cartStorage.values().stream()
                 .filter(cartResponse -> cartResponse.getCustomerID() == customerID)
                 .findFirst();
         return optionalCart.orElse(null);
     }
-
 
     @Override
     public Product findProductById(int productID, ProductType productType) {
@@ -273,5 +280,72 @@ public class CartServiceImpl implements CartService {
     @Override
     public void resetCart(int customerID) {
         cartStorage.remove(String.valueOf(customerID));
+    }
+
+    @Override
+    public Response applyPromotion(String cartId, String promotionCode) {
+        Response response = new Response();
+
+        // Check if cart exists
+        CartResponse cart = cartStorage.get(cartId);
+        if (cart == null) {
+            response.setMessage("Cart ID not found.");
+            response.setSuccess(false);
+            response.setStatusCode(404);
+            return response;
+        }
+
+        // Check if promotion code exists
+        Optional<Promotion> promotionOptional = promotionRepo.findByPromotionCode(promotionCode);
+        if (promotionOptional.isEmpty()) {
+            response.setMessage("Promotion code not found.");
+            response.setSuccess(false);
+            response.setStatusCode(404);
+            return response;
+        }
+        Promotion promotion = promotionOptional.get();
+
+        // Check if promotion is valid (dates)
+        Date now = new Date();
+        if (now.before(promotion.getStartDate()) || now.after(promotion.getEndDate())) {
+            response.setMessage("Promotion code is not valid at this time.");
+            response.setSuccess(false);
+            response.setStatusCode(400);
+            return response;
+        }
+
+        // Get applicable product IDs from promotion
+        List<Integer> applicableDiamondIds = promotionDiamondRepo.findByPromotionId(promotion.getId())
+                .stream().map(promotionDiamond -> promotionDiamond.getDiamond().getId())
+                .toList();
+
+        List<Integer> applicableDiamondShellIds = promotionDiamondShellRepo.findByPromotionId(promotion.getId())
+                .stream().map(promotionDiamondShell -> promotionDiamondShell.getDiamondShell().getId())
+                .toList();
+
+        double discountPercent = promotion.getDiscountPercent();
+
+        // Apply discount to applicable items in the cart
+        for (CartItemResponse item : cart.getItems()) {
+            if (item.getProductType() == ProductType.DIAMOND && applicableDiamondIds.contains(item.getProductId())) {
+                double newAmount = item.getUnitPrice() * item.getQuantity() * (1 - discountPercent / 100);
+                item.setAmount(newAmount);
+            } else if (item.getProductType() == ProductType.DIAMOND_SHELL && applicableDiamondShellIds.contains(item.getProductId())) {
+                double newAmount = item.getUnitPrice() * item.getQuantity() * (1 - discountPercent / 100);
+                item.setAmount(newAmount);
+            }
+        }
+
+        // Update the total price of the cart by summing up the amount of each item
+        double totalPrice = cart.getItems().stream().mapToDouble(CartItemResponse::getAmount).sum();
+        cart.setTotalPrice(totalPrice);
+
+        cartStorage.put(cartId, cart);
+
+        response.setResult(cart);
+        response.setMessage("Promotion applied successfully.");
+        response.setSuccess(true);
+        response.setStatusCode(200);
+        return response;
     }
 }

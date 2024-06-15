@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,12 +21,17 @@ public class Promotion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "promotion_code")
+    private String promotionCode;
+
     @Column(name = "promotion_name")
     private String promotionName;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS", timezone = "UTC")
     @Column(name = "start_date")
     private Date startDate;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS", timezone = "UTC")
     @Column(name = "end_date")
     private Date endDate;
 

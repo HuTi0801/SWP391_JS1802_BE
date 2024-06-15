@@ -22,6 +22,9 @@ public class Diamond implements Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "origin")
     private String origin;
 

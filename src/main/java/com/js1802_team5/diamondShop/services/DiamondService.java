@@ -35,4 +35,10 @@ public interface DiamondService {
 
     //convert diamond to diamondRequest
     Diamond toDiamond(DiamondRequest diamondRequest);
+    List<String> getAllOrigins();
+    List<String> getAllClarities();
+    List<String> getAllColors();
+    List<String> getAllCuts();
+    List<Float> getAllCaratWeights();
+    List<String> getAllDiamondNames();
 }

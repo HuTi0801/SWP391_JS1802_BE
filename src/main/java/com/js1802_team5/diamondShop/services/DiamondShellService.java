@@ -40,4 +40,8 @@ public interface DiamondShellService {
 
     //convert diamondShellRequest to diamondShell
     DiamondShell toDiamond(DiamondShellRequest diamondShellRequest);
+
+    List<String> getAllMaterials();
+    List<String> getAllSecondaryStoneTypes();
+    List<String> getAllDiamondShellNames();
 }
