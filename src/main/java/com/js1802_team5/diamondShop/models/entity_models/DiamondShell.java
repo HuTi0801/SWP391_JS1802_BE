@@ -26,6 +26,7 @@ public class DiamondShell implements Product {
 
     private String name;
 
+    @Column(name = "quantity")
     private int quantity;
 
     @Column(name = "secondary_stone_type")

@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -266,5 +267,58 @@ public class DiamondServiceImpl implements DiamondService {
                 .origin(diamondRequest.getOrigin())
                 .statusDiamond(diamondRequest.isStatusDiamond())
                 .build();
+    }
+
+    @Override
+    public List<String> getAllOrigins() {
+        return diamondRepo.findAll()
+                .stream()
+                .map(Diamond::getOrigin)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllClarities() {
+        return diamondRepo.findAll()
+                .stream()
+                .map(Diamond::getClarity)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllColors() {
+        return diamondRepo.findAll()
+                .stream()
+                .map(Diamond::getColor)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllCuts() {
+        return diamondRepo.findAll()
+                .stream()
+                .map(Diamond::getCut)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Float> getAllCaratWeights() {
+        return diamondRepo.findAll()
+                .stream()
+                .map(Diamond::getCaratWeight)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllDiamondNames() {
+        List<Diamond> diamonds = diamondRepo.findAll();
+        return diamonds.stream()
+                .map(Diamond::getName)
+                .collect(Collectors.toList());
     }
 }

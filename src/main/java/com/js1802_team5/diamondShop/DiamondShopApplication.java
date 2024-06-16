@@ -1,13 +1,13 @@
 package com.js1802_team5.diamondShop;
 
-import com.js1802_team5.diamondShop.models.entity_models.*;
-import com.js1802_team5.diamondShop.repositories.*;
-import com.js1802_team5.diamondShop.enums.MemberLevel;
+//import com.js1802_team5.diamondShop.models.entity_models.*;
+//import com.js1802_team5.diamondShop.repositories.*;
+//import com.js1802_team5.diamondShop.enums.MemberLevel;
 import com.js1802_team5.diamondShop.enums.Role;
 import com.js1802_team5.diamondShop.models.entity_models.Account;
-import com.js1802_team5.diamondShop.models.entity_models.Customer;
-import com.js1802_team5.diamondShop.repositories.AccountRepo;
-import com.js1802_team5.diamondShop.repositories.CustomerRepo;
+//import com.js1802_team5.diamondShop.models.entity_models.Customer;
+//import com.js1802_team5.diamondShop.repositories.AccountRepo;
+//import com.js1802_team5.diamondShop.repositories.CustomerRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,21 +15,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
-import java.util.List;
+//import java.util.Arrays;
+//import java.util.List;
 
 @SpringBootApplication
 @RequiredArgsConstructor
 public class DiamondShopApplication {
-
-
 //	private final CustomerRepo customerRepo;
 //	private final DiamondRepo diamondRepo;
 //	private final DiamondShellRepo diamondShellRepo;
 //	private final SizeRepo sizeRepo;
 //	private final StatusOrderRepo statusOrderRepo;
 //	private final SizeDiamondShellRepo sizeDiamondShellRepo;
-
 //	public static void main(String[] args) {
 //		SpringApplication.run(DiamondShopApplication.class, args);
 //	}
@@ -909,9 +906,10 @@ public class DiamondShopApplication {
 //			sizeDiamondShellRepo.save(sizeDiamondShell);
 //		}
 //	}
-	private final AccountRepo accountRepo;
-	private final CustomerRepo customerRepo;
-	private final PasswordEncoder passwordEncoder;
+
+//	private final AccountRepo accountRepo;
+//	private final CustomerRepo customerRepo;
+//	private final PasswordEncoder passwordEncoder;
 	public static void main(String[] args) {
 		SpringApplication.run(DiamondShopApplication.class, args);
 	}
@@ -939,10 +937,10 @@ public class DiamondShopApplication {
 //						.build();
 //
 //				Account sale_staff = Account.builder()
-//						.username("khoatnn")
-//						.firstName("Khoa")
-//						.lastName("Tran")
-//						.pass(passwordEncoder.encode("123456"))
+//						.username("duynn")
+//						.firstName("Duy")
+//						.lastName("Nguyen")
+//						.pass(passwordEncoder.encode("12345"))
 //						.role(Role.SALE_STAFF)
 //						.isActive(true)
 //						.build();
@@ -979,9 +977,7 @@ public class DiamondShopApplication {
 //				accountRepo.save(sale_staff);
 //				accountRepo.save(delivery_staff);
 //				accountRepo.save(manager);
-//
 //				customerRepo.save(customer_1);
-
 			}
 		};
 	}

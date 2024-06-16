@@ -8,12 +8,17 @@ import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.DiamondShellService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/diamond-shell")
+@RequestMapping("/auth/diamond-shell")
 @RequiredArgsConstructor
 public class DiamondShellController {
 
@@ -55,5 +60,26 @@ public class DiamondShellController {
     @PostMapping("/remove-diamond-shell-{id}")
     public Response removeDiamondShell(@PathVariable Integer id) {
         return diamondShellService.removeDiamondShell(id);
+    }
+
+    @GetMapping("/attributes")
+    public ResponseEntity<Response> getDiamondShellAttributes() {
+        Map<String, Object> attributes = new HashMap<>();
+        attributes.put("materials", diamondShellService.getAllMaterials());
+        attributes.put("secondaryStoneTypes", diamondShellService.getAllSecondaryStoneTypes());
+
+        Response response = new Response();
+        response.setResult(attributes);
+        response.setSuccess(true);
+        response.setMessage("Fetched diamond shell attributes successfully");
+        response.setStatusCode(HttpStatus.OK.value());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-diamond-shell-names")
+    public ResponseEntity<List<String>> getAllDiamondShellNames() {
+        List<String> diamondShellNames = diamondShellService.getAllDiamondShellNames();
+        return ResponseEntity.status(HttpStatus.OK).body(diamondShellNames);
     }
 }

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/auth/orders")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
@@ -34,5 +34,15 @@ public class OrderController {
     @PostMapping("/update-status-order-{orderId}-{newStatus}")
     public Response updateStatusOrder(@PathVariable Integer orderId, @RequestParam String newStatus){
         return orderService.updateOrderStatus(orderId, newStatus);
+    }
+
+    @GetMapping("/view-order-history/{accountId}")
+    public Response getDeliveredOrders(@PathVariable Integer accountId) {
+        return orderService.getDeliveredOrders(accountId);
+    }
+
+    @GetMapping("/view-shipping-order/{accountId}")
+    public Response getDeliveringOrders(@PathVariable Integer accountId) {
+        return orderService.getDeliveringOrders(accountId);
     }
 }
