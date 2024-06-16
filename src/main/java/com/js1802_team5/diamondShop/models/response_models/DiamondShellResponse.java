@@ -12,11 +12,12 @@ import java.util.List;
 @Builder
 public class DiamondShellResponse {
     private Integer id;
+    private String name;
     private int quantity;
     private String secondaryStoneType;
     private String material;
     private String gender;
     private double price;
     private String imageDiamondShell;
-    private List<Integer> size;
+    private List<SizeDiamondShellResponse> size;
 }

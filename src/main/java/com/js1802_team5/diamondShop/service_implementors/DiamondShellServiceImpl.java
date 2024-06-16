@@ -2,11 +2,16 @@ package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
+import com.js1802_team5.diamondShop.models.entity_models.Size;
+import com.js1802_team5.diamondShop.models.entity_models.SizeDiamondShell;
 import com.js1802_team5.diamondShop.models.request_models.DiamondShellRequest;
 import com.js1802_team5.diamondShop.models.request_models.DiamondShellSearchRequest;
 import com.js1802_team5.diamondShop.models.response_models.DiamondShellResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
+import com.js1802_team5.diamondShop.models.response_models.SizeDiamondShellResponse;
 import com.js1802_team5.diamondShop.repositories.DiamondShellRepo;
+import com.js1802_team5.diamondShop.repositories.SizeDiamondShellRepo;
+import com.js1802_team5.diamondShop.repositories.SizeRepo;
 import com.js1802_team5.diamondShop.services.DiamondShellService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -27,6 +32,8 @@ import java.util.stream.Collectors;
 public class DiamondShellServiceImpl implements DiamondShellService {
 
     private final DiamondShellRepo diamondShellRepo;
+    private final SizeRepo sizeRepo;
+    private final SizeDiamondShellRepo sizeDiamondShellRepo;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -34,11 +41,32 @@ public class DiamondShellServiceImpl implements DiamondShellService {
     public Response createDiamondShell(DiamondShellRequest diamondShellRequest) {
         Response response = new Response();
         try {
+            DiamondShell diamondShell = toDiamond(diamondShellRequest);
+            diamondShell.generateName();
+            diamondShell = diamondShellRepo.save(diamondShell);
+            // Lưu vào bảng SizeDiamondShell
+            List<SizeDiamondShell> sizeDiamondShells = new ArrayList<>();
+            if (diamondShellRequest.getSizeIds() != null && !diamondShellRequest.getSizeIds().isEmpty()) {
+                for (Integer sizeId : diamondShellRequest.getSizeIds()) {
+                    Size size = sizeRepo.findById(sizeId)
+                            .orElseThrow(() -> new IllegalArgumentException("Size not found with id: " + sizeId));
+
+                    SizeDiamondShell sizeDiamondShell = SizeDiamondShell.builder()
+                            .diamondShell(diamondShell)
+                            .size(size)
+                            .build();
+
+                    sizeDiamondShells.add(sizeDiamondShellRepo.save(sizeDiamondShell));
+                }
+            }
+            // Cập nhật danh sách SizeDiamondShell trong DiamondShell
+            diamondShell.setSizeDiamondShellList(sizeDiamondShells);
+            DiamondShellResponse diamondShellResponse = convertToDiamondShellResponse(diamondShell);
             response.setMessage("Create diamond shell successfully!");
-            response.setResult(diamondShellRequest);
+            response.setResult(diamondShellResponse);
             response.setSuccess(true);
             response.setStatusCode(200);
-            diamondShellRepo.save(toDiamond(diamondShellRequest));
+            // diamondShellRepo.save(toDiamond(diamondShellRequest));
         } catch (Exception e) {
             response.setStatusCode(500);
             response.setSuccess(false);
@@ -78,21 +106,6 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         return response;
     }
 
-    //add Size to Diamond Shell
-//    @Override
-//    public DiamondShell addSizeToDiamondShell(Integer diamondShellId, Integer sizeId) {
-//        DiamondShell diamondShell = diamondShellRepo.findById(diamondShellId).orElseThrow();
-//        Size size = sizeRepo.findById(sizeId).orElseThrow();
-//
-//        SizeDiamondShell sizeDiamondShell = new SizeDiamondShell();
-//        sizeDiamondShell.setDiamondShell(diamondShell);
-//        sizeDiamondShell.setSize(size);
-//
-//        sizeDiamondShellRepo.save(sizeDiamondShell);
-//        diamondShell.getSizeDiamondShellList().add(sizeDiamondShell);
-//        return diamondShellRepo.save(diamondShell);
-//    }
-
     //get a diamond shell
     @Override
     public Response getADiamondShell(Integer id) {
@@ -123,16 +136,21 @@ public class DiamondShellServiceImpl implements DiamondShellService {
     public Response updateDiamondShell(Integer id, DiamondShellRequest updateDiamondShell) {
         var response = new Response();
         try {
-            var diamondShell = diamondShellRepo.findById(id);
-            if (diamondShell.isPresent()) {
-                diamondShell.get().setPrice(updateDiamondShell.getPrice());
-                diamondShell.get().setQuantity(updateDiamondShell.getQuantity());
-                diamondShell.get().setGender(updateDiamondShell.getGender());
-                diamondShell.get().setImageDiamondShell(updateDiamondShell.getImageDiamondShell());
-                diamondShell.get().setStatusDiamondShell(updateDiamondShell.isStatusDiamondShell());
-                diamondShell.get().setMaterial(updateDiamondShell.getMaterial());
-                diamondShell.get().setSecondaryStoneType(updateDiamondShell.getSecondaryStoneType());
-                diamondShellRepo.save(diamondShell.get());
+            Optional<DiamondShell> diamondShellOptional = diamondShellRepo.findById(id);
+            if (diamondShellOptional.isPresent()) {
+                DiamondShell diamondShell = diamondShellOptional.get();
+                diamondShell.setPrice(updateDiamondShell.getPrice());
+                diamondShell.setQuantity(updateDiamondShell.getQuantity());
+                diamondShell.setGender(updateDiamondShell.getGender());
+                diamondShell.setImageDiamondShell(updateDiamondShell.getImageDiamondShell());
+                diamondShell.setStatusDiamondShell(updateDiamondShell.isStatusDiamondShell());
+                diamondShell.setMaterial(updateDiamondShell.getMaterial());
+                diamondShell.setSecondaryStoneType(updateDiamondShell.getSecondaryStoneType());
+
+                // Gọi phương thức generateName để tự động cập nhật name cho diamond shell
+                diamondShell.generateName();
+
+                diamondShellRepo.save(diamondShell);
                 //Set response to return
                 response.setMessage("Update diamond shell successfully!");
                 response.setResult(updateDiamondShell);
@@ -160,19 +178,19 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         var response = new Response();
         try {
             var diamond = diamondShellRepo.findById(id);
-            if(diamond.isPresent()){
+            if (diamond.isPresent()) {
                 diamondShellRepo.softDeleteById(id);
                 response.setMessage("Remove diamond shell successfully!");
                 response.setResult(null);
                 response.setSuccess(true);
                 response.setStatusCode(200);
-            }else {
+            } else {
                 response.setMessage("There are no diamond shell!");
                 response.setResult(id);
                 response.setSuccess(false);
                 response.setStatusCode(404);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatusCode(500);
             response.setSuccess(false);
             response.setMessage(e.getMessage());
@@ -218,6 +236,7 @@ public class DiamondShellServiceImpl implements DiamondShellService {
     public DiamondShellResponse convertToDiamondShellResponse(DiamondShell diamondShell) {
         DiamondShellResponse response = new DiamondShellResponse();
         response.setId(diamondShell.getId());
+        response.setName(diamondShell.getName());
         response.setQuantity(diamondShell.getQuantity());
         response.setSecondaryStoneType(diamondShell.getSecondaryStoneType());
         response.setMaterial(diamondShell.getMaterial());
@@ -225,19 +244,26 @@ public class DiamondShellServiceImpl implements DiamondShellService {
         response.setPrice(diamondShell.getPrice());
         response.setImageDiamondShell(diamondShell.getImageDiamondShell());
 
-        // Lấy danh sách size từ SizeDiamondShellList
-        List<Integer> sizes = diamondShell.getSizeDiamondShellList().stream()
-                .map(sizeDiamondShell -> sizeDiamondShell.getSize().getSize())
+        List<SizeDiamondShellResponse> sizeResponses = diamondShell.getSizeDiamondShellList().stream()
+                .map(sizeDiamondShell -> SizeDiamondShellResponse.builder()
+                        .id(sizeDiamondShell.getId())
+                        .size(sizeDiamondShell.getSize().getSize())
+                        .build())
                 .collect(Collectors.toList());
-        response.setSize(sizes);
+        response.setSize(sizeResponses);
 
         return response;
     }
 
     @Override
     public DiamondShellRequest toDiamondShellRequest(DiamondShell diamondShell) {
+        List<Integer> sizes = diamondShell.getSizeDiamondShellList().stream()
+                .map(sizeDiamondShell -> sizeDiamondShell.getSize().getSize())
+                .collect(Collectors.toList());
+
         return DiamondShellRequest.builder()
                 .id(diamondShell.getId())
+                .name(diamondShell.getName())
                 .gender(diamondShell.getGender())
                 .quantity(diamondShell.getQuantity())
                 .secondaryStoneType(diamondShell.getSecondaryStoneType())
@@ -245,9 +271,9 @@ public class DiamondShellServiceImpl implements DiamondShellService {
                 .imageDiamondShell(diamondShell.getImageDiamondShell())
                 .price(diamondShell.getPrice())
                 .statusDiamondShell(diamondShell.isStatusDiamondShell())
+                .sizeIds(sizes)
                 .build();
     }
-
 
 
     @Override
@@ -261,7 +287,7 @@ public class DiamondShellServiceImpl implements DiamondShellService {
 
     @Override
     public DiamondShell toDiamond(DiamondShellRequest diamondShellRequest) {
-        return DiamondShell.builder()
+        DiamondShell diamondShell = DiamondShell.builder()
                 .id(diamondShellRequest.getId())
                 .gender(diamondShellRequest.getGender())
                 .quantity(diamondShellRequest.getQuantity())
@@ -271,5 +297,10 @@ public class DiamondShellServiceImpl implements DiamondShellService {
                 .price(diamondShellRequest.getPrice())
                 .statusDiamondShell(diamondShellRequest.isStatusDiamondShell())
                 .build();
+
+        // Gọi phương thức generateName để tự động tạo name cho diamond shell
+        diamondShell.generateName();
+
+        return diamondShell;
     }
 }

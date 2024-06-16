@@ -17,8 +17,10 @@ public class DiamondRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    private String name;
+
     @NotBlank(message = "Origin is mandatory and should not contain numbers or special characters")
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Origin should only contain letters and spaces")
+//    3
     private String origin;
 
     @NotBlank(message = "Clarity is mandatory")
@@ -47,6 +49,6 @@ public class DiamondRequest {
 
     private String imageDiamond;
 
-    @Pattern(regexp = "^(true|false)$", message = "Status must be either true or false")
+//    @Pattern(regexp = "^(true|false)$", message = "Status must be either true or false")
     private boolean statusDiamond;
 }

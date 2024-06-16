@@ -5,10 +5,7 @@ import com.js1802_team5.diamondShop.mappers.OrderMapper;
 import com.js1802_team5.diamondShop.models.entity_models.*;
 import com.js1802_team5.diamondShop.models.request_models.OrderDetailRequest;
 import com.js1802_team5.diamondShop.models.request_models.OrderRequest;
-import com.js1802_team5.diamondShop.models.response_models.CartResponse;
-import com.js1802_team5.diamondShop.models.response_models.OrderDetailResponse;
-import com.js1802_team5.diamondShop.models.response_models.OrderResponse;
-import com.js1802_team5.diamondShop.models.response_models.Response;
+import com.js1802_team5.diamondShop.models.response_models.*;
 import com.js1802_team5.diamondShop.repositories.*;
 import com.js1802_team5.diamondShop.services.CartService;
 import com.js1802_team5.diamondShop.services.OrderService;
@@ -202,6 +199,58 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Response getOrderByStatus(String status) {
+        Response response = new Response();
+        try {
+            List<Order> orders = orderRepository.findAll(); // Lấy tất cả các đơn hàng trước
+
+            List<OrderResponse> filteredOrders = orders.stream()
+                    .filter(order -> {
+                        DateStatusOrder latestStatusOrder = order.getDateStatusOrderList().stream()
+                                .max(Comparator.comparing(DateStatusOrder::getDateStatus))
+                                .orElse(null);
+                        return latestStatusOrder != null && latestStatusOrder.getStatus().equals(status);
+                    })
+                    .map(order -> {
+                        DateStatusOrder latestStatusOrder = order.getDateStatusOrderList().stream()
+                                .max(Comparator.comparing(DateStatusOrder::getDateStatus))
+                                .orElse(null);
+
+                        List<DateStatusOrderResponse> dateStatusOrderResponses = new ArrayList<>();
+                        if (latestStatusOrder != null) {
+                            dateStatusOrderResponses.add(DateStatusOrderResponse.builder()
+                                    .dateStatus(latestStatusOrder.getDateStatus())
+                                    .status(latestStatusOrder.getStatus())
+                                    .build());
+                        }
+
+                        OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+                        orderResponse.setDateStatusOrders(dateStatusOrderResponses);
+                        return orderResponse;
+                    })
+                    .collect(Collectors.toList());
+
+            if (filteredOrders.isEmpty()) {
+                response.setSuccess(false);
+                response.setMessage("No orders found with the given status!");
+                response.setStatusCode(404);
+                response.setResult(null);
+            } else {
+                response.setMessage("Get orders successfully!");
+                response.setResult(filteredOrders);
+                response.setSuccess(true);
+                response.setStatusCode(200);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
+    }
+
+    @Override
     public Response cancelOrder(Integer id) {
         Response response = new Response();
         try {
@@ -281,7 +330,7 @@ public class OrderServiceImpl implements OrderService {
             if (newIndex <= currentIndex) {
                 throw new IllegalStateException("Cannot update to a previous or the same status.");
             }
-            if(newIndex != currentIndex + 1){
+            if (newIndex != currentIndex + 1) {
                 throw new IllegalStateException("Status must be updated in the correct sequence.");
             }
 
@@ -307,7 +356,7 @@ public class OrderServiceImpl implements OrderService {
             response.setStatusCode(200);
             response.setResult(orderResponse);
 
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             response.setSuccess(false);
             response.setMessage(e.getMessage());
             response.setStatusCode(400);
@@ -318,4 +367,202 @@ public class OrderServiceImpl implements OrderService {
         }
         return response;
     }
+
+    @Override
+    public Response updateOrderStatusToConfirmed(Integer orderId) {
+        Response response = new Response();
+        try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+            // Kiểm tra trạng thái hiện tại của đơn hàng
+            String currentStatus = order.getStatusOrder().getStatusName();
+
+            //Check status "Cancel"
+            if (order.getStatusOrder().getStatusName().equals("Cancel")) {
+                throw new IllegalStateException("Cannot update order. The order is already canceled!");
+            }
+
+            // Check if current status is "Pending"
+            if (!"Pending".equals(currentStatus)) {
+                throw new IllegalStateException("Order status must be 'Pending' to update to 'Confirmed'.");
+            }
+
+            // Lấy trạng thái "Confirmed" và set vào Order
+            StatusOrder statusOrder = statusOrderRepository.findByStatusName("Confirmed")
+                    .orElseThrow(() -> new IllegalArgumentException("Status 'Confirmed' not found"));
+            order.setStatusOrder(statusOrder);
+
+            // Lưu Order vào DB
+            order = orderRepository.save(order);
+
+            // Tạo và lưu DateStatusOrder cho trạng thái mới
+            DateStatusOrder dateStatusOrder = DateStatusOrder.builder()
+                    .dateStatus(new Date())
+                    .status("Confirmed")
+                    .order(order)
+                    .build();
+            dateStatusOrderRepo.save(dateStatusOrder);
+
+            OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+            response.setSuccess(true);
+            response.setMessage("Order status updated to 'Confirmed' successfully!");
+            response.setStatusCode(200);
+            response.setResult(orderResponse);
+
+        } catch (IllegalStateException e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(400);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(500);
+        }
+        return response;
+    }
+
+    @Override
+    public Response updateOrderStatusFromConfirmed(Integer orderId, String newStatus) {
+        Response response = new Response();
+        try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+            // Kiểm tra trạng thái hiện tại của đơn hàng
+            String currentStatus = order.getStatusOrder().getStatusName();
+
+            //Check status "Cancel"
+            if (order.getStatusOrder().getStatusName().equals("Cancel")) {
+                throw new IllegalStateException("Cannot update order. The order is already canceled!");
+            }
+
+            // Check if current status is "Confirmed"
+            if (!"Confirmed".equals(currentStatus) && !"Delivering".equals(currentStatus)) {
+                throw new IllegalStateException("Order status must be 'Confirmed' or 'Delivering' to update to the next status.");
+            }
+
+            // Xác định thứ tự các trạng thái hợp lệ
+            List<String> validStatusOrder = Arrays.asList("Confirmed", "Delivering", "Delivered");
+
+            // Kiểm tra xem trạng thái mới có hợp lệ hay không
+            if (!validStatusOrder.contains(newStatus)) {
+                throw new IllegalArgumentException("Invalid status: " + newStatus);
+            }
+
+            // Kiểm tra nếu trạng thái mới không theo thứ tự hợp lệ
+            int currentIndex = validStatusOrder.indexOf(currentStatus);
+            int newIndex = validStatusOrder.indexOf(newStatus);
+
+            if (newIndex <= currentIndex) {
+                throw new IllegalStateException("Cannot update to a previous or the same status.");
+            }
+            if (newIndex != currentIndex + 1) {
+                throw new IllegalStateException("Status must be updated in the correct sequence.");
+            }
+
+            // Lấy trạng thái mới và set vào Order
+            StatusOrder statusOrder = statusOrderRepository.findByStatusName(newStatus)
+                    .orElseThrow(() -> new IllegalArgumentException("Status not found"));
+            order.setStatusOrder(statusOrder);
+
+            // Lưu Order vào DB
+            order = orderRepository.save(order);
+
+            // Tạo và lưu DateStatusOrder cho trạng thái mới
+            DateStatusOrder dateStatusOrder = DateStatusOrder.builder()
+                    .dateStatus(new Date())
+                    .status(newStatus)
+                    .order(order)
+                    .build();
+            dateStatusOrderRepo.save(dateStatusOrder);
+
+            OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+            response.setSuccess(true);
+            response.setMessage("Order status updated to '" + newStatus + "' successfully!");
+            response.setStatusCode(200);
+            response.setResult(orderResponse);
+
+        } catch (IllegalStateException e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(400);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(500);
+        }
+        return response;
+    }
+
+//    @Override
+//    public Response updateOrderStatusFromConfirmed(Integer orderId, String newStatus) {
+//        Response response = new Response();
+//        try {
+//            // Lấy thông tin người dùng hiện tại từ SecurityContext
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            String userRole = authentication.getAuthorities().iterator().next().getAuthority();
+//
+//            Order order = orderRepository.findById(orderId)
+//                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+//
+//            // Kiểm tra trạng thái hiện tại của đơn hàng
+//            String currentStatus = order.getStatusOrder().getStatusName();
+//
+//            // Kiểm tra trạng thái "Cancel"
+//            if ("Cancel".equals(currentStatus)) {
+//                throw new IllegalStateException("Cannot update order. The order is already canceled!");
+//            }
+//
+//            // Kiểm tra nếu trạng thái mới không hợp lệ
+//            List<String> validStatusOrder = Arrays.asList("Confirmed", "Delivering", "Delivered");
+//            if (!validStatusOrder.contains(newStatus)) {
+//                throw new IllegalArgumentException("Invalid status: " + newStatus);
+//            }
+//
+//            // Cập nhật trạng thái dựa trên vai trò người dùng
+//            if ("ROLE_CUSTOMER".equalsIgnoreCase(userRole)) {
+//                order.setCustomerStatus(newStatus);
+//            } else if ("ROLE_DELIVERY_STAFF".equalsIgnoreCase(userRole)) {
+//                order.setDeliveryStatus(newStatus);
+//            } else {
+//                throw new IllegalArgumentException("Invalid user role: " + userRole);
+//            }
+//
+//            // Kiểm tra nếu cả hai trạng thái của customer và delivery đều là "Delivered"
+//            if ("Delivered".equals(order.getCustomerStatus()) && "Delivered".equals(order.getDeliveryStatus())) {
+//                // Lấy trạng thái mới và set vào Order
+//                StatusOrder statusOrder = statusOrderRepository.findByStatusName("Delivered")
+//                        .orElseThrow(() -> new IllegalArgumentException("Status not found"));
+//                order.setStatusOrder(statusOrder);
+//
+//                // Tạo và lưu DateStatusOrder cho trạng thái mới
+//                DateStatusOrder dateStatusOrder = DateStatusOrder.builder()
+//                        .dateStatus(new Date())
+//                        .status("Delivered")
+//                        .order(order)
+//                        .build();
+//                dateStatusOrderRepo.save(dateStatusOrder);
+//            }
+//
+//            // Lưu Order vào DB
+//            order = orderRepository.save(order);
+//
+//            OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+//            response.setSuccess(true);
+//            response.setMessage("Order status updated successfully!");
+//            response.setStatusCode(200);
+//            response.setResult(orderResponse);
+//
+//        } catch (IllegalStateException e) {
+//            response.setSuccess(false);
+//            response.setMessage(e.getMessage());
+//            response.setStatusCode(400);
+//        } catch (Exception e) {
+//            response.setSuccess(false);
+//            response.setMessage(e.getMessage());
+//            response.setStatusCode(500);
+//        }
+//        return response;
+//    }
 }

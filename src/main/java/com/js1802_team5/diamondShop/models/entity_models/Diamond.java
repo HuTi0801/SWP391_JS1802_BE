@@ -22,28 +22,22 @@ public class Diamond implements Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "origin")
+    private String name;
+
     private String origin;
 
-    @Column(name = "clarity")
     private String clarity;
 
-    @Column(name = "carat_weight")
     private float caratWeight;
 
-    @Column(name = "price")
     private double price;
 
-    @Column(name = "color")
     private String color;
 
-    @Column(name = "cut")
     private String cut;
 
-    @Column(name = "certificate_number")
     private String certificateNumber;
 
-    @Column(name = "quantity")
     private int quantity;
 
     @Column(name = "image")
@@ -61,4 +55,10 @@ public class Diamond implements Product {
 
     @OneToMany(mappedBy = "diamond")
     private List<PromotionDiamond> promotionDiamondList;
+
+    // Method to generate name
+    public void generateName() {
+        this.name = String.format("Diamond %s %s %s %s %s", caratWeight, clarity, color, cut, origin);
+    }
+
 }
