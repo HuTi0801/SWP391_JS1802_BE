@@ -20,4 +20,5 @@ public class DiamondShellResponse {
     private double price;
     private String imageDiamondShell;
     private List<SizeDiamondShellResponse> size;
+    private Integer accountId;
 }
