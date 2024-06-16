@@ -3,6 +3,7 @@ package com.js1802_team5.diamondShop.mappers;
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.models.response_models.DiamondResponse;
+import com.js1802_team5.diamondShop.models.response_models.DiamondSearchResponse;
 import com.js1802_team5.diamondShop.repositories.AccountRepo;
 import com.js1802_team5.diamondShop.repositories.DiamondRepo;
 import lombok.AllArgsConstructor;
@@ -60,6 +61,24 @@ public class DiamondMapper {
 
     public DiamondResponse convertToDiamondResponse(Diamond diamond) {
         return DiamondResponse.builder()
+                .id(diamond.getId())
+                .name(diamond.getName())
+                .origin(diamond.getOrigin())
+                .clarity(diamond.getClarity())
+                .caratWeight(diamond.getCaratWeight())
+                .price(diamond.getPrice())
+                .color(diamond.getColor())
+                .cut(diamond.getCut())
+                .certificateNumber(diamond.getCertificateNumber())
+                .quantity(diamond.getQuantity())
+                .imageDiamond(diamond.getImageDiamond())
+                .statusDiamond(diamond.isStatusDiamond())
+                .accountId(diamond.getAccount() != null ? diamond.getAccount().getId() : null)
+                .build();
+    }
+
+    public static DiamondSearchResponse toResponse(Diamond diamond) {
+        return DiamondSearchResponse.builder()
                 .id(diamond.getId())
                 .name(diamond.getName())
                 .origin(diamond.getOrigin())

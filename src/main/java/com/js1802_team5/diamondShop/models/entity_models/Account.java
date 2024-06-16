@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.js1802_team5.diamondShop.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,9 +50,11 @@ public class Account implements UserDetails {
     private List<AccountOrder> accountOrderList;
 
     @OneToMany(mappedBy = "account")
+    @JsonManagedReference
     private List<Diamond> diamondList;
 
     @OneToMany(mappedBy = "account")
+    @JsonManagedReference
     private List<DiamondShell> diamondShellList;
 
     @OneToMany(mappedBy = "account")

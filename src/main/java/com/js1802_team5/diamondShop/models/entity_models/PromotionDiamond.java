@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class PromotionDiamond {
 
     @ManyToOne
     @JoinColumn(name = "diamond_id")
+    @JsonBackReference
     private Diamond diamond;
 
     @ManyToOne

@@ -1,8 +1,8 @@
 package com.js1802_team5.diamondShop.services;
 
-import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.models.request_models.DiamondSearchRequest;
+import com.js1802_team5.diamondShop.models.response_models.DiamondSearchResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface DiamondService {
     //delete diamond
     Response removeDiamond(Integer id);
     //search diamond
-    List<Diamond> searchDiamond(DiamondSearchRequest diamondSearchRequest);
+    List<DiamondSearchResponse> searchDiamond(DiamondSearchRequest diamondSearchRequest);
     List<String> getAllOrigins();
     List<String> getAllClarities();
     List<String> getAllColors();
