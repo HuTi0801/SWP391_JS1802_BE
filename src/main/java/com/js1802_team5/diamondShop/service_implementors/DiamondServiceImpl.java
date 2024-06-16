@@ -39,11 +39,13 @@ public class DiamondServiceImpl implements DiamondService {
                 response.setStatusCode(404);
                 response.setResult(diamondRequest);
             } else {
+                Diamond diamond = toDiamond(diamondRequest);
+                diamond.generateName();
                 response.setMessage("Create diamonds successfully!");
                 response.setResult(diamondRequest);
                 response.setSuccess(true);
                 response.setStatusCode(200);
-                diamondRepo.save(toDiamond(diamondRequest));
+                diamondRepo.save(diamond);
             }
         } catch (Exception e) {
             response.setStatusCode(500);
@@ -126,6 +128,7 @@ public class DiamondServiceImpl implements DiamondService {
                 diamond.get().setQuantity(updateDiamond.getQuantity());
                 diamond.get().setImageDiamond(updateDiamond.getImageDiamond());
                 diamond.get().setStatusDiamond(updateDiamond.isStatusDiamond());
+                diamond.get().generateName();
 
                 diamondRepo.save(diamond.get());
                 //Set response to return

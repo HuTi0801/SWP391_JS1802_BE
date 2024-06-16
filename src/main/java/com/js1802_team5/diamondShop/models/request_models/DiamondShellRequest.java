@@ -8,12 +8,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class DiamondShellRequest {
     private Integer id;
+
+    private String name;
 
     @NotNull(message = "Quantity is mandatory")
     @Min(value = 0, message = "Quantity should be at least 0")
@@ -35,6 +39,8 @@ public class DiamondShellRequest {
 
     //@Pattern(regexp = "^(true|false)$", message = "Status must be either true or false")
     private boolean statusDiamondShell;
+
+    private List<Integer> sizeIds;
 
     private double min_price;
 
