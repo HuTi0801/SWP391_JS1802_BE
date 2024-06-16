@@ -24,6 +24,7 @@ public class OrderMapper {
     private final DiamondRepo diamondRepository;
     private final DiamondShellRepo diamondShellRepository;
 
+
     public Order toOrder(OrderRequest orderRequest) {
         Customer customer = customerRepository.findById(orderRequest.getCustomerId())
                 .orElseThrow(() -> new IllegalArgumentException("Customer's is not exist"));
@@ -81,11 +82,13 @@ public class OrderMapper {
                 .toList();
 
         return OrderResponse.builder()
-                .id(order.getId())
+                .orderId(order.getId())
                 .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null) // Cập nhật phần này
                 .address(order.getAddress())
                 .phone(order.getPhone())
                 .cusName(order.getCusName())
+                .warrantyStartDate(order.getWarrantyStartDate())
+                .warrantyEndDate(order.getWarrantyEndDate())
                 .totalPrice(order.getTotalPrice())
                 .isCancel(order.isCancel())
                 .orderDetails(orderDetails)

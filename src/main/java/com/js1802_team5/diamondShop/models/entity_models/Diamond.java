@@ -1,5 +1,9 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.js1802_team5.diamondShop.models.request_models.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -17,10 +21,14 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "`diamond`")
+
 public class Diamond implements Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "origin")
     private String origin;
@@ -53,12 +61,15 @@ public class Diamond implements Product {
     private boolean statusDiamond;
 
     @OneToMany(mappedBy = "diamond")
+    @JsonManagedReference
     private List<OrderDetail> orderDetailList;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
+    @JsonBackReference
     private Account account;
 
     @OneToMany(mappedBy = "diamond")
+    @JsonManagedReference
     private List<PromotionDiamond> promotionDiamondList;
 }

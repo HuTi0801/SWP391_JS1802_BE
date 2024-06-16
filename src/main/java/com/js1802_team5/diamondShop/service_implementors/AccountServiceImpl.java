@@ -20,6 +20,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -45,8 +50,14 @@ public class AccountServiceImpl implements AccountService {
             Account account = accountRepo.findByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+            Integer customerId = null;
+            if (account.getRole() == Role.CUSTOMER) {
+                Customer customer = customerRepo.findByAccountId(account.getId())
+                        .orElseThrow(() -> new UsernameNotFoundException("Customer not found"));
+                customerId = customer.getId();
+            }
             return Response.builder()
-                    .result(new LoginResponse(token, account.getUsername(), account.getAuthorities().toString()))
+                    .result(new LoginResponse(token, account.getUsername(), account.getAuthorities().toString(), account.getId(), customerId))
                     .isSuccess(true)
                     .message("Login successful")
                     .statusCode(200)
@@ -197,4 +208,50 @@ public class AccountServiceImpl implements AccountService {
         return password.matches("\\d+") && password.length() <= 8;
     }
 
+    public List<Map<String, Object>> getActiveSaleStaffWithOrderCounts() {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        // Lấy danh sách SALE_STAFF có isActive = true
+        List<Account> saleStaff = accountRepo.findByRoleAndIsActiveOrderByUsernameAsc(Role.SALE_STAFF, true);
+
+        // Tính số lượng order cho từng nhân viên SALE_STAFF và thêm vào kết quả
+        for (Account staff : saleStaff) {
+            Map<String, Object> staffInfo = new HashMap<>();
+            staffInfo.put("accountId", staff.getId());
+            staffInfo.put("username", staff.getUsername());
+            staffInfo.put("orderCount", staff.getAccountOrderList().size()); // Số lượng order của SALE_STAFF
+            result.add(staffInfo);
+        }
+
+        // Sắp xếp danh sách kết quả theo số lượng order từ thấp đến cao
+        result.sort((staff1, staff2) -> {
+            int orderCount1 = (int) staff1.get("orderCount");
+            int orderCount2 = (int) staff2.get("orderCount");
+            return Integer.compare(orderCount1, orderCount2);
+        });
+
+        return result;
+    }
+
+    public List<Map<String, Object>> getActiveDeliveryStaffWithOrderCounts() {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        List<Account> deliveryStaff = accountRepo.findByRoleAndIsActiveOrderByUsernameAsc(Role.DELIVERY_STAFF, true);
+
+        for (Account staff : deliveryStaff) {
+            Map<String, Object> staffInfo = new HashMap<>();
+            staffInfo.put("accountId", staff.getId());
+            staffInfo.put("username", staff.getUsername());
+            staffInfo.put("orderCount", staff.getAccountOrderList().size());
+            result.add(staffInfo);
+        }
+
+        result.sort((staff1, staff2) -> {
+            int orderCount1 = (int) staff1.get("orderCount");
+            int orderCount2 = (int) staff2.get("orderCount");
+            return Integer.compare(orderCount1, orderCount2);
+        });
+
+        return result;
+    }
 }

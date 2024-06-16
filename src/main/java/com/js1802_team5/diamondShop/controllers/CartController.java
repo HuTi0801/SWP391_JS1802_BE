@@ -75,12 +75,18 @@ public class CartController {
             } else {
                 Map<String, Object> response = new HashMap<>();
                 response.put("message", "Cart is empty.");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                return ResponseEntity.ok(response);
             }
         } else {
             Map<String, Object> response = new HashMap<>();
             response.put("message", serviceResponse.getMessage());
             return ResponseEntity.status(serviceResponse.getStatusCode()).body(response);
         }
+    }
+
+    @PostMapping("/apply-promotion")
+    public ResponseEntity<Response> applyPromotion(@RequestParam String cartId, @RequestParam String promotionCode) {
+        Response response = cartService.applyPromotion(cartId, promotionCode);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 }

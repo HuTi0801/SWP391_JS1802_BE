@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.js1802_team5.diamondShop.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "`account`")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Account implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,9 +50,11 @@ public class Account implements UserDetails {
     private List<AccountOrder> accountOrderList;
 
     @OneToMany(mappedBy = "account")
+    @JsonManagedReference
     private List<Diamond> diamondList;
 
     @OneToMany(mappedBy = "account")
+    @JsonManagedReference
     private List<DiamondShell> diamondShellList;
 
     @OneToMany(mappedBy = "account")

@@ -248,8 +248,6 @@ public class DiamondShellServiceImpl implements DiamondShellService {
                 .build();
     }
 
-
-
     @Override
     public List<DiamondShellRequest> toListDiamondShellRequest(List<DiamondShell> diamondShells) {
         List<DiamondShellRequest> diamondShellRequest = new ArrayList<>();
@@ -271,5 +269,31 @@ public class DiamondShellServiceImpl implements DiamondShellService {
                 .price(diamondShellRequest.getPrice())
                 .statusDiamondShell(diamondShellRequest.isStatusDiamondShell())
                 .build();
+    }
+
+    @Override
+    public List<String> getAllMaterials() {
+        return diamondShellRepo.findAll()
+                .stream()
+                .map(DiamondShell::getMaterial)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllSecondaryStoneTypes() {
+        return diamondShellRepo.findAll()
+                .stream()
+                .map(DiamondShell::getSecondaryStoneType)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllDiamondShellNames() {
+        List<DiamondShell> diamondShells = diamondShellRepo.findAll();
+        return diamondShells.stream()
+                .map(DiamondShell::getName)
+                .collect(Collectors.toList());
     }
 }

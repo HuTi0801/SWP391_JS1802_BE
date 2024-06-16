@@ -5,14 +5,12 @@ import com.js1802_team5.diamondShop.mappers.OrderMapper;
 import com.js1802_team5.diamondShop.models.entity_models.*;
 import com.js1802_team5.diamondShop.models.request_models.OrderDetailRequest;
 import com.js1802_team5.diamondShop.models.request_models.OrderRequest;
-import com.js1802_team5.diamondShop.models.response_models.CartResponse;
-import com.js1802_team5.diamondShop.models.response_models.OrderDetailResponse;
-import com.js1802_team5.diamondShop.models.response_models.OrderResponse;
-import com.js1802_team5.diamondShop.models.response_models.Response;
+import com.js1802_team5.diamondShop.models.response_models.*;
 import com.js1802_team5.diamondShop.repositories.*;
 import com.js1802_team5.diamondShop.services.CartService;
 import com.js1802_team5.diamondShop.services.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -30,6 +28,8 @@ public class OrderServiceImpl implements OrderService {
     private final DateStatusOrderRepo dateStatusOrderRepo;
     private final DiamondRepo diamondRepo;
     private final DiamondShellRepo diamondShellRepo;
+    private final AccountOrderRepo accountOrderRepo;
+
 
     @Override
     public Response createOrder(Integer customerId, String address, String numberPhone, String cusName) {
@@ -250,7 +250,7 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
-    //update Order status - Sale Staff - Only 2 status:
+    //Update Order status - Sale Staff - Only 2 status:
     @Override
     public Response updateOrderStatus(Integer orderId, String newStatus) {
         Response response = new Response();
@@ -317,5 +317,37 @@ public class OrderServiceImpl implements OrderService {
             response.setStatusCode(500);
         }
         return response;
+    }
+
+    @Override
+    public Response getDeliveredOrders(Integer accountID) {
+        Optional<StatusOrder> deliveredStatusOpt = statusOrderRepository.findByStatusName("Delivered");
+        if (deliveredStatusOpt.isPresent()) {
+            StatusOrder deliveredStatus = deliveredStatusOpt.get();
+            List<OrderResponse> orders = accountOrderRepo.findByAccount_Id(accountID).stream()
+                    .map(AccountOrder::getOrder)
+                    .filter(order -> order.getStatusOrder().equals(deliveredStatus))
+                    .map(orderMapper::toOrderResponse)
+                    .collect(Collectors.toList());
+            return new Response(orders, true, "Successfully retrieved delivered orders", HttpStatus.OK.value());
+        } else {
+            return new Response(null, false, "Delivered status not found", HttpStatus.NOT_FOUND.value());
+        }
+    }
+
+    @Override
+    public Response getDeliveringOrders(Integer accountID) {
+        Optional<StatusOrder> deliveringStatusOpt = statusOrderRepository.findByStatusName("Delivering");
+        if (deliveringStatusOpt.isPresent()) {
+            StatusOrder deliveringStatus = deliveringStatusOpt.get();
+            List<OrderResponse> orders = accountOrderRepo.findByAccount_Id(accountID).stream()
+                    .map(AccountOrder::getOrder)
+                    .filter(order -> order.getStatusOrder().equals(deliveringStatus))
+                    .map(orderMapper::toOrderResponse)
+                    .collect(Collectors.toList());
+            return new Response(orders, true, "Successfully retrieved delivering orders", HttpStatus.OK.value());
+        } else {
+            return new Response(null, false, "Delivering status not found", HttpStatus.NOT_FOUND.value());
+        }
     }
 }
