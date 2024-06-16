@@ -30,7 +30,7 @@ public class Order {
     private Date warrantyStartDate;
     private Date warrantyEndDate;
     private boolean isCancel;
-
+    private String description;
 //    private String customerStatus;
 //    private String deliveryStatus;
 

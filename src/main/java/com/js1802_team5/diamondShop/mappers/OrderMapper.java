@@ -33,6 +33,7 @@ public class OrderMapper {
                 .totalPrice(orderRequest.getTotalPrice())
                 .isCancel(false) // mặc định là false khi tạo mới
                 .customer(customer)
+                .description(orderRequest.getDescription())
                 .build();
 
         List<OrderDetail> orderDetails = orderRequest.getOrderDetails().stream()
@@ -92,6 +93,7 @@ public class OrderMapper {
                 .isCancel(order.isCancel())
                 .orderDetails(orderDetails)
                 .dateStatusOrders(dateStatusOrderResponses)
+                .description(order.getDescription())
                 .build();
     }
 

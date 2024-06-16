@@ -2,6 +2,7 @@ package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.request_models.DiamondSearchRequest;
+import com.js1802_team5.diamondShop.models.response_models.DiamondSearchResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.DiamondService;
 import lombok.RequiredArgsConstructor;
@@ -42,9 +43,10 @@ public class DiamondController {
     }
 
     //Search diamond
-    @PostMapping("/search-diamond")
-    public List<Diamond> searchDiamonds(@RequestBody DiamondSearchRequest diamondSearchRequest) {
-        return diamondService.searchDiamond(diamondSearchRequest);
+    @PostMapping("/search")
+    public ResponseEntity<List<DiamondSearchResponse>> searchDiamonds(@RequestBody DiamondSearchRequest request) {
+        List<DiamondSearchResponse> results = diamondService.searchDiamond(request);
+        return ResponseEntity.ok(results);
     }
 
     //Update diamond
