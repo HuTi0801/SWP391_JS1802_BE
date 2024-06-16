@@ -9,9 +9,15 @@ public interface OrderService {
 
     Response getOrder(Integer id);
 
+    Response getOrderByStatus(String status);
+
     Response cancelOrder(Integer id);
 
     Response updateOrderStatus(Integer orderId, String newStatus);
+
+    Response updateOrderStatusToConfirmed(Integer orderId);
+
+    Response updateOrderStatusFromConfirmed(Integer orderId, String newStatus);
 
     Response getDeliveredOrders(Integer accountID);
 

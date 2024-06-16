@@ -27,7 +27,6 @@ public class DiamondShell implements Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name")
     private String name;
 
     @Column(name = "quantity")
@@ -36,13 +35,10 @@ public class DiamondShell implements Product {
     @Column(name = "secondary_stone_type")
     private String secondaryStoneType;
 
-    @Column(name = "material")
     private String material;
 
-    @Column(name = "gender")
     private String gender;
 
-    @Column(name = "price")
     private double price;
 
     @Column(name = "image")
@@ -67,4 +63,9 @@ public class DiamondShell implements Product {
     @OneToMany(mappedBy = "diamondShell")
     @JsonManagedReference
     private List<SizeDiamondShell> sizeDiamondShellList;
+
+    // Method to generate name
+    public void generateName() {
+        this.name = String.format("Diamond Shell %s %s %s", gender, material, secondaryStoneType);
+    }
 }

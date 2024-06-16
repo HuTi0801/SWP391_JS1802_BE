@@ -32,15 +32,6 @@ public interface DiamondShellService {
 
     DiamondShellResponse convertToDiamondShellResponse(DiamondShell diamondShell);
 
-    //convert diamondShell to diamondShellRequest
-    DiamondShellRequest toDiamondShellRequest(DiamondShell diamondShell);
-
-    //This function use to mapping from List Diamond shell to List Diamondshell request
-    List<DiamondShellRequest> toListDiamondShellRequest(List<DiamondShell> diamondShells);
-
-    //convert diamondShellRequest to diamondShell
-    DiamondShell toDiamond(DiamondShellRequest diamondShellRequest);
-
     List<String> getAllMaterials();
     List<String> getAllSecondaryStoneTypes();
     List<String> getAllDiamondShellNames();
