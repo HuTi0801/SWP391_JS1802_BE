@@ -35,7 +35,9 @@ public class Order {
 //    private String deliveryStatus;
 
     @OneToMany(mappedBy = "order")
+    @JsonManagedReference
     private List<AccountOrder> accountOrderList;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;

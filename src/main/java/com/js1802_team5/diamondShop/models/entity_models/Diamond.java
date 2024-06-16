@@ -2,12 +2,10 @@ package com.js1802_team5.diamondShop.models.entity_models;
 
 import com.js1802_team5.diamondShop.models.request_models.Product;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Range;
 
 import java.util.List;
 
@@ -24,6 +22,7 @@ public class Diamond implements Product {
 
     private String name;
 
+    @Column(name = "origin")
     private String origin;
 
     private String clarity;

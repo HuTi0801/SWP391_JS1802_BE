@@ -1,7 +1,6 @@
 package com.js1802_team5.diamondShop.mappers;
 
 import com.js1802_team5.diamondShop.models.entity_models.*;
-import com.js1802_team5.diamondShop.models.request_models.DiamondRequest;
 import com.js1802_team5.diamondShop.models.request_models.OrderDetailRequest;
 import com.js1802_team5.diamondShop.models.request_models.OrderRequest;
 import com.js1802_team5.diamondShop.models.response_models.DateStatusOrderResponse;
@@ -12,8 +11,6 @@ import com.js1802_team5.diamondShop.repositories.DiamondRepo;
 import com.js1802_team5.diamondShop.repositories.DiamondShellRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +20,7 @@ public class OrderMapper {
     private final CustomerRepo customerRepository;
     private final DiamondRepo diamondRepository;
     private final DiamondShellRepo diamondShellRepository;
+
 
     public Order toOrder(OrderRequest orderRequest) {
         Customer customer = customerRepository.findById(orderRequest.getCustomerId())
@@ -81,11 +79,15 @@ public class OrderMapper {
                 .toList();
 
         return OrderResponse.builder()
-                .id(order.getId())
+                .orderId(order.getId())
                 .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null)
+                .orderId(order.getId())
+                .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null) // Cập nhật phần này
                 .address(order.getAddress())
                 .phone(order.getPhone())
                 .cusName(order.getCusName())
+                .warrantyStartDate(order.getWarrantyStartDate())
+                .warrantyEndDate(order.getWarrantyEndDate())
                 .totalPrice(order.getTotalPrice())
                 .isCancel(order.isCancel())
                 .orderDetails(orderDetails)

@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth/account")
 @RequiredArgsConstructor
@@ -56,4 +59,16 @@ public class AccountController {
         Response response = accountService.register(email, phoneNumber, firstName, lastName, password);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/get-active-sale-staff-and-order-counts-list")
+    public List<Map<String, Object>> getActiveSaleStaffWithOrderCounts() {
+        return accountService.getActiveSaleStaffWithOrderCounts();
+    }
+
+    @GetMapping("/get-active-delivery-staff-and-order-counts-list")
+    public List<Map<String, Object>> getActiveDeliveryStaffWithOrderCounts() {
+        return accountService.getActiveDeliveryStaffWithOrderCounts();
+    }
+
+
 }

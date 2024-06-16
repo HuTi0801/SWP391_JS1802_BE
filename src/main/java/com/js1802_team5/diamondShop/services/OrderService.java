@@ -1,8 +1,5 @@
 package com.js1802_team5.diamondShop.services;
 
-import com.js1802_team5.diamondShop.models.entity_models.Customer;
-import com.js1802_team5.diamondShop.models.entity_models.Order;
-import com.js1802_team5.diamondShop.models.request_models.OrderRequest;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 
 public interface OrderService {
@@ -21,4 +18,8 @@ public interface OrderService {
     Response updateOrderStatusToConfirmed(Integer orderId);
 
     Response updateOrderStatusFromConfirmed(Integer orderId, String newStatus);
+
+    Response getDeliveredOrders(Integer accountID);
+
+    Response getDeliveringOrders(Integer accountID);
 }

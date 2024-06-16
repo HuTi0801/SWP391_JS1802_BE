@@ -50,4 +50,14 @@ public class OrderController {
     public Response updateOrderStatusFromConfirmed(@PathVariable Integer orderId, @RequestParam String newStatus) {
         return orderService.updateOrderStatusFromConfirmed(orderId, newStatus);
     }
+
+    @GetMapping("/view-order-history/{accountId}")
+    public Response getDeliveredOrders(@PathVariable Integer accountId) {
+        return orderService.getDeliveredOrders(accountId);
+    }
+
+    @GetMapping("/view-shipping-order/{accountId}")
+    public Response getDeliveringOrders(@PathVariable Integer accountId) {
+        return orderService.getDeliveringOrders(accountId);
+    }
 }
