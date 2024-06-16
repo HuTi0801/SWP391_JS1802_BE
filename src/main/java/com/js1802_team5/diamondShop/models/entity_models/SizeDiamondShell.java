@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -22,6 +23,7 @@ public class SizeDiamondShell {
 
     @ManyToOne
     @JoinColumn(name = "diamond_shell_id")
+    @JsonBackReference
     private DiamondShell diamondShell;
 
     @ManyToOne

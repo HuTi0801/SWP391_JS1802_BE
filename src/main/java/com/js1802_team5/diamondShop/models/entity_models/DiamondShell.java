@@ -1,6 +1,8 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.js1802_team5.diamondShop.models.request_models.Product;
 import jakarta.persistence.*;
@@ -19,6 +21,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "`diamond_shell`")
+
 public class DiamondShell implements Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,16 +48,20 @@ public class DiamondShell implements Product {
     private boolean statusDiamondShell;
 
     @OneToMany(mappedBy = "diamondShell")
+    @JsonManagedReference
     private List<OrderDetail> orderDetailList;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
+    @JsonBackReference
     private Account account;
 
     @OneToMany(mappedBy = "diamondShell")
+    @JsonManagedReference
     private List<PromotionDiamondShell> promotionDiamondShellList;
 
     @OneToMany(mappedBy = "diamondShell")
+    @JsonManagedReference
     private List<SizeDiamondShell> sizeDiamondShellList;
 
     // Method to generate name

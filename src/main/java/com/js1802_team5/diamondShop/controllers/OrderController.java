@@ -26,14 +26,29 @@ public class OrderController {
         return orderService.getOrder(id);
     }
 
+    @GetMapping("/get-order-statusName")
+    public Response getOrderByStatusName(@RequestParam String statusName){
+        return orderService.getOrderByStatus(statusName);
+    }
+
     @PostMapping("/cancel-order-{id}")
     public Response cancelOrder(@PathVariable Integer id){
         return orderService.cancelOrder(id);
     }
 
-    @PostMapping("/update-status-order-{orderId}-{newStatus}")
-    public Response updateStatusOrder(@PathVariable Integer orderId, @RequestParam String newStatus){
-        return orderService.updateOrderStatus(orderId, newStatus);
+//    @PostMapping("/update-status-order-{orderId}-{newStatus}")
+//    public Response updateStatusOrder(@PathVariable Integer orderId, @RequestParam String newStatus){
+//        return orderService.updateOrderStatus(orderId, newStatus);
+//    }
+
+    @PostMapping("/update-order-status-to-confirmed/{orderId}")
+    public Response updateOrderStatusToConfirmed(@PathVariable Integer orderId) {
+        return orderService.updateOrderStatusToConfirmed(orderId);
+    }
+
+    @PostMapping("/update-order-status-from-confirmed/{orderId}")
+    public Response updateOrderStatusFromConfirmed(@PathVariable Integer orderId, @RequestParam String newStatus) {
+        return orderService.updateOrderStatusFromConfirmed(orderId, newStatus);
     }
 
     @GetMapping("/view-order-history/{accountId}")
