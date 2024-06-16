@@ -1,8 +1,13 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
+import com.js1802_team5.diamondShop.enums.Role;
+import com.js1802_team5.diamondShop.mappers.DiamondMapper;
+import com.js1802_team5.diamondShop.models.entity_models.Account;
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.request_models.DiamondSearchRequest;
+import com.js1802_team5.diamondShop.models.response_models.DiamondResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
+import com.js1802_team5.diamondShop.repositories.AccountRepo;
 import com.js1802_team5.diamondShop.repositories.DiamondRepo;
 import com.js1802_team5.diamondShop.services.DiamondService;
 import org.springframework.stereotype.Service;
@@ -26,6 +31,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DiamondServiceImpl implements DiamondService {
     private final DiamondRepo diamondRepo;
+    private final AccountRepo accountRepo;
+    private final DiamondMapper diamondMapper;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -40,11 +47,23 @@ public class DiamondServiceImpl implements DiamondService {
                 response.setStatusCode(404);
                 response.setResult(diamondRequest);
             } else {
+                Diamond diamond = diamondMapper.toDiamond(diamondRequest);
+                // Tìm tài khoản có role là MANAGER
+                List<Account> managers = accountRepo.findByRoleAndIsActiveOrderByUsernameAsc(Role.MANAGER, true);
+                if (managers.isEmpty()) {
+                    throw new IllegalArgumentException("No active manager found.");
+                }
+                // Sử dụng tài khoản quản lý đầu tiên tìm được
+                diamond.setAccount(managers.get(0));
+                diamond.generateName();
+
+                DiamondResponse diamondResponse = diamondMapper.convertToDiamondResponse(diamond);
+
                 response.setMessage("Create diamonds successfully!");
-                response.setResult(diamondRequest);
+                response.setResult(diamondResponse);
                 response.setSuccess(true);
                 response.setStatusCode(200);
-                diamondRepo.save(toDiamond(diamondRequest));
+                diamondRepo.save(diamond);
             }
         } catch (Exception e) {
             response.setStatusCode(500);
@@ -72,7 +91,7 @@ public class DiamondServiceImpl implements DiamondService {
                 response.setResult(null);
             } else {
                 response.setMessage("Get all diamonds successfully!");
-                response.setResult(toListDiamondRequest(filteredDiamonds));
+                response.setResult(diamondMapper.toListDiamondRequest(filteredDiamonds));
                 response.setSuccess(true);
                 response.setStatusCode(200);
             }
@@ -97,7 +116,7 @@ public class DiamondServiceImpl implements DiamondService {
                 response.setResult(null);
             } else {
                 response.setMessage("Get diamond successfully!");
-                response.setResult(toDiamondRequest(diamonds.get()));
+                response.setResult(diamondMapper.toDiamondRequest(diamonds.get()));
                 response.setSuccess(true);
                 response.setStatusCode(200);
             }
@@ -127,11 +146,20 @@ public class DiamondServiceImpl implements DiamondService {
                 diamond.get().setQuantity(updateDiamond.getQuantity());
                 diamond.get().setImageDiamond(updateDiamond.getImageDiamond());
                 diamond.get().setStatusDiamond(updateDiamond.isStatusDiamond());
+                diamond.get().generateName();
+
+                // Gán Account vào Diamond
+                if (updateDiamond.getAccountId() != null) {
+                    Account account = accountRepo.findById(updateDiamond.getAccountId())
+                            .orElseThrow(() -> new IllegalArgumentException("Account not found with id: " + updateDiamond.getAccountId()));
+                    diamond.get().setAccount(account);
+                }
 
                 diamondRepo.save(diamond.get());
+                DiamondResponse diamondResponse = diamondMapper.convertToDiamondResponse(diamond.get()); // Sử dụng convertToDiamondResponse
                 //Set response to return
                 response.setMessage("Update diamond successfully!");
-                response.setResult(updateDiamond);
+                response.setResult(diamondResponse);
                 response.setSuccess(true);
                 response.setStatusCode(200);
 
@@ -221,49 +249,6 @@ public class DiamondServiceImpl implements DiamondService {
         cq.where(predicates.toArray(new Predicate[0]));
 
         return entityManager.createQuery(cq.select(diamond)).getResultList();
-    }
-
-    @Override
-    public DiamondRequest toDiamondRequest(Diamond diamond) {
-        return DiamondRequest.builder()
-                .id(diamond.getId())
-                .cut(diamond.getCut())
-                .imageDiamond(diamond.getImageDiamond())
-                .clarity(diamond.getClarity())
-                .color(diamond.getColor())
-                .caratWeight(diamond.getCaratWeight())
-                .certificateNumber(diamond.getCertificateNumber())
-                .quantity(diamond.getQuantity())
-                .price(diamond.getPrice())
-                .origin(diamond.getOrigin())
-                .statusDiamond(diamond.isStatusDiamond())
-                .build();
-    }
-
-    @Override
-    public List<DiamondRequest> toListDiamondRequest(List<Diamond> diamond) {
-        List<DiamondRequest> diamondRequest = new ArrayList<>();
-        for (Diamond diamonds : diamond) {
-            diamondRequest.add(toDiamondRequest(diamonds));
-        }
-        return diamondRequest;
-    }
-
-    @Override
-    public Diamond toDiamond(DiamondRequest diamondRequest) {
-        return Diamond.builder()
-                .id(diamondRequest.getId())
-                .cut(diamondRequest.getCut())
-                .imageDiamond(diamondRequest.getImageDiamond())
-                .clarity(diamondRequest.getClarity())
-                .color(diamondRequest.getColor())
-                .caratWeight(diamondRequest.getCaratWeight())
-                .certificateNumber(diamondRequest.getCertificateNumber())
-                .quantity(diamondRequest.getQuantity())
-                .price(diamondRequest.getPrice())
-                .origin(diamondRequest.getOrigin())
-                .statusDiamond(diamondRequest.isStatusDiamond())
-                .build();
     }
 
     @Override

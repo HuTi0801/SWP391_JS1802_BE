@@ -27,10 +27,12 @@ public class Order {
     private String phone;
     @Column(name = "customer_name")
     private String cusName;
-
     private Date warrantyStartDate;
     private Date warrantyEndDate;
     private boolean isCancel;
+
+//    private String customerStatus;
+//    private String deliveryStatus;
 
     @OneToMany(mappedBy = "order")
     @JsonManagedReference
