@@ -25,23 +25,17 @@ public class DiamondShellRequest {
 
     @NotBlank(message = "Secondary Stone Type is mandatory")
     private String secondaryStoneType;
-
     private String material;
-
-    //@Pattern(regexp = "^(male|female)$", message = "Gender must be either male or female")
     private String gender;
 
     @NotNull(message = "Price is mandatory")
     @Positive(message = "Price should be a positive number")
     private double price;
-
     private String imageDiamondShell;
-
-    //@Pattern(regexp = "^(true|false)$", message = "Status must be either true or false")
     private boolean statusDiamondShell;
-
     private List<Integer> sizeIds;
 
+    private Integer accountId;
     private double min_price;
 
     private double max_price;
