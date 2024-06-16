@@ -20,7 +20,6 @@ public class DiamondRequest {
     private String name;
 
     @NotBlank(message = "Origin is mandatory and should not contain numbers or special characters")
-//    3
     private String origin;
 
     @NotBlank(message = "Clarity is mandatory")
@@ -49,6 +48,6 @@ public class DiamondRequest {
 
     private String imageDiamond;
 
-//    @Pattern(regexp = "^(true|false)$", message = "Status must be either true or false")
     private boolean statusDiamond;
+    private Integer accountId;
 }
