@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface AccountRepo extends JpaRepository<Account, Integer> {
     Optional<Account> findByUsername(String username);
-
     List<Account> findByRoleAndIsActiveOrderByUsernameAsc(Role role, boolean isActive);
+    List<Account> findByRole(Role role);
+    List<Account> findByIsActive(boolean isActive);
+    List<Account> findByRoleAndIsActive(Role role, boolean isActive);
 }

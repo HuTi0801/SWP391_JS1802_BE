@@ -4,6 +4,8 @@ import com.js1802_team5.diamondShop.enums.MemberLevel;
 import com.js1802_team5.diamondShop.enums.Role;
 import com.js1802_team5.diamondShop.models.entity_models.Account;
 import com.js1802_team5.diamondShop.models.entity_models.Customer;
+import com.js1802_team5.diamondShop.models.response_models.AccountResponse;
+import com.js1802_team5.diamondShop.models.response_models.CustomerResponse;
 import com.js1802_team5.diamondShop.models.response_models.LoginResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.AccountRepo;
@@ -20,10 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -253,5 +252,90 @@ public class AccountServiceImpl implements AccountService {
         });
 
         return result;
+    }
+
+    @Override
+    public List<AccountResponse> getAccountList(Role role, String status) {
+        List<Account> accounts;
+
+        if (role != null && status != null) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            accounts = accountRepo.findByRoleAndIsActive(role, isActive);
+        } else if (role != null) {
+            accounts = accountRepo.findByRole(role);
+        } else if (status != null) {
+            boolean isActive = "active".equalsIgnoreCase(status);
+            accounts = accountRepo.findByIsActive(isActive);
+        } else {
+            accounts = accountRepo.findAll();
+        }
+
+        List<AccountResponse> accountResponses = new ArrayList<>();
+
+        for (Account account : accounts) {
+            AccountResponse accountResponse = AccountResponse.builder()
+                    .id(account.getId())
+                    .username(account.getUsername())
+                    .pass(account.getPass())
+                    .firstName(account.getFirstName())
+                    .lastName(account.getLastName())
+                    .isActive(account.isActive())
+                    .role(account.getRole())
+                    .build();
+
+            if (Role.CUSTOMER.equals(account.getRole())) {
+                CustomerResponse customerResponse = getCustomerByAccountId(account.getId());
+                if (customerResponse != null) {
+                    accountResponse.setCustomerResponse(customerResponse);
+                }
+            }
+
+            accountResponses.add(accountResponse);
+        }
+
+        return accountResponses;
+    }
+
+    @Override
+    public AccountResponse getAccountDetails(Integer accountId) {
+        Account account = accountRepo.findById(accountId).orElse(null);
+        if (account == null) {
+            return null;
+        }
+
+        AccountResponse accountResponse = AccountResponse.builder()
+                .id(account.getId())
+                .username(account.getUsername())
+                .pass(account.getPass())
+                .firstName(account.getFirstName())
+                .lastName(account.getLastName())
+                .isActive(account.isActive())
+                .role(account.getRole())
+                .build();
+
+        if (Role.CUSTOMER.equals(account.getRole())) {
+            CustomerResponse customerResponse = getCustomerByAccountId(accountId);
+            if (customerResponse != null) {
+                accountResponse.setCustomerResponse(customerResponse);
+            }
+        }
+
+        return accountResponse;
+    }
+
+    @Override
+    public CustomerResponse getCustomerByAccountId(Integer accountId) {
+        Optional<Customer> optionalCustomer = customerRepo.findByAccountId(accountId);
+        if (optionalCustomer.isPresent()) {
+            Customer customer = optionalCustomer.get();
+            return CustomerResponse.builder()
+                    .customerID(customer.getId())
+                    .email(customer.getEmail())
+                    .phone(customer.getPhone())
+                    .point(customer.getPoint())
+                    .memberLevel(customer.getMemberLevel())
+                    .build();
+        }
+        return null;
     }
 }

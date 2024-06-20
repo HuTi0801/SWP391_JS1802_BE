@@ -1,14 +1,15 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.models.entity_models.*;
+import com.js1802_team5.diamondShop.models.response_models.PromotionResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.*;
 import com.js1802_team5.diamondShop.services.PromotionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -147,4 +148,85 @@ public class PromotionServiceImpl implements PromotionService {
         return cal.getTime();
     }
 
+    @Override
+    public Response getPromotionList() {
+        Response response = new Response();
+        try {
+            List<Promotion> promotions = promotionRepo.findAll();
+            List<PromotionResponse> promotionResponses = promotions.stream().map(promotion -> PromotionResponse.builder()
+                    .id(promotion.getId())
+                    .promotionCode(promotion.getPromotionCode())
+                    .promotionName(promotion.getPromotionName())
+                    .startDate(promotion.getStartDate())
+                    .endDate(promotion.getEndDate())
+                    .description(promotion.getDescription())
+                    .type(promotion.getType())
+                    .memberLevelPromotion(promotion.getMemberLevelPromotion())
+                    .discountPercent(promotion.getDiscountPercent())
+                    .build()).collect(Collectors.toList());
+            response.setResult(promotionResponses);
+            response.setSuccess(true);
+            response.setMessage("Promotion list fetched successfully.");
+            response.setStatusCode(200);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Error fetching promotion list.");
+            response.setStatusCode(500);
+        }
+        return response;
+    }
+
+    @Override
+    public Response getPromotionDetails(Integer promotionId) {
+        Response response = new Response();
+
+        try {
+            Optional<Promotion> promotionOptional = promotionRepo.findById(promotionId);
+            if (promotionOptional.isEmpty()) {
+                response.setMessage("Promotion not found.");
+                response.setSuccess(false);
+                response.setStatusCode(404);
+                return response;
+            }
+
+            Promotion promotion = promotionOptional.get();
+
+            //ProductName_Diamond
+            List<String> promotionDiamondNameList = promotionDiamondRepo.findByPromotionId(promotion.getId())
+                    .stream()
+                    .map(promotionDiamond -> promotionDiamond.getDiamond().getName())
+                    .collect(Collectors.toList());
+
+            //ProductName_DiamondShell
+            List<String> promotionDiamondShellNameList = promotionDiamondShellRepo.findByPromotionId(promotion.getId())
+                    .stream()
+                    .map(promotionDiamondShell -> promotionDiamondShell.getDiamondShell().getName())
+                    .collect(Collectors.toList());
+
+            PromotionResponse promotionResponse = PromotionResponse.builder()
+                    .id(promotion.getId())
+                    .promotionCode(promotion.getPromotionCode())
+                    .promotionName(promotion.getPromotionName())
+                    .startDate(promotion.getStartDate())
+                    .endDate(promotion.getEndDate())
+                    .description(promotion.getDescription())
+                    .type(promotion.getType())
+                    .memberLevelPromotion(promotion.getMemberLevelPromotion())
+                    .discountPercent(promotion.getDiscountPercent())
+                    .promotionDiamondShellNameList(promotionDiamondShellNameList)
+                    .promotionDiamondNameList(promotionDiamondNameList)
+                    .build();
+
+            response.setResult(promotionResponse);
+            response.setSuccess(true);
+            response.setMessage("Promotion details fetched successfully.");
+            response.setStatusCode(200);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Error fetching promotion details.");
+            response.setStatusCode(500);
+        }
+
+        return response;
+    }
 }
