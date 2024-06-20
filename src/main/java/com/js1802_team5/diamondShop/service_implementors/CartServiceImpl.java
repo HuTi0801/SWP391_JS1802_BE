@@ -81,7 +81,7 @@ public class CartServiceImpl implements CartService {
                     if (item.getProductId() == productID && item.getProductType() == productType) {
                         if (item.getSize() == (size)) {
                             item.setQuantity(item.getQuantity() + 1);
-                            item.setAmount(item.getAmount() + item.getUnitPrice());//
+                            item.setAmount(item.getAmount() + item.getUnitPrice());
                             itemAdded = true;
                             break;
                         }
