@@ -49,4 +49,13 @@ public class PromotionController {
                 .body(promotionService.deletePromotion(id));
     }
 
+    @GetMapping("/get-promotions-list")
+    public Response getPromotionList() {
+        return promotionService.getPromotionList();
+    }
+
+    @GetMapping("/view-promotion/{promotionId}")
+    public Response getPromotionDetails(@PathVariable Integer promotionId) {
+        return promotionService.getPromotionDetails(promotionId);
+    }
 }

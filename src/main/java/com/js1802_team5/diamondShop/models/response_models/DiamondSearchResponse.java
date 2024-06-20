@@ -23,4 +23,5 @@ public class DiamondSearchResponse {
     private int quantity;
     private String imageDiamond;
     private boolean statusDiamond;
+    private Integer accountId;
 }
