@@ -31,13 +31,10 @@ public class Order {
 
     @Column(name = "customer_name")
     private String cusName;
-
     private Date warrantyStartDate;
-
     private Date warrantyEndDate;
-
     private boolean isCancel;
-
+    private String description;
     @OneToMany(mappedBy = "order")
     @JsonManagedReference
     private List<AccountOrder> accountOrderList;

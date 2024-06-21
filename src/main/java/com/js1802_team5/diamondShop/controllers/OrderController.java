@@ -12,8 +12,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/create-order")
-    public Response createOrder(Integer id, String address, String numberPhone, String cusName) {
-        return orderService.createOrder(id, address, numberPhone, cusName);
+    public Response createOrder(Integer id, String address, String numberPhone, String cusName, String description) {
+        return orderService.createOrder(id, address, numberPhone, cusName, description);
     }
 
     @GetMapping("/get-all-orders")
@@ -32,8 +32,8 @@ public class OrderController {
     }
 
     @PostMapping("/cancel-order-{id}")
-    public Response cancelOrder(@PathVariable Integer id){
-        return orderService.cancelOrder(id);
+    public Response cancelOrder(@PathVariable Integer id, String description){
+        return orderService.cancelOrder(id, description);
     }
 
     @PostMapping("/update-order-status-to-confirmed/{orderId}")
