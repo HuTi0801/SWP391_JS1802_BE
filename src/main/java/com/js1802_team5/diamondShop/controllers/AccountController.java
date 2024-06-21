@@ -75,7 +75,7 @@ public class AccountController {
     }
 
 
-    @GetMapping
+    @GetMapping("/view-accounts-list")
     public ResponseEntity<Response> viewAccountList(
             @RequestParam(value = "role", required = false) Role role,
             @RequestParam(value = "status", required = false) String status) {
@@ -92,7 +92,7 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{accountId}")
+    @GetMapping("/view-account-details/{accountId}")
     public ResponseEntity<Response> viewAccountDetails(@PathVariable Integer accountId) {
         AccountResponse accountResponse = accountService.getAccountDetails(accountId);
 

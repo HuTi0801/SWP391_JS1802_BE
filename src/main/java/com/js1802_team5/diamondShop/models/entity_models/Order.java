@@ -21,18 +21,22 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private double totalPrice;
+
     private String address;
+
     @Column(name = "number_phone")
     private String phone;
+
     @Column(name = "customer_name")
     private String cusName;
-    private Date warrantyStartDate;
-    private Date warrantyEndDate;
-    private boolean isCancel;
 
-//    private String customerStatus;
-//    private String deliveryStatus;
+    private Date warrantyStartDate;
+
+    private Date warrantyEndDate;
+
+    private boolean isCancel;
 
     @OneToMany(mappedBy = "order")
     @JsonManagedReference

@@ -2,6 +2,7 @@ package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.enums.ProductType;
 import com.js1802_team5.diamondShop.exceptions.ProductNotFoundException;
+import com.js1802_team5.diamondShop.models.entity_models.Customer;
 import com.js1802_team5.diamondShop.models.entity_models.Promotion;
 import com.js1802_team5.diamondShop.models.request_models.Product;
 import com.js1802_team5.diamondShop.models.response_models.CartResponse;
@@ -22,6 +23,7 @@ public class CartServiceImpl implements CartService {
     private final PromotionRepo promotionRepo;
     private final PromotionDiamondRepo promotionDiamondRepo;
     private final PromotionDiamondShellRepo promotionDiamondShellRepo;
+    private final CustomerRepo customerRepo;
     private final Map<String, CartResponse> cartStorage = new HashMap<>();
     private static int cartCounter = 1;
 
@@ -283,7 +285,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Response applyPromotion(String cartId, String promotionCode) {
+    public Response applyPromotion(String cartId, String promotionCode, Integer customerID) {
         Response response = new Response();
 
         // Check if cart exists
@@ -294,6 +296,16 @@ public class CartServiceImpl implements CartService {
             response.setStatusCode(404);
             return response;
         }
+
+        // Check if customer exists
+        Optional<Customer> customerOptional = customerRepo.findById(customerID);
+        if (customerOptional.isEmpty()) {
+            response.setMessage("Customer ID not found.");
+            response.setSuccess(false);
+            response.setStatusCode(404);
+            return response;
+        }
+        Customer customer = customerOptional.get();
 
         // Check if promotion code exists
         Optional<Promotion> promotionOptional = promotionRepo.findByPromotionCode(promotionCode);
@@ -309,6 +321,16 @@ public class CartServiceImpl implements CartService {
         Date now = new Date();
         if (now.before(promotion.getStartDate()) || now.after(promotion.getEndDate())) {
             response.setMessage("Promotion code is not valid at this time.");
+            response.setSuccess(false);
+            response.setStatusCode(400);
+            return response;
+        }
+
+        // Check if customer is eligible for the promotion
+        String customerMemberLevel = customer.getMemberLevel();
+        List<String> eligibleMemberLevels = Arrays.asList(promotion.getMemberLevelPromotion().split(","));
+        if (!eligibleMemberLevels.contains(customerMemberLevel)) {
+            response.setMessage("Customer is not suitable for this promotion.");
             response.setSuccess(false);
             response.setStatusCode(400);
             return response;
