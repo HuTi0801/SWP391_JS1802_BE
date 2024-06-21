@@ -28,7 +28,6 @@ public class PromotionServiceImpl implements PromotionService {
         return code;
     }
 
-    @Override
     public Response addPromotion(String promotionName, String description, float discountPercent, Date startDate, Date endDate, List<String> memberLevels, List<String> types, List<String> productNames) {
         Response response = new Response();
 
@@ -54,6 +53,11 @@ public class PromotionServiceImpl implements PromotionService {
         }
 
         Date today = resetTime(new Date());
+
+        // Adjust start and end dates based on the conditions
+        startDate = adjustStartDate(startDate, today);
+        endDate = adjustEndDate(startDate, endDate, today);
+
         if (startDate.before(today)) {
             response.setMessage("Start date cannot be before today.");
             response.setSuccess(false);
@@ -90,6 +94,50 @@ public class PromotionServiceImpl implements PromotionService {
         response.setMessage("Promotion added successfully.");
         response.setStatusCode(200);
         return response;
+    }
+
+    private Date resetTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    private Date adjustStartDate(Date startDate, Date today) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDate);
+        if (resetTime(startDate).equals(today)) {
+            cal.setTime(new Date()); // If startDate is today, set the time to current time
+        } else {
+            // Otherwise, set time to 00:00:00
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+        }
+        return cal.getTime();
+    }
+
+    private Date adjustEndDate(Date startDate, Date endDate, Date today) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endDate);
+        if (resetTime(endDate).equals(resetTime(startDate))) {
+            // If endDate is the same day as startDate, set time to the end of the day
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+        } else {
+            // Otherwise, set time to the end of the day
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+        }
+        return cal.getTime();
     }
 
     public Response deletePromotion(Integer promotionId) {
@@ -136,16 +184,6 @@ public class PromotionServiceImpl implements PromotionService {
         promotionDiamondShell.setDiamondShell(diamondShell);
         promotionDiamondShell.setPromotion(promotion);
         promotionDiamondShellRepo.save(promotionDiamondShell);
-    }
-
-    private Date resetTime(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
     }
 
     @Override

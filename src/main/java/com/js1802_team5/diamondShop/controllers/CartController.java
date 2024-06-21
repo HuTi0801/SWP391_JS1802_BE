@@ -85,8 +85,8 @@ public class CartController {
     }
 
     @PostMapping("/apply-promotion")
-    public ResponseEntity<Response> applyPromotion(@RequestParam String cartId, @RequestParam String promotionCode) {
-        Response response = cartService.applyPromotion(cartId, promotionCode);
+    public ResponseEntity<Response> applyPromotion(@RequestParam String cartId, @RequestParam String promotionCode, @RequestParam Integer customerID) {
+        Response response = cartService.applyPromotion(cartId, promotionCode, customerID);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 }
