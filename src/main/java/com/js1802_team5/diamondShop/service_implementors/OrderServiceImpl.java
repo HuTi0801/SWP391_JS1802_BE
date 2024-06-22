@@ -255,7 +255,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Response cancelOrder(Integer id) {
+    public Response cancelOrder(Integer id, String description) {
         Response response = new Response();
         try {
             // Tìm order theo ID
@@ -272,6 +272,7 @@ public class OrderServiceImpl implements OrderService {
 
             // Thay đổi giá trị isCancel thành true
             order.setCancel(true);
+            order.setDescription(description);
 
             //Tìm trạng thái Cancel
             StatusOrder cancelStatus = statusOrderRepository.findByStatusName("Cancel")

@@ -1,5 +1,7 @@
 package com.js1802_team5.diamondShop.controllers;
 
+import com.js1802_team5.diamondShop.enums.Role;
+import com.js1802_team5.diamondShop.models.response_models.AccountResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +19,7 @@ import java.util.Map;
 public class AccountController {
 
     private final AccountService accountService;
+
     @PostMapping("/login")
     public ResponseEntity<Response> login(@RequestParam("username") String username,
                                                @RequestParam("password") String password) {
@@ -71,4 +75,43 @@ public class AccountController {
     }
 
 
+    @GetMapping("/view-accounts-list")
+    public ResponseEntity<Response> viewAccountList(
+            @RequestParam(value = "role", required = false) Role role,
+            @RequestParam(value = "status", required = false) String status) {
+
+        List<AccountResponse> accountResponses = accountService.getAccountList(role, status);
+
+        Response response = Response.builder()
+                .result(accountResponses)
+                .isSuccess(true)
+                .message("Fetched account list successfully")
+                .statusCode(200)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/view-account-details/{accountId}")
+    public ResponseEntity<Response> viewAccountDetails(@PathVariable Integer accountId) {
+        AccountResponse accountResponse = accountService.getAccountDetails(accountId);
+
+        if (accountResponse == null) {
+            Response response = Response.builder()
+                    .isSuccess(false)
+                    .message("Account not found")
+                    .statusCode(404)
+                    .build();
+            return ResponseEntity.status(404).body(response);
+        }
+
+        Response response = Response.builder()
+                .result(accountResponse)
+                .isSuccess(true)
+                .message("Fetched account details successfully")
+                .statusCode(200)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 }

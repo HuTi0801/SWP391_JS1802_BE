@@ -1,10 +1,10 @@
 package com.js1802_team5.diamondShop.service_implementors;
-
-import com.js1802_team5.diamondShop.enums.Role;
 import com.js1802_team5.diamondShop.mappers.DiamondMapper;
-import com.js1802_team5.diamondShop.models.entity_models.Account;
 import com.js1802_team5.diamondShop.models.entity_models.Diamond;
 import com.js1802_team5.diamondShop.models.request_models.DiamondSearchRequest;
+import com.js1802_team5.diamondShop.models.response_models.DiamondSearchResponse;
+import com.js1802_team5.diamondShop.enums.Role;
+import com.js1802_team5.diamondShop.models.entity_models.Account;
 import com.js1802_team5.diamondShop.models.response_models.DiamondResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.AccountRepo;
@@ -208,7 +208,7 @@ public class DiamondServiceImpl implements DiamondService {
     }
 
     @Override
-    public List<Diamond> searchDiamond(DiamondSearchRequest diamondSearchRequest) {
+    public List<DiamondSearchResponse> searchDiamond(DiamondSearchRequest diamondSearchRequest) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Diamond> cq = cb.createQuery(Diamond.class);
         Root<Diamond> diamond = cq.from(Diamond.class);
@@ -216,39 +216,35 @@ public class DiamondServiceImpl implements DiamondService {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.isTrue(diamond.get("statusDiamond")));
 
-
         if (diamondSearchRequest.getCaratWeight() > 0) {
             predicates.add(cb.equal(diamond.get("caratWeight"), diamondSearchRequest.getCaratWeight()));
-
         }
         if (diamondSearchRequest.getColor() != null && !diamondSearchRequest.getColor().isEmpty()) {
             predicates.add(cb.equal(diamond.get("color"), diamondSearchRequest.getColor()));
-
         }
         if (diamondSearchRequest.getClarity() != null && !diamondSearchRequest.getClarity().isEmpty()) {
             predicates.add(cb.equal(diamond.get("clarity"), diamondSearchRequest.getClarity()));
-
         }
         if (diamondSearchRequest.getCut() != null && !diamondSearchRequest.getCut().isEmpty()) {
             predicates.add(cb.equal(diamond.get("cut"), diamondSearchRequest.getCut()));
-
         }
         if (diamondSearchRequest.getOrigin() != null && !diamondSearchRequest.getOrigin().isEmpty()) {
             predicates.add(cb.equal(diamond.get("origin"), diamondSearchRequest.getOrigin()));
-
         }
         if (diamondSearchRequest.getMin_price() > 0.0) {
             predicates.add(cb.greaterThanOrEqualTo(diamond.get("price"), diamondSearchRequest.getMin_price()));
-
         }
         if (diamondSearchRequest.getMax_price() > 0.0 && (diamondSearchRequest.getMin_price() <= diamondSearchRequest.getMax_price())) {
             predicates.add(cb.lessThanOrEqualTo(diamond.get("price"), diamondSearchRequest.getMax_price()));
-
         }
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-        return entityManager.createQuery(cq.select(diamond)).getResultList();
+        List<Diamond> diamonds = entityManager.createQuery(cq.select(diamond)).getResultList();
+
+        return diamonds.stream()
+                .map(DiamondMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Override

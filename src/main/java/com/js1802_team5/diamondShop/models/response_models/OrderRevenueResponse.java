@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SizeDiamondShellResponse {
-    private Integer id;
-    private Integer size;
+public class OrderRevenueResponse {
+    private int orderId;
+    private double orderValue;
 }

@@ -6,10 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class SizeDiamondShellResponse {
-    private Integer id;
-    private Integer size;
+public class CustomerResponse {
+    private Integer customerID;
+    private String email;
+    private String phone;
+    private int point;
+    private String memberLevel;
 }

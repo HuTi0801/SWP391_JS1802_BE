@@ -11,7 +11,7 @@ public interface OrderService {
 
     Response getOrderByStatus(String status);
 
-    Response cancelOrder(Integer id);
+    Response cancelOrder(Integer id, String description);
 
     Response updateOrderStatus(Integer orderId, String newStatus);
 

@@ -1,14 +1,15 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
 import com.js1802_team5.diamondShop.models.entity_models.*;
+import com.js1802_team5.diamondShop.models.response_models.PromotionResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.*;
 import com.js1802_team5.diamondShop.services.PromotionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,6 @@ public class PromotionServiceImpl implements PromotionService {
         return code;
     }
 
-    @Override
     public Response addPromotion(String promotionName, String description, float discountPercent, Date startDate, Date endDate, List<String> memberLevels, List<String> types, List<String> productNames) {
         Response response = new Response();
 
@@ -53,6 +53,11 @@ public class PromotionServiceImpl implements PromotionService {
         }
 
         Date today = resetTime(new Date());
+
+        // Adjust start and end dates based on the conditions
+        startDate = adjustStartDate(startDate, today);
+        endDate = adjustEndDate(startDate, endDate, today);
+
         if (startDate.before(today)) {
             response.setMessage("Start date cannot be before today.");
             response.setSuccess(false);
@@ -89,6 +94,50 @@ public class PromotionServiceImpl implements PromotionService {
         response.setMessage("Promotion added successfully.");
         response.setStatusCode(200);
         return response;
+    }
+
+    private Date resetTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    private Date adjustStartDate(Date startDate, Date today) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(startDate);
+        if (resetTime(startDate).equals(today)) {
+            cal.setTime(new Date()); // If startDate is today, set the time to current time
+        } else {
+            // Otherwise, set time to 00:00:00
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+        }
+        return cal.getTime();
+    }
+
+    private Date adjustEndDate(Date startDate, Date endDate, Date today) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(endDate);
+        if (resetTime(endDate).equals(resetTime(startDate))) {
+            // If endDate is the same day as startDate, set time to the end of the day
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+        } else {
+            // Otherwise, set time to the end of the day
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+        }
+        return cal.getTime();
     }
 
     public Response deletePromotion(Integer promotionId) {
@@ -137,14 +186,85 @@ public class PromotionServiceImpl implements PromotionService {
         promotionDiamondShellRepo.save(promotionDiamondShell);
     }
 
-    private Date resetTime(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
+    @Override
+    public Response getPromotionList() {
+        Response response = new Response();
+        try {
+            List<Promotion> promotions = promotionRepo.findAll();
+            List<PromotionResponse> promotionResponses = promotions.stream().map(promotion -> PromotionResponse.builder()
+                    .id(promotion.getId())
+                    .promotionCode(promotion.getPromotionCode())
+                    .promotionName(promotion.getPromotionName())
+                    .startDate(promotion.getStartDate())
+                    .endDate(promotion.getEndDate())
+                    .description(promotion.getDescription())
+                    .type(promotion.getType())
+                    .memberLevelPromotion(promotion.getMemberLevelPromotion())
+                    .discountPercent(promotion.getDiscountPercent())
+                    .build()).collect(Collectors.toList());
+            response.setResult(promotionResponses);
+            response.setSuccess(true);
+            response.setMessage("Promotion list fetched successfully.");
+            response.setStatusCode(200);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Error fetching promotion list.");
+            response.setStatusCode(500);
+        }
+        return response;
     }
 
+    @Override
+    public Response getPromotionDetails(Integer promotionId) {
+        Response response = new Response();
+
+        try {
+            Optional<Promotion> promotionOptional = promotionRepo.findById(promotionId);
+            if (promotionOptional.isEmpty()) {
+                response.setMessage("Promotion not found.");
+                response.setSuccess(false);
+                response.setStatusCode(404);
+                return response;
+            }
+
+            Promotion promotion = promotionOptional.get();
+
+            //ProductName_Diamond
+            List<String> promotionDiamondNameList = promotionDiamondRepo.findByPromotionId(promotion.getId())
+                    .stream()
+                    .map(promotionDiamond -> promotionDiamond.getDiamond().getName())
+                    .collect(Collectors.toList());
+
+            //ProductName_DiamondShell
+            List<String> promotionDiamondShellNameList = promotionDiamondShellRepo.findByPromotionId(promotion.getId())
+                    .stream()
+                    .map(promotionDiamondShell -> promotionDiamondShell.getDiamondShell().getName())
+                    .collect(Collectors.toList());
+
+            PromotionResponse promotionResponse = PromotionResponse.builder()
+                    .id(promotion.getId())
+                    .promotionCode(promotion.getPromotionCode())
+                    .promotionName(promotion.getPromotionName())
+                    .startDate(promotion.getStartDate())
+                    .endDate(promotion.getEndDate())
+                    .description(promotion.getDescription())
+                    .type(promotion.getType())
+                    .memberLevelPromotion(promotion.getMemberLevelPromotion())
+                    .discountPercent(promotion.getDiscountPercent())
+                    .promotionDiamondShellNameList(promotionDiamondShellNameList)
+                    .promotionDiamondNameList(promotionDiamondNameList)
+                    .build();
+
+            response.setResult(promotionResponse);
+            response.setSuccess(true);
+            response.setMessage("Promotion details fetched successfully.");
+            response.setStatusCode(200);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Error fetching promotion details.");
+            response.setStatusCode(500);
+        }
+
+        return response;
+    }
 }

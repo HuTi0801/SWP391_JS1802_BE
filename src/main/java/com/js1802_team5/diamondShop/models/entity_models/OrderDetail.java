@@ -37,9 +37,11 @@ public class OrderDetail {
 
     @ManyToOne
     @JoinColumn(name = "diamond_id")
+    @JsonBackReference
     private Diamond diamond;
 
     @ManyToOne
     @JoinColumn(name = "diamondShell_id")
+    @JsonBackReference
     private DiamondShell diamondShell;
 }
