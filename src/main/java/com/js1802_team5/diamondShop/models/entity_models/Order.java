@@ -35,6 +35,10 @@ public class Order {
     private Date warrantyEndDate;
     private boolean isCancel;
     private String description;
+
+//    private String customerStatus;
+//    private String deliveryStatus;
+
     @OneToMany(mappedBy = "order")
     @JsonManagedReference
     private List<AccountOrder> accountOrderList;
