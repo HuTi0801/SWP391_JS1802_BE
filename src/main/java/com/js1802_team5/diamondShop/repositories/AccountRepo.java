@@ -21,4 +21,6 @@ public interface AccountRepo extends JpaRepository<Account, Integer> {
 
     @Query("SELECT a FROM Account a WHERE a.role IN :roles")
     List<Account> findAllByRoles(List<Role> roles);
+
+    List<Account> findByIdIn(List<Integer> ids);
 }

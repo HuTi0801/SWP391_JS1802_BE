@@ -1,13 +1,13 @@
 package com.js1802_team5.diamondShop.controllers;
 
+import com.js1802_team5.diamondShop.models.response_models.AccountResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.AccountOrderService;
 import com.js1802_team5.diamondShop.services.AccountService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth/account-order")
@@ -21,5 +21,10 @@ public class AccountOrderController {
         } catch (Exception e) {
             return new Response(null, false, e.getMessage(), 500);
         }
+    }
+
+    @GetMapping("/get-staff-accounts-assigning-by-order")
+    public List<AccountResponse> getAccountsByOrderId(@RequestParam Integer orderId) {
+        return accountOrderService.getAccountsByOrderId(orderId);
     }
 }
