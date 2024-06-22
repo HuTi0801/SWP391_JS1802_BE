@@ -25,4 +25,5 @@ public class OrderResponse {
     private boolean isCancel;
     private List<OrderDetailResponse> orderDetails;
     private List<DateStatusOrderResponse> dateStatusOrders;
+    private String description;
 }

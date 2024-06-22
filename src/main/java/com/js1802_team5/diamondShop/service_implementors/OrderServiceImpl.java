@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Response createOrder(Integer customerId, String address, String numberPhone, String cusName) {
+    public Response createOrder(Integer customerId, String address, String numberPhone, String cusName, String description) {
         Response response = new Response();
         try {
             // Lấy thông tin customer
@@ -67,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
                     .cusName(cusName)// Ngày mua hàng là ngày hiện tại
                     .orderDetails(orderDetailRequests)
                     .isCancel(false)
+                    .description(description)
                     .build();
 
             // Tính tổng giá từ giỏ hàng
