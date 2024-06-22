@@ -8,4 +8,6 @@ public interface PromotionService {
     Response addPromotion(String promotionName, String description, float discountPercent, Date startDate, Date endDate,
                           List<String> memberLevels, List<String> types, List<String> productNames);
     Response deletePromotion(Integer promotionId);
+    Response getPromotionList();
+    Response getPromotionDetails(Integer promotionId);
 }

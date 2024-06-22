@@ -32,14 +32,9 @@ public class OrderController {
     }
 
     @PostMapping("/cancel-order-{id}")
-    public Response cancelOrder(@PathVariable Integer id){
-        return orderService.cancelOrder(id);
+    public Response cancelOrder(@PathVariable Integer id, String description){
+        return orderService.cancelOrder(id, description);
     }
-
-//    @PostMapping("/update-status-order-{orderId}-{newStatus}")
-//    public Response updateStatusOrder(@PathVariable Integer orderId, @RequestParam String newStatus){
-//        return orderService.updateOrderStatus(orderId, newStatus);
-//    }
 
     @PostMapping("/update-order-status-to-confirmed/{orderId}")
     public Response updateOrderStatusToConfirmed(@PathVariable Integer orderId) {

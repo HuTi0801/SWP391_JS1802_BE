@@ -23,4 +23,5 @@ public class OrderRequest {
 //    private Date warrantyEndDate;
     private boolean isCancel;
     private List<OrderDetailRequest> orderDetails;
+    private String description;
 }
