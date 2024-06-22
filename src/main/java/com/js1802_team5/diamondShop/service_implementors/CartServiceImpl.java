@@ -370,4 +370,72 @@ public class CartServiceImpl implements CartService {
         response.setStatusCode(200);
         return response;
     }
+
+    @Override
+    public Response removePromotion(String cartId, Integer customerId) {
+        Response response = new Response();
+
+        try {
+            // Kiểm tra giỏ hàng tồn tại
+            CartResponse cart = cartStorage.get(cartId);
+            if (cart == null) {
+                response.setMessage("Cart ID not found.");
+                response.setSuccess(false);
+                response.setStatusCode(404);
+                return response;
+            }
+
+            // Kiểm tra khách hàng tồn tại
+            Optional<Customer> customerOptional = customerRepo.findById(customerId);
+            if (customerOptional.isEmpty()) {
+                response.setMessage("Customer ID not found.");
+                response.setSuccess(false);
+                response.setStatusCode(404);
+                return response;
+            }
+
+            Customer customer = customerOptional.get();
+            String customerMemberLevel = customer.getMemberLevel();
+
+            // Kiểm tra nếu khách hàng đã áp dụng khuyến mãi trước đó
+            boolean promotionApplied = false;
+            for (CartItemResponse item : cart.getItems()) {
+                double originalAmount = item.getUnitPrice() * item.getQuantity();
+                if (item.getAmount() < originalAmount) {
+                    promotionApplied = true;
+                    break;
+                }
+            }
+
+            if (!promotionApplied) {
+                response.setMessage("No promotion applied to the cart.");
+                response.setSuccess(false);
+                response.setStatusCode(400);
+                return response;
+            }
+
+            // Loại bỏ giảm giá cho các sản phẩm trong giỏ hàng
+            for (CartItemResponse item : cart.getItems()) {
+                double originalAmount = item.getUnitPrice() * item.getQuantity();
+                item.setAmount(originalAmount);
+            }
+
+            // Cập nhật tổng giá trị của giỏ hàng
+            double totalPrice = cart.getItems().stream().mapToDouble(CartItemResponse::getAmount).sum();
+            cart.setTotalPrice(totalPrice);
+
+            cartStorage.put(cartId, cart);
+
+            response.setResult(cart);
+            response.setMessage("Promotion removed successfully.");
+            response.setSuccess(true);
+            response.setStatusCode(200);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Error removing promotion.");
+            response.setStatusCode(500);
+        }
+
+        return response;
+    }
 }

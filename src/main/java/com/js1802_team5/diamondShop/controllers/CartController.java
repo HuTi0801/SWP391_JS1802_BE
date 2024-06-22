@@ -89,4 +89,9 @@ public class CartController {
         Response response = cartService.applyPromotion(cartId, promotionCode, customerID);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+
+    @PostMapping("/remove-applying-promotion-code")
+    public Response removePromotion(@RequestParam String cartId, @RequestParam Integer customerId) {
+        return cartService.removePromotion(cartId, customerId);
+    }
 }
