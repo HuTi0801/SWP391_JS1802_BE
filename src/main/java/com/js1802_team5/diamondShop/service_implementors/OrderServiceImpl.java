@@ -9,10 +9,10 @@ import com.js1802_team5.diamondShop.models.response_models.*;
 import com.js1802_team5.diamondShop.repositories.*;
 import com.js1802_team5.diamondShop.services.CartService;
 import com.js1802_team5.diamondShop.services.OrderService;
-import com.js1802_team5.diamondShop.services.VnPayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,21 +79,6 @@ public class OrderServiceImpl implements OrderService {
             // Chuyển đổi OrderRequest thành thực thể Order
             Order order = orderMapper.toOrder(orderRequest);
             order.setCustomer(customer);
-
-//            // Lấy trạng thái "Confirmed"
-//            StatusOrder confirmedStatus = statusOrderRepository.findByStatusName("Confirmed")
-//                    .orElseThrow(() -> new Exception("Trạng thái 'Confirmed' không tồn tại"));
-//
-//            // Tính ngày bắt đầu và kết thúc bảo hành nếu trạng thái là "Confirmed"
-//            if (order.getStatusOrder() != null && order.getStatusOrder().getId().equals(confirmedStatus.getId())) {
-//                Date warrantyStartDate = new Date();
-//                order.setWarrantyStartDate(warrantyStartDate);
-//                // Tính ngày kết thúc bảo hành là 3 tháng sau ngày bắt đầu bảo hành
-//                Calendar calendar = Calendar.getInstance();
-//                calendar.setTime(warrantyStartDate);
-//                calendar.add(Calendar.MONTH, 3);
-//                order.setWarrantyEndDate(calendar.getTime());
-//            }
 
             // Khởi tạo danh sách dateStatusOrderList nếu null
             if (order.getDateStatusOrderList() == null) {
@@ -580,6 +565,114 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             response.setSuccess(false);
             response.setMessage("Failed to update order status to 'Delivered'.");
+            response.setStatusCode(500);
+        }
+        return response;
+    }
+
+    @Override
+    public Response setWarrantyDates(Integer orderId) {
+        Response response = new Response();
+        try {
+            // Tìm đơn hàng theo ID
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+            // Kiểm tra trạng thái hiện tại của đơn hàng
+            String currentStatus = order.getStatusOrder().getStatusName();
+
+            // Nếu trạng thái không phải là "Confirmed", không làm gì và trả về lỗi
+            if (!"Confirmed".equals(currentStatus)) {
+                throw new IllegalStateException("Order must be in Confirmed status to set warranty dates.");
+            }
+
+            // Lấy ngày khi đơn hàng được xác nhận từ DateStatusOrder
+            DateStatusOrder dateStatusOrder = dateStatusOrderRepo.findFirstByOrderAndStatusOrder_StatusNameOrderByDateStatusDesc(order, "Confirmed")
+                    .orElseThrow(() -> new IllegalStateException("Confirmed date not found for the order."));
+
+            Date confirmedDate = dateStatusOrder.getDateStatus();
+
+            // Thiết lập ngày bắt đầu bảo hành là ngày khi đơn hàng được xác nhận
+            order.setWarrantyStartDate(confirmedDate);
+
+            // Thiết lập ngày kết thúc bảo hành là 6 tháng sau ngày bắt đầu
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(confirmedDate);
+            calendar.add(Calendar.MONTH, 6);
+            Date endDate = calendar.getTime();
+            order.setWarrantyEndDate(endDate);
+
+            // Lưu Order vào DB
+            order = orderRepository.save(order);
+
+            // Tạo OrderResponse và set vào response
+            OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+            response.setSuccess(true);
+            response.setMessage("Warranty dates set successfully!");
+            response.setStatusCode(200);
+            response.setResult(orderResponse);
+
+        } catch (IllegalStateException e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(400);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(500);
+        }
+        return response;
+    }
+
+    @Transactional
+    @Override
+    public Response updateWarrantyEndDate(Integer orderId, Date newEndDate) {
+        Response response = new Response();
+        try {
+            // Tìm đơn hàng theo ID
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+            // Kiểm tra trạng thái hiện tại của đơn hàng
+            String currentStatus = order.getStatusOrder().getStatusName();
+
+            // Nếu trạng thái không phải là "Delivered", không làm gì và trả về lỗi
+            if (!"Delivered".equals(currentStatus)) {
+                throw new IllegalStateException("Order must be in Delivered status to extend warranty.");
+            }
+
+            // Lấy ngày bắt đầu và kết thúc bảo hành hiện tại
+            Date currentStartDate = order.getWarrantyStartDate();
+            Date currentEndDate = order.getWarrantyEndDate();
+
+            // Kiểm tra ngày kết thúc bảo hành mới
+            if (newEndDate.before(currentStartDate)) {
+                throw new IllegalArgumentException("New end date must be after the start date.");
+            }
+            if (newEndDate.before(currentEndDate)) {
+                throw new IllegalArgumentException("New end date must be after the current end date.");
+            }
+
+            // Cập nhật ngày kết thúc bảo hành
+            order.setWarrantyEndDate(newEndDate);
+
+            // Lưu Order vào DB
+            order = orderRepository.save(order);
+
+            // Tạo OrderResponse và set vào response
+            OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+            response.setSuccess(true);
+            response.setMessage("Warranty end date extended successfully!");
+            response.setStatusCode(200);
+            response.setResult(orderResponse);
+
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(400);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
             response.setStatusCode(500);
         }
         return response;

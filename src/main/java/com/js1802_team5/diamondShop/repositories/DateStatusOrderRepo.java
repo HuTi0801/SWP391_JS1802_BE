@@ -1,6 +1,7 @@
 package com.js1802_team5.diamondShop.repositories;
 
 import com.js1802_team5.diamondShop.models.entity_models.DateStatusOrder;
+import com.js1802_team5.diamondShop.models.entity_models.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,10 @@ public interface DateStatusOrderRepo extends JpaRepository<DateStatusOrder, Inte
 
     @Query("SELECT dso FROM DateStatusOrder dso WHERE dso.order.id IN :orderIds AND FUNCTION('YEAR', dso.dateStatus) = :year ORDER BY dso.dateStatus DESC")
     List<DateStatusOrder> findAllByOrderIdsAndYear(List<Integer> orderIds, int year);
+
+    @Query("SELECT dso FROM DateStatusOrder dso " +
+            "WHERE dso.order = :order " +
+            "AND dso.status = :statusName " +
+            "ORDER BY dso.dateStatus DESC")
+    Optional<DateStatusOrder> findFirstByOrderAndStatusOrder_StatusNameOrderByDateStatusDesc(Order order, String statusName);
 }

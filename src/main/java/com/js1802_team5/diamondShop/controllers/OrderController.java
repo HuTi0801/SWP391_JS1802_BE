@@ -2,9 +2,12 @@ package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.OrderService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/auth/orders")
@@ -18,7 +21,7 @@ public class OrderController {
     }
 
     @GetMapping("/get-all-orders")
-    public Response getAllOrder(){
+    public Response getAllOrder() {
         return orderService.getAllOrder();
     }
 
@@ -28,12 +31,12 @@ public class OrderController {
     }
 
     @GetMapping("/get-order-statusName")
-    public Response getOrderByStatusName(@RequestParam String statusName){
+    public Response getOrderByStatusName(@RequestParam String statusName) {
         return orderService.getOrderByStatus(statusName);
     }
 
     @PostMapping("/cancel-order-{id}")
-    public Response cancelOrder(@PathVariable Integer id, String description){
+    public Response cancelOrder(@PathVariable Integer id, String description) {
         return orderService.cancelOrder(id, description);
     }
 
@@ -53,6 +56,21 @@ public class OrderController {
             @RequestParam boolean isCustomer,
             @RequestParam boolean isDelivery) {
         return orderService.updateOrderStatusToDelivered(orderId, isCustomer, isDelivery);
+    }
+
+    @PostMapping("/set-warranty-date/{orderId}")
+    public Response setWarrantyDates(@PathVariable Integer orderId) {
+        return orderService.setWarrantyDates(orderId);
+    }
+
+    @PostMapping("/update-warranty-end-date/{orderId}{endDate}")
+    public Response updateWarrantyEndDate(@RequestParam Integer orderId,
+                                          @RequestParam("newEndDate") String newEndDateStr) throws ParseException {
+        // Chuyển đổi chuỗi thành đối tượng Date
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Date newEndDate = format.parse(newEndDateStr);
+        // Gọi phương thức service với ngày mới
+        return orderService.updateWarrantyEndDate(orderId, newEndDate);
     }
 
     @GetMapping("/view-order-history/{accountId}")
