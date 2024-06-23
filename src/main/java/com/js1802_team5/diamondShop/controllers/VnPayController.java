@@ -22,11 +22,10 @@ public class VnPayController {
                                        @RequestParam("language") String language) throws UnsupportedEncodingException {
         return vnPayService.createPayment(request, cusId, amount, bankCode, language);
     }
-
     @GetMapping("/return")
     public VnPayResponse testVnPayReturn(
             @RequestParam Map<String, String> params,
-            HttpServletRequest request) throws Exception {
+            HttpServletRequest request) throws UnsupportedEncodingException {
         // Đưa các tham số nhận được vào request
         for (Map.Entry<String, String> entry : params.entrySet()) {
             request.setAttribute(entry.getKey(), entry.getValue());
