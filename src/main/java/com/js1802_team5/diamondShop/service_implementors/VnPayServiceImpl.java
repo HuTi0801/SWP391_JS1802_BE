@@ -21,7 +21,7 @@ public class VnPayServiceImpl implements VnPayService {
     private final VnPayConfig vnPayConfig;
 
     @Override
-    public VnPayResponse createPayment(HttpServletRequest request, Integer cusId, double amount, String bankCode, String language) throws UnsupportedEncodingException {
+    public VnPayResponse createPayment(HttpServletRequest request, Integer cusId, long amount, String bankCode, String language) throws UnsupportedEncodingException {
         String vnp_Version = vnPayConfig.getVnp_Version();
         String vnp_Command = vnPayConfig.getVnp_Command();
         String orderType = vnPayConfig.getOrderType();
@@ -105,7 +105,7 @@ public class VnPayServiceImpl implements VnPayService {
     }
 
     @Override
-    public VnPayResponse vnPayReturn(HttpServletRequest request) throws Exception {
+    public VnPayResponse vnPayReturn(HttpServletRequest request) throws UnsupportedEncodingException {
         String queryString = request.getQueryString();
         Map<String, String> allParams = new HashMap<>();
         if (queryString != null) {
