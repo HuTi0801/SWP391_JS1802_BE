@@ -2,11 +2,6 @@ package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.response_models.VnPayResponse;
 import com.js1802_team5.diamondShop.services.VnPayService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +22,11 @@ public class VnPayController {
                                        @RequestParam("language") String language) throws UnsupportedEncodingException {
         return vnPayService.createPayment(request, cusId, amount, bankCode, language);
     }
+
     @GetMapping("/return")
     public VnPayResponse testVnPayReturn(
             @RequestParam Map<String, String> params,
-            HttpServletRequest request) throws UnsupportedEncodingException {
+            HttpServletRequest request) throws Exception {
         // Đưa các tham số nhận được vào request
         for (Map.Entry<String, String> entry : params.entrySet()) {
             request.setAttribute(entry.getKey(), entry.getValue());
