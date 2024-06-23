@@ -12,4 +12,6 @@ public interface AccountOrderRepo extends JpaRepository<AccountOrder, Integer> {
 
     @Query("SELECT ao FROM AccountOrder ao WHERE ao.account.id IN :accountIds")
     List<AccountOrder> findAllByAccountIds(List<Integer> accountIds);
+
+    List<AccountOrder> findByOrderId(Integer orderId);
 }

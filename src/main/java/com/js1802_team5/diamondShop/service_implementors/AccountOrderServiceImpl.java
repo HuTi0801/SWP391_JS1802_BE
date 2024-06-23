@@ -3,6 +3,7 @@ package com.js1802_team5.diamondShop.service_implementors;
 import com.js1802_team5.diamondShop.models.entity_models.Account;
 import com.js1802_team5.diamondShop.models.entity_models.AccountOrder;
 import com.js1802_team5.diamondShop.models.entity_models.Order;
+import com.js1802_team5.diamondShop.models.response_models.AccountResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.repositories.AccountOrderRepo;
 import com.js1802_team5.diamondShop.repositories.AccountRepo;
@@ -11,7 +12,9 @@ import com.js1802_team5.diamondShop.services.AccountOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +50,29 @@ public class AccountOrderServiceImpl implements AccountOrderService {
         } catch (Exception e) {
             return new Response(null, false, e.getMessage(), 500);
         }
+    }
+
+    public List<AccountResponse> getAccountsByOrderId(Integer orderId) {
+        List<AccountOrder> accountOrders = accountOrderRepo.findByOrderId(orderId);
+        List<Integer> accountIds = accountOrders.stream()
+                .map(accountOrder -> accountOrder.getAccount().getId())
+                .collect(Collectors.toList());
+
+        List<Account> accounts = accountRepo.findByIdIn(accountIds);
+        return accounts.stream()
+                .map(this::convertToAccountResponse)
+                .collect(Collectors.toList());
+    }
+
+    private AccountResponse convertToAccountResponse(Account account) {
+        AccountResponse response = new AccountResponse();
+        response.setId(account.getId());
+        response.setUsername(account.getUsername());
+        response.setPass(account.getPassword());
+        response.setFirstName(account.getFirstName());
+        response.setLastName(account.getLastName());
+        response.setActive(account.isActive());
+        response.setRole(account.getRole());
+        return response;
     }
 }
