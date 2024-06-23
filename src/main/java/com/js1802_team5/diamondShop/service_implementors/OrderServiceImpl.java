@@ -322,7 +322,6 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
-    //Update Order status - Sale Staff - Only 2 status:
     @Override
     public Response updateOrderStatus(Integer orderId, String newStatus) {
         Response response = new Response();
@@ -391,6 +390,7 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    //update status from Pending to Confirmed
     @Override
     public Response updateOrderStatusToConfirmed(Integer orderId) {
         Response response = new Response();
@@ -445,6 +445,7 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+    //Update status from Confirmed to Delivering
     @Override
     public Response updateOrderStatusFromConfirmed(Integer orderId, String newStatus) {
         Response response = new Response();
@@ -518,6 +519,8 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
+
+    //Update status from Delivering to Delivred (Customer + Delivery staff)
     public Response updateOrderStatusToDelivered(Integer orderId, boolean isCustomer, boolean isDelivery) {
         Response response = new Response();
 
@@ -570,7 +573,6 @@ public class OrderServiceImpl implements OrderService {
                 response.setMessage("Both customer and delivery staff must confirm to update to 'Delivered'.");
                 response.setStatusCode(400);
             }
-
         } catch (IllegalStateException | IllegalArgumentException e) {
             response.setSuccess(false);
             response.setMessage(e.getMessage());
@@ -580,23 +582,8 @@ public class OrderServiceImpl implements OrderService {
             response.setMessage("Failed to update order status to 'Delivered'.");
             response.setStatusCode(500);
         }
-
         return response;
     }
-
-    private void updateOrderToDelivered(Order order) {
-        // Kiểm tra xem đơn hàng có đang ở trạng thái hợp lệ để cập nhật không
-        String currentStatus = order.getStatusOrder().getStatusName();
-        if (!"Confirmed".equals(currentStatus) && !"Delivering".equals(currentStatus)) {
-            throw new IllegalStateException("Order status must be 'Confirmed' or 'Delivering' to update to 'Delivered'.");
-        }
-
-        // Cập nhật trạng thái đơn hàng lên "Delivered"
-        order.setStatusOrder(statusOrderRepository.findByStatusName("Delivered")
-                .orElseThrow(() -> new IllegalArgumentException("Status 'Delivered' not found")));
-        orderRepository.save(order);
-    }
-
 
     public Response getDeliveredOrders(Integer accountID) {
         Optional<StatusOrder> deliveredStatusOpt = statusOrderRepository.findByStatusName("Delivered");
