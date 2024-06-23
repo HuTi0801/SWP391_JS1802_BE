@@ -3,7 +3,9 @@ package com.js1802_team5.diamondShop.repositories;
 import com.js1802_team5.diamondShop.enums.Role;
 import com.js1802_team5.diamondShop.models.entity_models.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
@@ -23,4 +25,14 @@ public interface AccountRepo extends JpaRepository<Account, Integer> {
     List<Account> findAllByRoles(List<Role> roles);
 
     List<Account> findByIdIn(List<Integer> ids);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.isActive = false WHERE a.id = :id")
+    void banAccountById(Integer id);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.isActive = true WHERE a.id = :id")
+    void unbanAccountById(Integer id);
 }
