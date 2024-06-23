@@ -2,6 +2,7 @@ package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.OrderService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,14 @@ public class OrderController {
     @PostMapping("/update-order-status-from-confirmed/{orderId}")
     public Response updateOrderStatusFromConfirmed(@PathVariable Integer orderId, @RequestParam String newStatus) {
         return orderService.updateOrderStatusFromConfirmed(orderId, newStatus);
+    }
+
+    @PostMapping("/update-order-status-to-delivered/{orderId}")
+    public Response updateOrderStatusToDelivered(
+            @PathVariable Integer orderId,
+            @RequestParam boolean isCustomer,
+            @RequestParam boolean isDelivery) {
+        return orderService.updateOrderStatusToDelivered(orderId, isCustomer, isDelivery);
     }
 
     @GetMapping("/view-order-history/{accountId}")

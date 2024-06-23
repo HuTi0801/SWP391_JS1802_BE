@@ -9,6 +9,7 @@ import com.js1802_team5.diamondShop.models.response_models.*;
 import com.js1802_team5.diamondShop.repositories.*;
 import com.js1802_team5.diamondShop.services.CartService;
 import com.js1802_team5.diamondShop.services.OrderService;
+import com.js1802_team5.diamondShop.services.VnPayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private final DiamondRepo diamondRepo;
     private final DiamondShellRepo diamondShellRepo;
     private final AccountOrderRepo accountOrderRepo;
+    private final OrderDetailRepo orderDetailRepo;
 
 
     @Override
@@ -151,7 +153,6 @@ public class OrderServiceImpl implements OrderService {
         }
         return response;
     }
-
     @Override
     public Response getAllOrder() {
         Response response = new Response();
@@ -270,16 +271,33 @@ public class OrderServiceImpl implements OrderService {
                 throw new Exception("Orders can only be canceled when in 'Pending' status!");
             }
 
+            // Lấy danh sách các chi tiết đơn hàng của order để hoàn trả số lượng sản phẩm
+            List<OrderDetail> orderDetails = order.getOrderDetailList();
+
+            for (OrderDetail orderDetail : orderDetails) {
+                if (orderDetail.getDiamond() != null) {
+                    Diamond diamond = diamondRepo.findById(orderDetail.getDiamond().getId())
+                            .orElseThrow(() -> new Exception("Diamond not found"));
+                    diamond.setQuantity(diamond.getQuantity() + orderDetail.getQuantity());
+                    diamondRepo.save(diamond);
+                } else if (orderDetail.getDiamondShell() != null) {
+                    DiamondShell diamondShell = diamondShellRepo.findById(orderDetail.getDiamondShell().getId())
+                            .orElseThrow(() -> new Exception("Diamond shell not found"));
+                    diamondShell.setQuantity(diamondShell.getQuantity() + orderDetail.getQuantity());
+                    diamondShellRepo.save(diamondShell);
+                }
+            }
+
             // Thay đổi giá trị isCancel thành true
             order.setCancel(true);
             order.setDescription(description);
 
-            //Tìm trạng thái Cancel
+            // Tìm trạng thái Cancel
             StatusOrder cancelStatus = statusOrderRepository.findByStatusName("Cancel")
-                    .orElseThrow(() -> new Exception(("Status 'Cancel' is not existed")));
+                    .orElseThrow(() -> new Exception("Status 'Cancel' is not existed"));
             order.setStatusOrder(cancelStatus);
 
-            //Change date
+            // Change date
             DateStatusOrder dateStatusOrder = DateStatusOrder.builder()
                     .order(order)
                     .status(cancelStatus.getStatusName())
@@ -500,76 +518,86 @@ public class OrderServiceImpl implements OrderService {
         return response;
     }
 
-//    @Override
-//    public Response updateOrderStatusFromConfirmed(Integer orderId, String newStatus) {
-//        Response response = new Response();
-//        try {
-//            // Lấy thông tin người dùng hiện tại từ SecurityContext
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            String userRole = authentication.getAuthorities().iterator().next().getAuthority();
-//
-//            Order order = orderRepository.findById(orderId)
-//                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-//
-//            // Kiểm tra trạng thái hiện tại của đơn hàng
-//            String currentStatus = order.getStatusOrder().getStatusName();
-//
-//            // Kiểm tra trạng thái "Cancel"
-//            if ("Cancel".equals(currentStatus)) {
-//                throw new IllegalStateException("Cannot update order. The order is already canceled!");
-//            }
-//
-//            // Kiểm tra nếu trạng thái mới không hợp lệ
-//            List<String> validStatusOrder = Arrays.asList("Confirmed", "Delivering", "Delivered");
-//            if (!validStatusOrder.contains(newStatus)) {
-//                throw new IllegalArgumentException("Invalid status: " + newStatus);
-//            }
-//
-//            // Cập nhật trạng thái dựa trên vai trò người dùng
-//            if ("ROLE_CUSTOMER".equalsIgnoreCase(userRole)) {
-//                order.setCustomerStatus(newStatus);
-//            } else if ("ROLE_DELIVERY_STAFF".equalsIgnoreCase(userRole)) {
-//                order.setDeliveryStatus(newStatus);
-//            } else {
-//                throw new IllegalArgumentException("Invalid user role: " + userRole);
-//            }
-//
-//            // Kiểm tra nếu cả hai trạng thái của customer và delivery đều là "Delivered"
-//            if ("Delivered".equals(order.getCustomerStatus()) && "Delivered".equals(order.getDeliveryStatus())) {
-//                // Lấy trạng thái mới và set vào Order
-//                StatusOrder statusOrder = statusOrderRepository.findByStatusName("Delivered")
-//                        .orElseThrow(() -> new IllegalArgumentException("Status not found"));
-//                order.setStatusOrder(statusOrder);
-//
-//                // Tạo và lưu DateStatusOrder cho trạng thái mới
-//                DateStatusOrder dateStatusOrder = DateStatusOrder.builder()
-//                        .dateStatus(new Date())
-//                        .status("Delivered")
-//                        .order(order)
-//                        .build();
-//                dateStatusOrderRepo.save(dateStatusOrder);
-//            }
-//
-//            // Lưu Order vào DB
-//            order = orderRepository.save(order);
-//
-//            OrderResponse orderResponse = orderMapper.toOrderResponse(order);
-//            response.setSuccess(true);
-//            response.setMessage("Order status updated successfully!");
-//            response.setStatusCode(200);
-//            response.setResult(orderResponse);
-//
-//        } catch (IllegalStateException e) {
-//            response.setSuccess(false);
-//            response.setMessage(e.getMessage());
-//            response.setStatusCode(400);
-//        } catch (Exception e) {
-//            response.setSuccess(false);
-//            response.setMessage(e.getMessage());
-//            response.setStatusCode(500);
-//        }
-//        return response;
-//    }
+    public Response updateOrderStatusToDelivered(Integer orderId, boolean isCustomer, boolean isDelivery) {
+        Response response = new Response();
+
+        try {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+            // Kiểm tra trạng thái hiện tại của đơn hàng
+            String currentStatus = order.getStatusOrder().getStatusName();
+
+            // Check if current status is "Delivering"
+            if (!"Delivering".equals(currentStatus)) {
+                throw new IllegalStateException("Order status must be 'Delivering' to update to 'Delivered'.");
+            }
+
+            // Update the flags based on the input
+            if (isCustomer) {
+                order.setCustomerDelivered(true);
+            }
+            if (isDelivery) {
+                order.setDeliveryDelivered(true);
+            }
+
+            // Check if both conditions are met
+            if (order.isCustomerDelivered() && order.isDeliveryDelivered()) {
+                // Lấy trạng thái "Delivered"
+                StatusOrder deliveredStatus = statusOrderRepository.findByStatusName("Delivered")
+                        .orElseThrow(() -> new IllegalArgumentException("Status 'Delivered' not found"));
+
+                // Cập nhật trạng thái đơn hàng
+                order.setStatusOrder(deliveredStatus);
+
+                // Tạo và lưu DateStatusOrder cho trạng thái mới
+                DateStatusOrder dateStatusOrder = DateStatusOrder.builder()
+                        .dateStatus(new Date())
+                        .status("Delivered")
+                        .order(order)
+                        .build();
+                dateStatusOrderRepo.save(dateStatusOrder);
+
+                response.setSuccess(true);
+                response.setMessage("Order status updated to 'Delivered' successfully!");
+                response.setStatusCode(200);
+                response.setResult(orderMapper.toOrderResponse(order));
+            } else {
+                // Save the updated order without changing the status
+                orderRepository.save(order);
+
+                response.setSuccess(false);
+                response.setMessage("Both customer and delivery staff must confirm to update to 'Delivered'.");
+                response.setStatusCode(400);
+            }
+
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(400);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Failed to update order status to 'Delivered'.");
+            response.setStatusCode(500);
+        }
+
+        return response;
+    }
+
+    private void updateOrderToDelivered(Order order) {
+        // Kiểm tra xem đơn hàng có đang ở trạng thái hợp lệ để cập nhật không
+        String currentStatus = order.getStatusOrder().getStatusName();
+        if (!"Confirmed".equals(currentStatus) && !"Delivering".equals(currentStatus)) {
+            throw new IllegalStateException("Order status must be 'Confirmed' or 'Delivering' to update to 'Delivered'.");
+        }
+
+        // Cập nhật trạng thái đơn hàng lên "Delivered"
+        order.setStatusOrder(statusOrderRepository.findByStatusName("Delivered")
+                .orElseThrow(() -> new IllegalArgumentException("Status 'Delivered' not found")));
+        orderRepository.save(order);
+    }
+
+
     public Response getDeliveredOrders(Integer accountID) {
         Optional<StatusOrder> deliveredStatusOpt = statusOrderRepository.findByStatusName("Delivered");
         if (deliveredStatusOpt.isPresent()) {
