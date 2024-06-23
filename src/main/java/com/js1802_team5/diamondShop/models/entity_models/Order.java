@@ -35,9 +35,10 @@ public class Order {
     private Date warrantyEndDate;
     private boolean isCancel;
     private String description;
-
-//    private String customerStatus;
-//    private String deliveryStatus;
+    @Column(name = "is_customer_delivered")
+    private boolean isCustomerDelivered;
+    @Column(name = "is_delivery_delivered")
+    private boolean isDeliveryDelivered;
 
     @OneToMany(mappedBy = "order")
     @JsonManagedReference
