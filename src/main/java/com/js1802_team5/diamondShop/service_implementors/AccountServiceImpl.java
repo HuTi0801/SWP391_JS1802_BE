@@ -338,4 +338,56 @@ public class AccountServiceImpl implements AccountService {
         }
         return null;
     }
+
+    @Override
+    public Response banAccount(Integer id) {
+        var response = new Response();
+        try {
+            var account = accountRepo.findById(id);
+            if (account.isPresent()) {
+                accountRepo.banAccountById(id);
+                response.setMessage("Account banned successfully!");
+                response.setResult(null);
+                response.setSuccess(true);
+                response.setStatusCode(200);
+            } else {
+                response.setMessage("Account not found!");
+                response.setResult(id);
+                response.setSuccess(false);
+                response.setStatusCode(404);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
+    }
+
+    @Override
+    public Response unbanAccount(Integer id) {
+        var response = new Response();
+        try {
+            var account = accountRepo.findById(id);
+            if (account.isPresent()) {
+                accountRepo.unbanAccountById(id);
+                response.setMessage("Account unbanned successfully!");
+                response.setResult(null);
+                response.setSuccess(true);
+                response.setStatusCode(200);
+            } else {
+                response.setMessage("Account not found!");
+                response.setResult(id);
+                response.setSuccess(false);
+                response.setStatusCode(404);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
+    }
 }

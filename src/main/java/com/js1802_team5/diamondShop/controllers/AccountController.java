@@ -114,4 +114,14 @@ public class AccountController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/ban-account/{id}")
+    public Response banAccount(@PathVariable Integer id) {
+        return accountService.banAccount(id);
+    }
+
+    @PostMapping("/unban-account/{id}")
+    public Response unbanAccount(@PathVariable Integer id) {
+        return accountService.unbanAccount(id);
+    }
 }

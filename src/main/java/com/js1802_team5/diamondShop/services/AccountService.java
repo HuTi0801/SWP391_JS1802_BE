@@ -27,4 +27,8 @@ public interface AccountService {
     AccountResponse getAccountDetails(Integer accountId);
 
     CustomerResponse getCustomerByAccountId(Integer accountId);
+
+    Response banAccount(Integer id);
+
+    Response unbanAccount(Integer id);
 }
