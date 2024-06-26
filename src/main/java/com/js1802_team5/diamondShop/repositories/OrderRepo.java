@@ -13,4 +13,6 @@ public interface OrderRepo extends JpaRepository<Order, Integer> {
 
     @Query("SELECT o FROM Order o JOIN FETCH o.dateStatusOrderList d WHERE d.status = :status")
     List<Order> findOrdersByStatus(@Param("status") String status);
+
+    Order findTopByOrderByIdDesc();
 }
