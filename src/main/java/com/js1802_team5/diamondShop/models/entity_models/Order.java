@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -61,4 +62,17 @@ public class Order {
 
     @OneToMany(mappedBy = "order")
     private List<DateStatusOrder> dateStatusOrderList;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Sử dụng id để tránh vòng lặp
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Order order = (Order) obj;
+        return Objects.equals(id, order.id); // So sánh dựa trên id
+    }
 }
