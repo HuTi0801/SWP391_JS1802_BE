@@ -40,6 +40,12 @@ public class Order {
 
     private String description;
 
+    @Column(name = "is_customer_delivered")
+    private boolean isCustomerDelivered;
+
+    @Column(name = "is_delivery_delivered")
+    private boolean isDeliveryDelivered;
+
 //    private String customerStatus;
 //    private String deliveryStatus;
 
