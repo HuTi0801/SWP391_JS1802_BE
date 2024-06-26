@@ -727,4 +727,16 @@ public class OrderServiceImpl implements OrderService {
             return new Response(null, false, "Delivering status not found", HttpStatus.NOT_FOUND.value());
         }
     }
+
+    @Override
+    public List<OrderResponse> getOrdersByStatus(String statusName) {
+        Optional<StatusOrder> optionalStatusOrder = statusOrderRepository.findByStatusName(statusName);
+        if (optionalStatusOrder.isPresent()) {
+            StatusOrder statusOrder = optionalStatusOrder.get();
+            List<Order> orders = orderRepository.findByStatusOrder(statusOrder);
+            return orders.stream().map(orderMapper::toOrderResponse).collect(Collectors.toList());
+        } else {
+            throw new RuntimeException("Status not found");
+        }
+    }
 }

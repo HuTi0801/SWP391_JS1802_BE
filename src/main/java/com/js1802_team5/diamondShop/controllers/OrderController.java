@@ -1,6 +1,7 @@
 package com.js1802_team5.diamondShop.controllers;
 
 import com.js1802_team5.diamondShop.models.request_models.TransactionRequest;
+import com.js1802_team5.diamondShop.models.response_models.OrderResponse;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth/orders")
@@ -82,5 +84,10 @@ public class OrderController {
     @GetMapping("/view-shipping-order/{accountId}")
     public Response getDeliveringOrders(@PathVariable Integer accountId) {
         return orderService.getDeliveringOrders(accountId);
+    }
+
+    @GetMapping("/get-orders-list-by-status")
+    public List<OrderResponse> getOrdersByStatus(@RequestParam String status) {
+        return orderService.getOrdersByStatus(status);
     }
 }
