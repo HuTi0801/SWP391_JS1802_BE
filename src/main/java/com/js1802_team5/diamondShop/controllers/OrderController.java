@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.controllers;
 
+import com.js1802_team5.diamondShop.models.request_models.TransactionRequest;
 import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.services.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/create-order")
-    public Response createOrder(Integer id, String address, String numberPhone, String cusName, String description) {
-        return orderService.createOrder(id, address, numberPhone, cusName, description);
+    public Response createOrder(Integer id, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest) {
+        return orderService.createOrder(id, address, numberPhone, cusName, description, transactionRequest);
     }
 
     @GetMapping("/get-all-orders")

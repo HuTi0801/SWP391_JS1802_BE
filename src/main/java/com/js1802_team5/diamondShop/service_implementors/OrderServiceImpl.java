@@ -5,6 +5,7 @@ import com.js1802_team5.diamondShop.mappers.OrderMapper;
 import com.js1802_team5.diamondShop.models.entity_models.*;
 import com.js1802_team5.diamondShop.models.request_models.OrderDetailRequest;
 import com.js1802_team5.diamondShop.models.request_models.OrderRequest;
+import com.js1802_team5.diamondShop.models.request_models.TransactionRequest;
 import com.js1802_team5.diamondShop.models.response_models.*;
 import com.js1802_team5.diamondShop.repositories.*;
 import com.js1802_team5.diamondShop.services.CartService;
@@ -30,11 +31,11 @@ public class OrderServiceImpl implements OrderService {
     private final DiamondRepo diamondRepo;
     private final DiamondShellRepo diamondShellRepo;
     private final AccountOrderRepo accountOrderRepo;
-    private final OrderDetailRepo orderDetailRepo;
+    private final TransactionRepo transactionRepo;
 
 
     @Override
-    public Response createOrder(Integer customerId, String address, String numberPhone, String cusName, String description) {
+    public Response createOrder(Integer customerId, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest) {
         Response response = new Response();
         try {
             // Lấy thông tin customer
@@ -123,6 +124,24 @@ public class OrderServiceImpl implements OrderService {
             order.setDateStatusOrderList(dateStatusOrderRepo.findByOrderId(order.getId()));
 
             OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+
+            // Tạo một giao dịch mới và lưu vào cơ sở dữ liệu
+            Transaction transaction = new Transaction();
+            transaction.setPayDate(transactionRequest.getVnp_PayDate());
+            transaction.setTransactionNo(transactionRequest.getVnp_TransactionNo());
+            transaction.setTmnCode(transactionRequest.getVnp_TmnCode());
+            transaction.setSecureHash(transactionRequest.getVnp_SecureHash());
+            transaction.setOrderInfo(transactionRequest.getVnp_OrderInfo());
+            transaction.setTxnRef(transactionRequest.getVnp_TxnRef());
+            transaction.setAmount(transactionRequest.getVnp_Amount());
+            transaction.setCardType(transactionRequest.getVnp_CardType());
+            transaction.setTransactionStatus(transactionRequest.getVnp_TransactionStatus());
+            transaction.setBankTranNo(transactionRequest.getVnp_BankTranNo());
+            transaction.setResponseCode(transactionRequest.getVnp_ResponseCode());
+            transaction.setOrder(order); // Liên kết giao dịch với đơn hàng mới nhất
+
+            transactionRepo.save(transaction);
+
 
             // Cấu hình phản hồi thành công
             response.setSuccess(true);

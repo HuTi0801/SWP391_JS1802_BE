@@ -6,6 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 
 public interface VnPayService {
-    VnPayResponse createPayment(HttpServletRequest request, Integer cusId, long amount, String bankCode, String language) throws UnsupportedEncodingException;
+    VnPayResponse createPayment(HttpServletRequest request, Integer cusId, long amount, String language) throws UnsupportedEncodingException;
     VnPayResponse vnPayReturn(HttpServletRequest request) throws UnsupportedEncodingException;
 }

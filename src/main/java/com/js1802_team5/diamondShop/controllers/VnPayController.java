@@ -18,9 +18,8 @@ public class VnPayController {
     public VnPayResponse createPayment(HttpServletRequest request,
                                        @RequestParam("cusId") Integer cusId,
                                        @RequestParam("amount") long amount,
-                                       @RequestParam("bankCode") String bankCode,
                                        @RequestParam("language") String language) throws UnsupportedEncodingException {
-        return vnPayService.createPayment(request, cusId, amount, bankCode, language);
+        return vnPayService.createPayment(request, cusId, amount, language);
     }
     @GetMapping("/return")
     public VnPayResponse testVnPayReturn(
