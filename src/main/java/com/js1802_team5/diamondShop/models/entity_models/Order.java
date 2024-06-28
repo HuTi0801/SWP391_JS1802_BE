@@ -40,6 +40,7 @@ public class Order {
     private boolean isCancel;
 
     private String description;
+
     @Column(name = "is_customer_delivered")
     private boolean isCustomerDelivered;
     @Column(name = "is_delivery_delivered")

@@ -1,6 +1,7 @@
 package com.js1802_team5.diamondShop.repositories;
 
 import com.js1802_team5.diamondShop.models.entity_models.Order;
+import com.js1802_team5.diamondShop.models.entity_models.StatusOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +16,6 @@ public interface OrderRepo extends JpaRepository<Order, Integer> {
     List<Order> findOrdersByStatus(@Param("status") String status);
 
     Order findTopByOrderByIdDesc();
+
+    List<Order> findByStatusOrder(StatusOrder statusOrder);
 }
