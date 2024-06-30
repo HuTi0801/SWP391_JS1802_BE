@@ -1,5 +1,6 @@
 package com.js1802_team5.diamondShop.service_implementors;
 
+import com.js1802_team5.diamondShop.enums.MemberLevel;
 import com.js1802_team5.diamondShop.enums.ProductType;
 import com.js1802_team5.diamondShop.mappers.OrderMapper;
 import com.js1802_team5.diamondShop.models.entity_models.*;
@@ -124,6 +125,26 @@ public class OrderServiceImpl implements OrderService {
             order.setDateStatusOrderList(dateStatusOrderRepo.findByOrderId(order.getId()));
 
             OrderResponse orderResponse = orderMapper.toOrderResponse(order);
+
+            // Cập nhật điểm khách hàng
+            int newPoints = (int) (customer.getPoint() + (totalPrice / 1000000));
+            customer.setPoint(newPoints);
+
+            // Cập nhật hạng thành viên dựa trên điểm
+            if (newPoints >= 5000) {
+                customer.setMemberLevel(String.valueOf(MemberLevel.PRIVATE));
+            } else if (newPoints >= 1000) {
+                customer.setMemberLevel(String.valueOf(MemberLevel.DIAMOND));
+            } else if (newPoints >= 400) {
+                customer.setMemberLevel(String.valueOf(MemberLevel.PLATINUM));
+            } else if (newPoints >= 100) {
+                customer.setMemberLevel(String.valueOf(MemberLevel.GOLD));
+            } else {
+                customer.setMemberLevel(String.valueOf(MemberLevel.SILVER));
+            }
+
+            // Lưu thông tin khách hàng cập nhật vào cơ sở dữ liệu
+            customerRepository.save(customer);
 
             // Tạo một giao dịch mới và lưu vào cơ sở dữ liệu
             Transaction transaction = new Transaction();

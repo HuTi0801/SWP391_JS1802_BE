@@ -1,6 +1,5 @@
 package com.js1802_team5.diamondShop.controllers;
 
-import com.js1802_team5.diamondShop.models.response_models.Response;
 import com.js1802_team5.diamondShop.models.response_models.TransactionResponse;
 import com.js1802_team5.diamondShop.services.TransactionService;
 import lombok.RequiredArgsConstructor;
