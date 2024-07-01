@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-
     private final OrderRepo orderRepository;
     private final CustomerRepo customerRepository;
     private final CartService cartService;
@@ -33,7 +32,6 @@ public class OrderServiceImpl implements OrderService {
     private final DiamondShellRepo diamondShellRepo;
     private final AccountOrderRepo accountOrderRepo;
     private final TransactionRepo transactionRepo;
-
 
     @Override
     public Response createOrder(Integer customerId, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest) {
@@ -178,6 +176,7 @@ public class OrderServiceImpl implements OrderService {
         }
         return response;
     }
+
     @Override
     public Response getAllOrder() {
         Response response = new Response();
@@ -247,12 +246,10 @@ public class OrderServiceImpl implements OrderService {
                                 .orElse(null);
 
                         List<DateStatusOrderResponse> dateStatusOrderResponses = new ArrayList<>();
-                        if (latestStatusOrder != null) {
-                            dateStatusOrderResponses.add(DateStatusOrderResponse.builder()
-                                    .dateStatus(latestStatusOrder.getDateStatus())
-                                    .status(latestStatusOrder.getStatus())
-                                    .build());
-                        }
+                        dateStatusOrderResponses.add(DateStatusOrderResponse.builder()
+                                .dateStatus(latestStatusOrder.getDateStatus())
+                                .status(latestStatusOrder.getStatus())
+                                .build());
 
                         OrderResponse orderResponse = orderMapper.toOrderResponse(order);
                         orderResponse.setDateStatusOrders(dateStatusOrderResponses);
