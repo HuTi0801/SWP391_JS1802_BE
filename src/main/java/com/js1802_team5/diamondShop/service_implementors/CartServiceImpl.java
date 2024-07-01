@@ -3,6 +3,8 @@ package com.js1802_team5.diamondShop.service_implementors;
 import com.js1802_team5.diamondShop.enums.ProductType;
 import com.js1802_team5.diamondShop.exceptions.ProductNotFoundException;
 import com.js1802_team5.diamondShop.models.entity_models.Customer;
+import com.js1802_team5.diamondShop.models.entity_models.Diamond;
+import com.js1802_team5.diamondShop.models.entity_models.DiamondShell;
 import com.js1802_team5.diamondShop.models.entity_models.Promotion;
 import com.js1802_team5.diamondShop.models.request_models.Product;
 import com.js1802_team5.diamondShop.models.response_models.CartResponse;
@@ -394,9 +396,6 @@ public class CartServiceImpl implements CartService {
                 return response;
             }
 
-            Customer customer = customerOptional.get();
-            String customerMemberLevel = customer.getMemberLevel();
-
             // Kiểm tra nếu khách hàng đã áp dụng khuyến mãi trước đó
             boolean promotionApplied = false;
             for (CartItemResponse item : cart.getItems()) {
@@ -437,5 +436,93 @@ public class CartServiceImpl implements CartService {
         }
 
         return response;
+    }
+
+    @Override
+    public Response refreshCart(int customerID) {
+        Response response = new Response();
+        try {
+            CartResponse cartResponse = getCartByCustomerID(customerID);
+            if (cartResponse == null) {
+                response.setSuccess(false);
+                response.setMessage("Cart not found for customerID: " + customerID);
+                response.setStatusCode(404);
+                response.setResult(null);
+                return response;
+            }
+
+            boolean updated = false;
+            List<String> updatedProducts = new ArrayList<>();
+
+            // Refresh each item in the cart
+            Iterator<CartItemResponse> iterator = cartResponse.getItems().iterator();
+            while (iterator.hasNext()) {
+                CartItemResponse item = iterator.next();
+                Product product = findProductById(item.getProductId(), item.getProductType());
+
+                if (product == null || !isProductAvailable(product) || product.getQuantity() == 0) {
+                    iterator.remove();
+                    updated = true;
+                    if (product == null || !isProductAvailable(product)) {
+                        updatedProducts.add(item.getProductName() + " (Removed: Product not available)");
+                    } else if (product.getQuantity() == 0) {
+                        updatedProducts.add(item.getProductName() + " (Removed: Out of stock)");
+                    }
+                    continue;
+                }
+
+                boolean itemUpdated = false;
+
+                if (!item.getProductName().equals(product.getName())) {
+                    item.setProductName(product.getName());
+                    itemUpdated = true;
+                }
+
+                if (item.getUnitPrice() != product.getPrice()) {
+                    item.setUnitPrice(product.getPrice());
+                    itemUpdated = true;
+                }
+
+                if (item.getQuantity() > product.getQuantity()) {
+                    item.setQuantity(product.getQuantity());
+                    item.setAmount(product.getQuantity() * item.getUnitPrice());
+                    itemUpdated = true;
+                } else {
+                    item.setAmount(item.getQuantity() * item.getUnitPrice());
+                }
+
+                if (itemUpdated) {
+                    updated = true;
+                    updatedProducts.add(item.getProductName());
+                }
+            }
+
+            cartStorage.put(cartResponse.getCartId(), cartResponse);
+
+            if (updated) {
+                response.setMessage("UPDATED! " + String.join(", ", updatedProducts));
+            } else {
+                response.setMessage("NOT UPDATED!");
+            }
+
+            response.setSuccess(true);
+            response.setStatusCode(200);
+            response.setResult(cartResponse);
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setStatusCode(500);
+            response.setResult(null);
+        }
+        return response;
+    }
+
+    private boolean isProductAvailable(Product product) {
+        if (product instanceof Diamond) {
+            return ((Diamond) product).isStatusDiamond();
+        } else if (product instanceof DiamondShell) {
+            return ((DiamondShell) product).isStatusDiamondShell();
+        }
+        return false;
     }
 }
