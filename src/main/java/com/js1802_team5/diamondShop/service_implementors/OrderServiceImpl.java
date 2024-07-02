@@ -33,10 +33,9 @@ public class OrderServiceImpl implements OrderService {
     private final DiamondShellRepo diamondShellRepo;
     private final AccountOrderRepo accountOrderRepo;
     private final TransactionRepo transactionRepo;
-
-
+    private final AccountRepo accountRepo;
     @Override
-    public Response createOrder(Integer customerId, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest) {
+    public Response createOrder(Integer customerId, Integer accountId, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest) {
         Response response = new Response();
         try {
             // Lấy thông tin customer
@@ -160,9 +159,15 @@ public class OrderServiceImpl implements OrderService {
             transaction.setBankTranNo(transactionRequest.getVnp_BankTranNo());
             transaction.setResponseCode(transactionRequest.getVnp_ResponseCode());
             transaction.setOrder(order); // Liên kết giao dịch với đơn hàng mới nhất
-
             transactionRepo.save(transaction);
 
+            //Save information into AccountOrder table
+            Account account = accountRepo.findById(accountId)
+                    .orElseThrow(() -> new Exception("Account not found"));
+            AccountOrder accountOrder = new AccountOrder();
+            accountOrder.setAccount(account);
+            accountOrder.setOrder(order);
+            accountOrderRepo.save(accountOrder);
 
             // Cấu hình phản hồi thành công
             response.setSuccess(true);
