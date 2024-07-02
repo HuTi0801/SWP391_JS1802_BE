@@ -26,7 +26,7 @@ public interface DiamondRepo extends JpaRepository<Diamond, Integer> {
     @Query("UPDATE Diamond d SET d.statusDiamond = false WHERE d.id = :id")
     void softDeleteById(Integer id);
 
-        @Query("SELECT d FROM Diamond d WHERE d.origin = :origin AND d.clarity = :clarity AND d.caratWeight = :caratWeight AND d.price = :price AND d.color = :color AND d.cut = :cut AND d.certificateNumber = :certificateNumber AND d.quantity = :quantity")
+    @Query("SELECT d FROM Diamond d WHERE d.origin = :origin AND d.clarity = :clarity AND d.caratWeight = :caratWeight AND d.price = :price AND d.color = :color AND d.cut = :cut AND d.certificateNumber = :certificateNumber AND d.quantity = :quantity")
     Optional<Diamond> findExactMatch(
             //@Param("name") String name,
             @Param("origin") String origin,
