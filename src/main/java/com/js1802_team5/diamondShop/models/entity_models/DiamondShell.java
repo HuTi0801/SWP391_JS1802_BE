@@ -25,19 +25,11 @@ public class DiamondShell implements Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String name;
-
-    @Column(name = "quantity")
     private int quantity;
-
-    @Column(name = "secondary_stone_type")
     private String secondaryStoneType;
-
     private String material;
-
     private String gender;
-
     private double price;
 
     @Column(name = "image")

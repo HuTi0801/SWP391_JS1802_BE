@@ -45,42 +45,64 @@ DiamondShellServiceImpl implements DiamondShellService {
     public Response createDiamondShell(DiamondShellRequest diamondShellRequest) {
         Response response = new Response();
         try {
-            DiamondShell diamondShell = diamondShellMapper.toDiamond(diamondShellRequest);
+            // Chuyển đổi yêu cầu sang thực thể DiamondShell
+            DiamondShell newDiamondShell = diamondShellMapper.toDiamond(diamondShellRequest);
 
-            // Tìm tài khoản có role là MANAGER
-            List<Account> managers = accountRepo.findByRoleAndIsActiveOrderByUsernameAsc(Role.MANAGER, true);
-            if (managers.isEmpty()) {
-                throw new IllegalArgumentException("No active manager found.");
-            }
-            // Sử dụng tài khoản quản lý đầu tiên tìm được
-            diamondShell.setAccount(managers.get(0));
+            // Kiểm tra xem DiamondShell với các thuộc tính tương tự đã tồn tại chưa
+            Optional<DiamondShell> existingDiamondShellOpt = diamondShellRepo.findExactMatch(
+                    newDiamondShell.getGender(),
+                    newDiamondShell.getMaterial(),
+                    newDiamondShell.getSecondaryStoneType(),
+                    newDiamondShell.getPrice(),
+                    newDiamondShell.getImageDiamondShell(),
+                    newDiamondShell.isStatusDiamondShell()
+            );
 
-            diamondShell.generateName();
-            diamondShell = diamondShellRepo.save(diamondShell);
+            if (existingDiamondShellOpt.isPresent()) {
+                // Nếu đã tồn tại, cập nhật số lượng
+                DiamondShell existingDiamondShell = existingDiamondShellOpt.get();
+                existingDiamondShell.setQuantity(existingDiamondShell.getQuantity() + newDiamondShell.getQuantity());
+                diamondShellRepo.save(existingDiamondShell);
 
-            // Lưu vào bảng SizeDiamondShell
-            List<SizeDiamondShell> sizeDiamondShells = new ArrayList<>();
-            if (diamondShellRequest.getSizeIds() != null && !diamondShellRequest.getSizeIds().isEmpty()) {
-                for (Integer sizeId : diamondShellRequest.getSizeIds()) {
-                    Size size = sizeRepo.findById(sizeId)
-                            .orElseThrow(() -> new IllegalArgumentException("Size not found with id: " + sizeId));
-
-                    SizeDiamondShell sizeDiamondShell = SizeDiamondShell.builder()
-                            .diamondShell(diamondShell)
-                            .size(size)
-                            .build();
-
-                    sizeDiamondShells.add(sizeDiamondShellRepo.save(sizeDiamondShell));
+                response.setMessage("Diamond Shell updated successfully with combined quantity!");
+                response.setResult(convertToDiamondShellResponse(existingDiamondShell));
+            } else {
+                // Nếu không tồn tại, tạo mới Diamond Shell
+                // Tìm tài khoản có vai trò là MANAGER
+                List<Account> managers = accountRepo.findByRoleAndIsActiveOrderByUsernameAsc(Role.MANAGER, true);
+                if (managers.isEmpty()) {
+                    throw new IllegalArgumentException("No active manager found.");
                 }
+                newDiamondShell.setAccount(managers.get(0));
+
+                // Generate name sau khi xác nhận không bị trùng
+                newDiamondShell.generateName();
+
+                newDiamondShell = diamondShellRepo.save(newDiamondShell);
+
+                // Lưu các mục SizeDiamondShell
+                List<SizeDiamondShell> sizeDiamondShells = new ArrayList<>();
+                if (diamondShellRequest.getSizeIds() != null && !diamondShellRequest.getSizeIds().isEmpty()) {
+                    for (Integer sizeId : diamondShellRequest.getSizeIds()) {
+                        Size size = sizeRepo.findById(sizeId)
+                                .orElseThrow(() -> new IllegalArgumentException("Size not found with id: " + sizeId));
+
+                        SizeDiamondShell sizeDiamondShell = SizeDiamondShell.builder()
+                                .diamondShell(newDiamondShell)
+                                .size(size)
+                                .build();
+
+                        sizeDiamondShells.add(sizeDiamondShellRepo.save(sizeDiamondShell));
+                    }
+                }
+                newDiamondShell.setSizeDiamondShellList(sizeDiamondShells);
+
+                DiamondShellResponse diamondShellResponse = convertToDiamondShellResponse(newDiamondShell);
+                response.setMessage("Create diamond shell successfully!");
+                response.setResult(diamondShellResponse);
             }
-            // Cập nhật danh sách SizeDiamondShell trong DiamondShell
-            diamondShell.setSizeDiamondShellList(sizeDiamondShells);
-            DiamondShellResponse diamondShellResponse = convertToDiamondShellResponse(diamondShell);
-            response.setMessage("Create diamond shell successfully!");
-            response.setResult(diamondShellResponse);
             response.setSuccess(true);
             response.setStatusCode(200);
-            // diamondShellRepo.save(toDiamond(diamondShellRequest));
         } catch (Exception e) {
             response.setStatusCode(500);
             response.setSuccess(false);
