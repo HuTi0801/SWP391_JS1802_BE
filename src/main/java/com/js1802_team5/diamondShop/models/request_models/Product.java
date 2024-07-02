@@ -4,5 +4,5 @@ public interface Product {
     Integer getId();
     int getQuantity();
     double getPrice();
-    String getName();//
+    String getName();
 }

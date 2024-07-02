@@ -94,4 +94,10 @@ public class CartController {
     public Response removePromotion(@RequestParam String cartId, @RequestParam Integer customerId) {
         return cartService.removePromotion(cartId, customerId);
     }
+
+    // Endpoint đồng bộ hóa giỏ hàng trước khi thanh toán
+    @PostMapping("/refresh/{customerID}")
+    public Response refreshCart(@PathVariable int customerID) {
+        return cartService.refreshCart(customerID);
+    }
 }
