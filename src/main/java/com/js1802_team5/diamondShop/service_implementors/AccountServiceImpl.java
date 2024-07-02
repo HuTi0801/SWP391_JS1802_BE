@@ -343,13 +343,21 @@ public class AccountServiceImpl implements AccountService {
     public Response banAccount(Integer id) {
         var response = new Response();
         try {
-            var account = accountRepo.findById(id);
-            if (account.isPresent()) {
-                accountRepo.banAccountById(id);
-                response.setMessage("Account banned successfully!");
-                response.setResult(null);
-                response.setSuccess(true);
-                response.setStatusCode(200);
+            var accountOptional = accountRepo.findById(id);
+            if (accountOptional.isPresent()) {
+                var account = accountOptional.get();
+                if (account.getRole() == Role.ADMIN) {  // Kiểm tra vai trò của tài khoản
+                    response.setMessage("Cannot ban an ADMIN account!");
+                    response.setResult(id);
+                    response.setSuccess(false);
+                    response.setStatusCode(403);  // HTTP Status Code for Forbidden
+                } else {
+                    accountRepo.banAccountById(id);
+                    response.setMessage("Account banned successfully!");
+                    response.setResult(null);
+                    response.setSuccess(true);
+                    response.setStatusCode(200);
+                }
             } else {
                 response.setMessage("Account not found!");
                 response.setResult(id);
