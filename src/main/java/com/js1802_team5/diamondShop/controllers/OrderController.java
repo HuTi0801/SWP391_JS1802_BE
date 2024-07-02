@@ -19,8 +19,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/create-order")
-    public Response createOrder(Integer id, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest) {
-        return orderService.createOrder(id, address, numberPhone, cusName, description, transactionRequest);
+    public Response createOrder(Integer customerId, Integer accountId, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest) {
+        return orderService.createOrder(customerId, accountId, address, numberPhone, cusName, description, transactionRequest);
     }
 
     @GetMapping("/get-all-orders")

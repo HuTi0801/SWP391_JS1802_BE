@@ -15,8 +15,6 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class DiamondMapper {
-    private final DiamondRepo diamondRepo;
-    private final AccountRepo accountRepo;
 
     public DiamondRequest toDiamondRequest(Diamond diamond) {
         return DiamondRequest.builder()
@@ -82,7 +80,6 @@ public class DiamondMapper {
     public static DiamondSearchResponse toResponse(Diamond diamond) {
         return DiamondSearchResponse.builder()
                 .id(diamond.getId())
-                .name(diamond.getName())
                 .origin(diamond.getOrigin())
                 .clarity(diamond.getClarity())
                 .caratWeight(diamond.getCaratWeight())

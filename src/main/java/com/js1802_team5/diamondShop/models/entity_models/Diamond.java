@@ -22,24 +22,14 @@ public class Diamond implements Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String name;
-
-    @Column(name = "origin")
     private String origin;
-
     private String clarity;
-
     private float caratWeight;
-
     private double price;
-
     private String color;
-
     private String cut;
-
     private String certificateNumber;
-
     private int quantity;
 
     @Column(name = "image")
