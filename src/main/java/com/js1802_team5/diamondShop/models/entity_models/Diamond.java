@@ -1,9 +1,7 @@
 package com.js1802_team5.diamondShop.models.entity_models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.js1802_team5.diamondShop.models.request_models.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -57,5 +55,4 @@ public class Diamond implements Product {
     public void generateName() {
         this.name = String.format("Diamond %s %s %s %s %s", caratWeight, clarity, color, cut, origin);
     }
-
 }

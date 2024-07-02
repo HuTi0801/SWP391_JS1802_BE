@@ -21,7 +21,6 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "`diamond_shell`")
-
 public class DiamondShell implements Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
