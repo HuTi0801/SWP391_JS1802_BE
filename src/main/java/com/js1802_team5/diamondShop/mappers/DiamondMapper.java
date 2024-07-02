@@ -15,12 +15,11 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class DiamondMapper {
-    private final DiamondRepo diamondRepo;
-    private final AccountRepo accountRepo;
 
     public DiamondRequest toDiamondRequest(Diamond diamond) {
         return DiamondRequest.builder()
                 .id(diamond.getId())
+                .name(diamond.getName())
                 .cut(diamond.getCut())
                 .imageDiamond(diamond.getImageDiamond())
                 .clarity(diamond.getClarity())
@@ -46,6 +45,7 @@ public class DiamondMapper {
     public Diamond toDiamond(DiamondRequest diamondRequest) {
         return Diamond.builder()
                 .id(diamondRequest.getId())
+                .name(diamondRequest.getName())
                 .cut(diamondRequest.getCut())
                 .imageDiamond(diamondRequest.getImageDiamond())
                 .clarity(diamondRequest.getClarity())
@@ -80,7 +80,6 @@ public class DiamondMapper {
     public static DiamondSearchResponse toResponse(Diamond diamond) {
         return DiamondSearchResponse.builder()
                 .id(diamond.getId())
-                .name(diamond.getName())
                 .origin(diamond.getOrigin())
                 .clarity(diamond.getClarity())
                 .caratWeight(diamond.getCaratWeight())
