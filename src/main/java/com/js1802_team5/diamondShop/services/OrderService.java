@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface OrderService {
-    Response createOrder(Integer id, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest);
+    Response createOrder(Integer customerId, Integer accountId, String address, String numberPhone, String cusName, String description, TransactionRequest transactionRequest);
 
     Response getAllOrder();
 

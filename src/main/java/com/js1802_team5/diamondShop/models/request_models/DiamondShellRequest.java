@@ -37,6 +37,5 @@ public class DiamondShellRequest {
 
     private Integer accountId;
     private double min_price;
-
     private double max_price;
 }

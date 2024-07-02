@@ -30,7 +30,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class DiamondShellServiceImpl implements DiamondShellService {
+public class
+DiamondShellServiceImpl implements DiamondShellService {
 
     private final DiamondShellRepo diamondShellRepo;
     private final SizeRepo sizeRepo;
