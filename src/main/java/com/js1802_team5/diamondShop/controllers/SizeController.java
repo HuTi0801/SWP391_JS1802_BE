@@ -6,6 +6,7 @@ import com.js1802_team5.diamondShop.services.SizeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -16,16 +17,15 @@ public class SizeController {
 
     private final  SizeService sizeService;
 
-    //create size
     @PostMapping("/create-size")
+    @PreAuthorize("hasAuthority('manager:create')")
     public Response createSize(@Valid @RequestBody SizeRequest sizeRequest){
         return sizeService.createSize(sizeRequest);
     }
 
-    //get All size
     @GetMapping("/get-all-size")
+    @PreAuthorize("hasAuthority('manager:read')")
     public Response getAllSize(){
         return sizeService.getAllSize();
     }
-
 }

@@ -157,7 +157,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Response updateCart(int customerID, ProductType productType, int productID, int quantity) {
+    public Response updateCart(int customerID, ProductType productType, int productID, int quantity, Integer size) {
         Response response = new Response();
         try {
             CartResponse cartResponse = getCartByCustomerID(customerID);
@@ -173,7 +173,7 @@ public class CartServiceImpl implements CartService {
                     updateDiamondQuantity(cartResponse, productID, quantity);
                     break;
                 case DIAMOND_SHELL:
-                    updateDiamondShellQuantity(cartResponse, productID, quantity);
+                    updateDiamondShellQuantity(cartResponse, productID, quantity, size);
                     break;
                 default:
                     response.setSuccess(false);
@@ -200,25 +200,33 @@ public class CartServiceImpl implements CartService {
         return response;
     }
 
-    @Override
-    public void updateDiamondQuantity(CartResponse cartResponse, int productID, int quantity) {
-        updateProductQuantity(cartResponse, productID, quantity, ProductType.DIAMOND);
+
+    private void updateDiamondQuantity(CartResponse cartResponse, int productID, int quantity) {
+        updateProductQuantity(cartResponse, productID, quantity, ProductType.DIAMOND, null);
     }
 
-    @Override
-    public void updateDiamondShellQuantity(CartResponse cartResponse, int productID, int quantity) {
-        updateProductQuantity(cartResponse, productID, quantity, ProductType.DIAMOND_SHELL);
+
+    private void updateDiamondShellQuantity(CartResponse cartResponse, int productID, int quantity, Integer size) {
+        updateProductQuantity(cartResponse, productID, quantity, ProductType.DIAMOND_SHELL, size);
     }
 
-    @Override
-    public void updateProductQuantity(CartResponse cartResponse, int productID, int quantity, ProductType productType) {
+
+    private void updateProductQuantity(CartResponse cartResponse, int productID, int quantity, ProductType productType, Integer size) {
         Product product = findProductById(productID, productType);
-        Optional<CartItemResponse> optionalProduct = cartResponse.getItems().stream()
-                .filter(item -> item.getProductId() == productID && item.getProductType() == productType)
-                .findFirst();
+        Optional<CartItemResponse> optionalProduct;
+        if (productType == ProductType.DIAMOND_SHELL && size != null) {
+            optionalProduct = cartResponse.getItems().stream()
+                    .filter(item -> item.getProductId() == productID && item.getProductType() == productType && item.getSize() == size)
+                    .findFirst();
+        } else {
+            optionalProduct = cartResponse.getItems().stream()
+                    .filter(item -> item.getProductId() == productID && item.getProductType() == productType)
+                    .findFirst();
+        }
+
         if (optionalProduct.isPresent()) {
             CartItemResponse cartItemResponse = optionalProduct.get();
-            //Check valid quantity
+            // Check valid quantity
             if (quantity > 0 && quantity <= product.getQuantity()) {
                 cartItemResponse.setQuantity(quantity);
                 cartItemResponse.setAmount(cartItemResponse.getUnitPrice() * quantity);
@@ -226,9 +234,10 @@ public class CartServiceImpl implements CartService {
                 throw new IllegalArgumentException("Invalid quantity: " + quantity + " (product quantity not exceed: " + product.getQuantity() + ")");
             }
         } else {
-            throw new IllegalArgumentException("Product not found in cart: productID=" + productID + ", productType=" + productType);
+            throw new IllegalArgumentException("Product not found in cart: productID=" + productID + ", productType=" + productType + (size != null ? ", size=" + size : ""));
         }
     }
+
 
     @Override
     public Response deleteCart(int customerID, int productID, ProductType productType) {

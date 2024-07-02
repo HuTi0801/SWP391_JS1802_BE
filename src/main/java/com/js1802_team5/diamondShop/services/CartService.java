@@ -10,10 +10,7 @@ public interface CartService {
     Response addToCart(int productID, ProductType productType, int customerID, Integer size);
     CartResponse getCartByCustomerID(int customerID);
     Product findProductById(int productID, ProductType productType);
-    Response updateCart(int customerID, ProductType productType, int productID, int quantity);
-    void updateDiamondQuantity(CartResponse cartResponse, int productID, int quantity);
-    void updateDiamondShellQuantity(CartResponse cartResponse, int productID, int quantity);
-    void updateProductQuantity(CartResponse cartResponse, int productID, int quantity, ProductType productType);
+    Response updateCart(int customerID, ProductType productType, int productID, int quantity, Integer size);
     Response deleteCart(int customerID, int productID, ProductType productType);
     void resetCart(int customerID);
     Response applyPromotion(String cartId, String promotionCode, Integer customerID);
