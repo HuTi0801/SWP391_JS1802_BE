@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -25,26 +26,26 @@ public class DiamondShellController {
 
     private final DiamondShellService diamondShellService;
 
-    //Create diamond shell
     @PostMapping("/create-diamond-shell")
+    @PreAuthorize("hasAuthority('manager:create')")
     public Response createDiamondShell(@Valid @RequestBody DiamondShellRequest diamondShellRequest){
         return diamondShellService.createDiamondShell(diamondShellRequest);
     }
 
-    //Get all diamond shell
     @GetMapping("/get-all-diamond-shell")
+    @PreAuthorize("hasAuthority('manager:read')")
     public Response getAllDiamondShell(){
         return diamondShellService.getAllDiamondShell();
     }
 
-    //Get a diamond shell by id
     @GetMapping("/get-a-diamond-shell-{id}")
+    @PreAuthorize("hasAuthority('manager:read')")
     public Response getADiamondShell(@PathVariable Integer id) {
         return diamondShellService.getADiamondShell(id);
     }
 
-    //Search diamond shell
     @PostMapping("/search-diamond-shell")
+    @PreAuthorize("hasAuthority('customer:delete')")
     public List<DiamondShellResponse> searchDiamondShell(@RequestBody DiamondShellSearchRequest diamondShellSearchRequest) {
         List<DiamondShell> diamondShells = diamondShellService.searchDiamondShell(diamondShellSearchRequest);
         return diamondShells.stream()
@@ -53,17 +54,19 @@ public class DiamondShellController {
     }
 
     @PostMapping("/update-diamond-shell-{id}")
+    @PreAuthorize("hasAuthority('manager:update')")
     public Response updateDiamondShell(@PathVariable Integer id, @RequestBody DiamondShellRequest updateDiamondShellRequest) {
         return diamondShellService.updateDiamondShell(id, updateDiamondShellRequest);
     }
 
-    //Delete diamondShell
     @PostMapping("/remove-diamond-shell-{id}")
+    @PreAuthorize("hasAuthority('manager:delete')")
     public Response removeDiamondShell(@PathVariable Integer id) {
         return diamondShellService.removeDiamondShell(id);
     }
 
     @GetMapping("/attributes")
+    @PreAuthorize("hasAuthority('manager:read')")
     public ResponseEntity<Response> getDiamondShellAttributes() {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("materials", diamondShellService.getAllMaterials());
@@ -79,6 +82,7 @@ public class DiamondShellController {
     }
 
     @GetMapping("/get-diamond-shell-names")
+    @PreAuthorize("hasAuthority('manager:read')")
     public ResponseEntity<List<String>> getAllDiamondShellNames() {
         List<String> diamondShellNames = diamondShellService.getAllDiamondShellNames();
         return ResponseEntity.status(HttpStatus.OK).body(diamondShellNames);

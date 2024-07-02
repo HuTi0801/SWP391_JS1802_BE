@@ -8,6 +8,7 @@ import com.js1802_team5.diamondShop.services.DiamondService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -24,44 +25,45 @@ public class DiamondController {
 
     private final DiamondService diamondService;
 
-    //create diamond
     @PostMapping("/create-diamond")
+    @PreAuthorize("hasAuthority('manager:create')")
     public Response createDiamond(@Valid @RequestBody DiamondRequest diamondRequest) {
         return diamondService.createDiamond(diamondRequest);
     }
 
-    //get all diamond
     @GetMapping("/get-all-diamond")
+    @PreAuthorize("hasAuthority('manager:read')")
     public Response getAllDiamond(){
         return diamondService.getAllDiamond();
     }
 
-    //Get A Diamond by id
     @GetMapping("/get-a-diamond-{id}")
+    @PreAuthorize("hasAuthority('manager:read')")
     public Response getADiamond(@PathVariable Integer id) {
         return diamondService.getADiamond(id);
     }
 
-    //Search diamond
     @PostMapping("/search")
+    @PreAuthorize("hasAuthority('customer:read')")
     public ResponseEntity<List<DiamondSearchResponse>> searchDiamonds(@RequestBody DiamondSearchRequest request) {
         List<DiamondSearchResponse> results = diamondService.searchDiamond(request);
         return ResponseEntity.ok(results);
     }
 
-    //Update diamond
     @PostMapping("/update-diamond-{id}")
+    @PreAuthorize("hasAuthority('manager:update')")
     public Response updateDiamond(@PathVariable Integer id, @RequestBody DiamondRequest updateDiamondRequest) {
         return diamondService.updateDiamond(id, updateDiamondRequest);
     }
 
-    //Delete diamond
     @PostMapping("/remove-diamond-{id}")
+    @PreAuthorize("hasAuthority('manager:delete')")
     public Response removeDiamond(@PathVariable Integer id) {
         return diamondService.removeDiamond(id);
     }
 
     @GetMapping("/attributes")
+    @PreAuthorize("hasAuthority('manager:read')")
     public ResponseEntity<Response> getDiamondAttributes() {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("origins", diamondService.getAllOrigins());
@@ -80,6 +82,7 @@ public class DiamondController {
     }
 
     @GetMapping("/get-diamond-names")
+    @PreAuthorize("hasAuthority('manager:read')")
     public ResponseEntity<List<String>> getAllDiamondNames() {
         List<String> diamondNames = diamondService.getAllDiamondNames();
         return ResponseEntity.status(HttpStatus.OK).body(diamondNames);
