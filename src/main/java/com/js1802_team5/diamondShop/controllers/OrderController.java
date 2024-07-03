@@ -31,10 +31,20 @@ public class OrderController {
         return orderService.getAllOrder();
     }
 
-    @GetMapping("/get-order-{id}")
+    @GetMapping("/get-all-orders-{customerId}")
+    public Response getAllOrderByCustomerId(@PathVariable Integer customerId) {
+        return orderService.getAllOrderByCustomerId(customerId);
+    }
+
+    @GetMapping("/get-all-orders-by-{staffId}")
+    public Response getAllOrderByStaffId(@PathVariable Integer staffId) {
+        return orderService.getAllOrderByStaffAccount(staffId);
+    }
+
+    @GetMapping("/get-order-{orderId}")
     @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read')")
-    public Response getOrder(@PathVariable Integer id) {
-        return orderService.getOrder(id);
+    public Response getOrder(@PathVariable Integer orderId) {
+        return orderService.getOrder(orderId);
     }
 
     @GetMapping("/get-order-statusName")
