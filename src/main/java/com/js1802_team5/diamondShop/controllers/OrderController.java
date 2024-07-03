@@ -32,11 +32,13 @@ public class OrderController {
     }
 
     @GetMapping("/get-all-orders-{customerId}")
+    @PreAuthorize("hasAuthority('customer:read')")
     public Response getAllOrderByCustomerId(@PathVariable Integer customerId) {
         return orderService.getAllOrderByCustomerId(customerId);
     }
 
     @GetMapping("/get-all-orders-by-{staffId}")
+    @PreAuthorize("hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read')")
     public Response getAllOrderByStaffId(@PathVariable Integer staffId) {
         return orderService.getAllOrderByStaffAccount(staffId);
     }
