@@ -98,7 +98,7 @@ public class AccountController {
     }
 
     @GetMapping("/view-account-details/{accountId}")
-    @PreAuthorize("hasAuthority('admin:read')")
+    @PreAuthorize("hasAuthority('customer:read') or hasAuthority('manager:read') or hasAuthority('admin:read') or hasAuthority('deliveryStaff:read') or hasAuthority('saleStaff:read')")
     public ResponseEntity<Response> viewAccountDetails(@PathVariable Integer accountId) {
         AccountResponse accountResponse = accountService.getAccountDetails(accountId);
 
