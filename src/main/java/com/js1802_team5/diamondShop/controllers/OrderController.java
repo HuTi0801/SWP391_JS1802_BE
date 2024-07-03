@@ -27,7 +27,7 @@ public class OrderController {
     }
 
     @GetMapping("/get-all-orders")
-    @PreAuthorize("hasAuthority('manager:read')")
+    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read') or hasAuthority('customer:read')")
     public Response getAllOrder() {
         return orderService.getAllOrder();
     }
