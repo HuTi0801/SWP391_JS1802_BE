@@ -13,7 +13,11 @@ public interface OrderService {
 
     Response getAllOrder();
 
-    Response getOrder(Integer id);
+    Response getOrder(Integer orderId);
+
+    Response getAllOrderByStaffAccount(Integer staffId);
+
+    Response getAllOrderByCustomerId(Integer customerId);
 
     Response getOrderByStatus(String status);
 
