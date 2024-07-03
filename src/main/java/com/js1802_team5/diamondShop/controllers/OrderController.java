@@ -28,9 +28,19 @@ public class OrderController {
         return orderService.getAllOrder();
     }
 
-    @GetMapping("/get-order-{id}")
-    public Response getOrder(@PathVariable Integer id) {
-        return orderService.getOrder(id);
+    @GetMapping("/get-all-orders-{customerId}")
+    public Response getAllOrderByCustomerId(@PathVariable Integer customerId) {
+        return orderService.getAllOrderByCustomerId(customerId);
+    }
+
+    @GetMapping("/get-all-orders-by-{staffId}")
+    public Response getAllOrderByStaffId(@PathVariable Integer staffId) {
+        return orderService.getAllOrderByStaffAccount(staffId);
+    }
+
+    @GetMapping("/get-order-{orderId}")
+    public Response getOrder(@PathVariable Integer orderId) {
+        return orderService.getOrder(orderId);
     }
 
     @GetMapping("/get-order-statusName")
