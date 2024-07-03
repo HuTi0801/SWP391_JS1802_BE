@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/auth/orders")
 @RequiredArgsConstructor
 public class OrderController {
+
     private final OrderService orderService;
 
     @PostMapping("/create-order")
@@ -26,13 +27,13 @@ public class OrderController {
     }
 
     @GetMapping("/get-all-orders")
-    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read')")
+    @PreAuthorize("hasAuthority('manager:read')")
     public Response getAllOrder() {
         return orderService.getAllOrder();
     }
 
     @GetMapping("/get-order-{id}")
-    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read')")
+    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read') or hasAuthority('customer:read')")
     public Response getOrder(@PathVariable Integer id) {
         return orderService.getOrder(id);
     }
