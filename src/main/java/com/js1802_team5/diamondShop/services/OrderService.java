@@ -23,8 +23,6 @@ public interface OrderService {
 
     Response cancelOrder(Integer id, String description);
 
-    Response updateOrderStatus(Integer orderId, String newStatus);
-
     Response updateOrderStatusToConfirmed(Integer orderId);
 
     Response updateOrderStatusFromConfirmed(Integer orderId, String newStatus);

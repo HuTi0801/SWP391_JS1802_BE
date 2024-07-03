@@ -14,7 +14,6 @@ import java.util.List;
 public class SizeDiamondShellController {
     private final SizeDiamondShellService sizeDiamondShellService;
     @GetMapping("/{diamondShellId}")
-    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('customer:read') ")
     public ResponseEntity<List<Integer>> getSizesByDiamondShellId(@PathVariable int diamondShellId) {
         List<Integer> sizes = sizeDiamondShellService.getSizesByDiamondShellId(diamondShellId);
         return ResponseEntity.ok(sizes);

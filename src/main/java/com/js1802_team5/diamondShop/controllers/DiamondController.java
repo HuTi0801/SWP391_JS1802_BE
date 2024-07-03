@@ -60,7 +60,6 @@ public class DiamondController {
     }
 
     @GetMapping("/attributes")
-    @PreAuthorize("hasAuthority('manager:read')")
     public ResponseEntity<Response> getDiamondAttributes() {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("origins", diamondService.getAllOrigins());
