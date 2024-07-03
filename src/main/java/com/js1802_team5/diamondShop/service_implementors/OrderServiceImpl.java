@@ -209,10 +209,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Response getOrder(Integer id) {
+    public Response getOrder(Integer orderId) {
         Response response = new Response();
         try {
-            var orders = orderRepository.findById(id);
+            var orders = orderRepository.findById(orderId);
             if (orders.isEmpty()) {
                 response.setSuccess(false);
                 response.setMessage("There are no order!");
@@ -234,11 +234,60 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Response getAllOrderByStaffAccount(Integer staffId) {
+        Response response = new Response();
+        try {
+            List<Order> orders = orderRepository.findByAccountOrderList_Account_Id(staffId);
+            if (orders.isEmpty()) {
+                response.setSuccess(false);
+                response.setMessage("There are no orders for this account!");
+                response.setStatusCode(404);
+                response.setResult(null);
+            } else {
+                response.setMessage("Get orders successfully!");
+                response.setResult(orderMapper.toListOrderResponse(orders));
+                response.setSuccess(true);
+                response.setStatusCode(200);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
+    }
+
+    @Override
+    public Response getAllOrderByCustomerId(Integer customerId) {
+        Response response = new Response();
+        try {
+            List<Order> orders = orderRepository.findByCustomer_Id(customerId);
+            if (orders.isEmpty()) {
+                response.setSuccess(false);
+                response.setMessage("There are no orders for this customer!");
+                response.setStatusCode(404);
+                response.setResult(null);
+            } else {
+                response.setMessage("Get orders successfully!");
+                response.setResult(orderMapper.toListOrderResponse(orders));
+                response.setSuccess(true);
+                response.setStatusCode(200);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(500);
+            response.setSuccess(false);
+            response.setMessage(e.getMessage());
+            response.setResult(null);
+        }
+        return response;
+    }
+
+    @Override
     public Response getOrderByStatus(String status) {
         Response response = new Response();
         try {
             List<Order> orders = orderRepository.findAll(); // Lấy tất cả các đơn hàng trước
-
             List<OrderResponse> filteredOrders = orders.stream()
                     .filter(order -> {
                         DateStatusOrder latestStatusOrder = order.getDateStatusOrderList().stream()
