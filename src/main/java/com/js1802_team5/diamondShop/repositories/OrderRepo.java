@@ -18,4 +18,8 @@ public interface OrderRepo extends JpaRepository<Order, Integer> {
     Order findTopByOrderByIdDesc();
 
     List<Order> findByStatusOrder(StatusOrder statusOrder);
+
+    List<Order> findByCustomer_Id(Integer customerId);
+
+    List<Order> findByAccountOrderList_Account_Id(Integer accountId);
 }
