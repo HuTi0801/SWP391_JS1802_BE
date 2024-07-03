@@ -7,6 +7,7 @@ import com.js1802_team5.diamondShop.services.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -26,9 +27,9 @@ public class AccountController {
         Response response = accountService.login(username, password);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
-
-    @PostMapping("/logout")
     //Bearer <token>
+    @PostMapping("/logout")
+    @PreAuthorize("hasAuthority('customer:read') or hasAuthority('manager:read') or hasAuthority('admin:read') or hasAuthority('deliveryStaff:read') or hasAuthority('saleStaff:read')")
     public ResponseEntity<Response> logout(@RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null || token.isEmpty()) {
             Response response = Response.builder()
@@ -48,6 +49,7 @@ public class AccountController {
     }
 
     @PostMapping("/forgetPassword")
+    @PreAuthorize("hasAuthority('customer:create') or hasAuthority('admin:create')")
     public ResponseEntity<Response> forgetPassword(@RequestParam("phone") String phone,
                                                    @RequestParam("newPassword") String newPassword) {
         Response response = accountService.forgetPassword(phone, newPassword);
@@ -65,17 +67,20 @@ public class AccountController {
     }
 
     @GetMapping("/get-active-sale-staff-and-order-counts-list")
+    @PreAuthorize("hasAuthority('manager:read')")
     public List<Map<String, Object>> getActiveSaleStaffWithOrderCounts() {
         return accountService.getActiveSaleStaffWithOrderCounts();
     }
 
     @GetMapping("/get-active-delivery-staff-and-order-counts-list")
+    @PreAuthorize("hasAuthority('manager:read')")
     public List<Map<String, Object>> getActiveDeliveryStaffWithOrderCounts() {
         return accountService.getActiveDeliveryStaffWithOrderCounts();
     }
 
 
     @GetMapping("/view-accounts-list")
+    @PreAuthorize("hasAuthority('admin:read')")
     public ResponseEntity<Response> viewAccountList(
             @RequestParam(value = "role", required = false) Role role,
             @RequestParam(value = "status", required = false) String status) {
@@ -93,6 +98,7 @@ public class AccountController {
     }
 
     @GetMapping("/view-account-details/{accountId}")
+    @PreAuthorize("hasAuthority('customer:read') or hasAuthority('manager:read') or hasAuthority('admin:read') or hasAuthority('deliveryStaff:read') or hasAuthority('saleStaff:read')")
     public ResponseEntity<Response> viewAccountDetails(@PathVariable Integer accountId) {
         AccountResponse accountResponse = accountService.getAccountDetails(accountId);
 
@@ -116,11 +122,13 @@ public class AccountController {
     }
 
     @PostMapping("/ban-account/{id}")
+    @PreAuthorize("hasAuthority('admin:update')")
     public Response banAccount(@PathVariable Integer id) {
         return accountService.banAccount(id);
     }
 
     @PostMapping("/unban-account/{id}")
+    @PreAuthorize("hasAuthority('admin:update')")
     public Response unbanAccount(@PathVariable Integer id) {
         return accountService.unbanAccount(id);
     }

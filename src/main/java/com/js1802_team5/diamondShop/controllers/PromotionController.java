@@ -5,6 +5,7 @@ import com.js1802_team5.diamondShop.services.PromotionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -18,6 +19,7 @@ import java.util.List;
 public class PromotionController {
     private final PromotionService promotionService;
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('manager:create')")
     public ResponseEntity<Response> addPromotion(@RequestParam String promotionName,
                                                  @RequestParam String description,
                                                  @RequestParam float discountPercent,
@@ -44,17 +46,20 @@ public class PromotionController {
     }
 
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('manager:delete')")
     public ResponseEntity<Response> deletePromotion(@PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(promotionService.deletePromotion(id));
     }
 
     @GetMapping("/get-promotions-list")
+    @PreAuthorize("hasAuthority('manager:read')")
     public Response getPromotionList() {
         return promotionService.getPromotionList();
     }
 
     @GetMapping("/view-promotion/{promotionId}")
+    @PreAuthorize("hasAuthority('manager:read')")
     public Response getPromotionDetails(@PathVariable Integer promotionId) {
         return promotionService.getPromotionDetails(promotionId);
     }

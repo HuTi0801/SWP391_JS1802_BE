@@ -21,7 +21,7 @@ public class CartController {
     public final CartService cartService;
 
     @PostMapping("/add-to-cart")
-//    @PreAuthorize("hasAuthority('customer:create')")
+    @PreAuthorize("hasAuthority('customer:create')")
     public ResponseEntity<Map<String, Object>> addToCart(@RequestParam("productID") int productID,
                                                          @RequestParam("productType") ProductType productType,
                                                          @RequestParam("customerID") int customerID,
@@ -40,6 +40,7 @@ public class CartController {
     }
 
     @PostMapping("/get-cart-by-customer-id/{customerID}")
+    @PreAuthorize("hasAuthority('customer:read')")
     public ResponseEntity<?> getCartByCustomerID(@PathVariable int customerID) {
         if (cartService.getCartByCustomerID(customerID) != null)
             return ResponseEntity.ok(cartService.getCartByCustomerID(customerID));
@@ -47,12 +48,14 @@ public class CartController {
     }
 
     @PostMapping("/update-cart")
+    @PreAuthorize("hasAuthority('customer:update')")
     public ResponseEntity<?> updateCart(
             @RequestParam("customerID") int customerID,
             @RequestParam("productType") ProductType productType,
             @RequestParam("productID") int productID,
-            @RequestParam("quantity") int quantity) {
-        Response serviceResponse = cartService.updateCart(customerID, productType, productID, quantity);
+            @RequestParam("quantity") int quantity,
+            @RequestParam(value = "size", required = false) Integer size) {
+        Response serviceResponse = cartService.updateCart(customerID, productType, productID, quantity, size);
         if (serviceResponse.isSuccess()) {
             return ResponseEntity.ok(serviceResponse.getResult());
         } else {
@@ -63,6 +66,7 @@ public class CartController {
     }
 
     @PostMapping("/delete-cart-item")
+    @PreAuthorize("hasAuthority('customer:delete')")
     public ResponseEntity<?> deleteCartItem(
             @RequestParam("customerID") int customerID,
             @RequestParam("productID") int productID,
@@ -85,18 +89,20 @@ public class CartController {
     }
 
     @PostMapping("/apply-promotion")
+    @PreAuthorize("hasAuthority('customer:create')")
     public ResponseEntity<Response> applyPromotion(@RequestParam String cartId, @RequestParam String promotionCode, @RequestParam Integer customerID) {
         Response response = cartService.applyPromotion(cartId, promotionCode, customerID);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @PostMapping("/remove-applying-promotion-code")
+    @PreAuthorize("hasAuthority('customer:delete')")
     public Response removePromotion(@RequestParam String cartId, @RequestParam Integer customerId) {
         return cartService.removePromotion(cartId, customerId);
     }
 
-    // Endpoint đồng bộ hóa giỏ hàng trước khi thanh toán
     @PostMapping("/refresh/{customerID}")
+    @PreAuthorize("hasAuthority('customer:read')")
     public Response refreshCart(@PathVariable int customerID) {
         return cartService.refreshCart(customerID);
     }
