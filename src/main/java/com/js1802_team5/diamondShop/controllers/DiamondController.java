@@ -32,19 +32,16 @@ public class DiamondController {
     }
 
     @GetMapping("/get-all-diamond")
-    @PreAuthorize("hasAuthority('manager:read')")
     public Response getAllDiamond(){
         return diamondService.getAllDiamond();
     }
 
     @GetMapping("/get-a-diamond-{id}")
-    @PreAuthorize("hasAuthority('manager:read')")
     public Response getADiamond(@PathVariable Integer id) {
         return diamondService.getADiamond(id);
     }
 
     @PostMapping("/search")
-    @PreAuthorize("hasAuthority('customer:read')")
     public ResponseEntity<List<DiamondSearchResponse>> searchDiamonds(@RequestBody DiamondSearchRequest request) {
         List<DiamondSearchResponse> results = diamondService.searchDiamond(request);
         return ResponseEntity.ok(results);

@@ -33,19 +33,16 @@ public class DiamondShellController {
     }
 
     @GetMapping("/get-all-diamond-shell")
-    @PreAuthorize("hasAuthority('manager:read')")
     public Response getAllDiamondShell(){
         return diamondShellService.getAllDiamondShell();
     }
 
     @GetMapping("/get-a-diamond-shell-{id}")
-    @PreAuthorize("hasAuthority('manager:read')")
     public Response getADiamondShell(@PathVariable Integer id) {
         return diamondShellService.getADiamondShell(id);
     }
 
     @PostMapping("/search-diamond-shell")
-    @PreAuthorize("hasAuthority('customer:delete')")
     public List<DiamondShellResponse> searchDiamondShell(@RequestBody DiamondShellSearchRequest diamondShellSearchRequest) {
         List<DiamondShell> diamondShells = diamondShellService.searchDiamondShell(diamondShellSearchRequest);
         return diamondShells.stream()
