@@ -49,7 +49,6 @@ public class AccountController {
     }
 
     @PostMapping("/forgetPassword")
-    @PreAuthorize("hasAuthority('customer:create') or hasAuthority('admin:create')")
     public ResponseEntity<Response> forgetPassword(@RequestParam("phone") String phone,
                                                    @RequestParam("newPassword") String newPassword) {
         Response response = accountService.forgetPassword(phone, newPassword);
