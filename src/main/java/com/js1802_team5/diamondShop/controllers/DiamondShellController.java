@@ -63,7 +63,6 @@ public class DiamondShellController {
     }
 
     @GetMapping("/attributes")
-    @PreAuthorize("hasAuthority('manager:read')")
     public ResponseEntity<Response> getDiamondShellAttributes() {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("materials", diamondShellService.getAllMaterials());

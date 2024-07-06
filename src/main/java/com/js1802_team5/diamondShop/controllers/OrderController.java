@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/auth/orders")
 @RequiredArgsConstructor
 public class OrderController {
+
     private final OrderService orderService;
 
     @PostMapping("/create-order")
@@ -26,25 +27,28 @@ public class OrderController {
     }
 
     @GetMapping("/get-all-orders")
-    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read')")
+    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read') or hasAuthority('customer:read')")
     public Response getAllOrder() {
         return orderService.getAllOrder();
     }
 
     @GetMapping("/get-all-orders-{customerId}")
+    @PreAuthorize("hasAuthority('customer:read')")
     public Response getAllOrderByCustomerId(@PathVariable Integer customerId) {
         return orderService.getAllOrderByCustomerId(customerId);
     }
 
     @GetMapping("/get-all-orders-by-{staffId}")
+    @PreAuthorize("hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read')")
     public Response getAllOrderByStaffId(@PathVariable Integer staffId) {
         return orderService.getAllOrderByStaffAccount(staffId);
     }
 
     @GetMapping("/get-order-{orderId}")
-    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read')")
+    @PreAuthorize("hasAuthority('manager:read') or hasAuthority('saleStaff:read') or hasAuthority('deliveryStaff:read') or hasAuthority('customer:read')")
     public Response getOrder(@PathVariable Integer orderId) {
         return orderService.getOrder(orderId);
+
     }
 
     @GetMapping("/get-order-statusName")
