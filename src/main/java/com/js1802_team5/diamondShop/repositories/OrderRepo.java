@@ -12,10 +12,10 @@ import java.util.Optional;
 public interface OrderRepo extends JpaRepository<Order, Integer> {
     Optional<Order> findById(Integer id);
 
-    @Query("SELECT o FROM Order o JOIN FETCH o.dateStatusOrderList d WHERE d.status = :status")
-    List<Order> findOrdersByStatus(@Param("status") String status);
+//    @Query("SELECT o FROM Order o JOIN FETCH o.dateStatusOrderList d WHERE d.status = :status")
+//    List<Order> findOrdersByStatus(@Param("status") String status);
 
-    Order findTopByOrderByIdDesc();
+    //Order findTopByOrderByIdDesc();
 
     List<Order> findByStatusOrder(StatusOrder statusOrder);
 
