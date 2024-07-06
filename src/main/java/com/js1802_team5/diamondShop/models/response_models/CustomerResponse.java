@@ -15,4 +15,6 @@ public class CustomerResponse {
     private String phone;
     private int point;
     private String memberLevel;
+    private String firstName;
+    private String lastName;
 }

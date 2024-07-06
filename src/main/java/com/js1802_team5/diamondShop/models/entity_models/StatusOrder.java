@@ -21,8 +21,6 @@ public class StatusOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "status_name")
     private String statusName;
 
     @OneToMany(mappedBy = "statusOrder")
