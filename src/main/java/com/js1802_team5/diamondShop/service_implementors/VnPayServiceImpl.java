@@ -40,10 +40,7 @@ public class VnPayServiceImpl implements VnPayService {
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
-//
-//        if (bankCode != null && !bankCode.isEmpty()) {
-//            vnp_Params.put("vnp_BankCode", bankCode);
-//        }
+
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Order is successfully:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);

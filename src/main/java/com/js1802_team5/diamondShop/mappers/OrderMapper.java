@@ -82,8 +82,8 @@ public class OrderMapper {
         return OrderResponse.builder()
                 .orderId(order.getId())
                 .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null)
-                .orderId(order.getId())
-                .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null) // Cập nhật phần này
+//                .orderId(order.getId())
+//                .customerId(order.getCustomer() != null ? order.getCustomer().getId() : null) // Cập nhật phần này
                 .address(order.getAddress())
                 .phone(order.getPhone())
                 .cusName(order.getCusName())
