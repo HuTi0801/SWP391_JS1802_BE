@@ -49,6 +49,7 @@ public class CartServiceImpl implements CartService {
             }
 
             CartResponse cartResponse = null;
+
             if (cartStorage.isEmpty()) {
                 String newCartID = generateCartId();
                 cartResponse = new CartResponse(newCartID, customerID, new ArrayList<>());
@@ -200,16 +201,13 @@ public class CartServiceImpl implements CartService {
         return response;
     }
 
-
     private void updateDiamondQuantity(CartResponse cartResponse, int productID, int quantity) {
         updateProductQuantity(cartResponse, productID, quantity, ProductType.DIAMOND, null);
     }
 
-
     private void updateDiamondShellQuantity(CartResponse cartResponse, int productID, int quantity, Integer size) {
         updateProductQuantity(cartResponse, productID, quantity, ProductType.DIAMOND_SHELL, size);
     }
-
 
     private void updateProductQuantity(CartResponse cartResponse, int productID, int quantity, ProductType productType, Integer size) {
         Product product = findProductById(productID, productType);
@@ -237,7 +235,6 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("Product not found in cart: productID=" + productID + ", productType=" + productType + (size != null ? ", size=" + size : ""));
         }
     }
-
 
     @Override
     public Response deleteCart(int customerID, int productID, ProductType productType) {
