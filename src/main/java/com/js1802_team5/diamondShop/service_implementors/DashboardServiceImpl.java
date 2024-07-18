@@ -72,29 +72,47 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     public Map<String, Object> getPerformance(int year) {
-        // Sử dụng các giá trị enum Role cho truy vấn
-        List<Role> roles = Arrays.asList(Role.SALE_STAFF, Role.DELIVERY_STAFF);
-        List<Account> accounts = accountRepo.findAllByRoles(roles);
-        List<Integer> accountIds = accounts.stream().map(Account::getId).collect(Collectors.toList());
-        List<AccountOrder> accountOrders = accountOrderRepo.findAllByAccountIds(accountIds);
-        List<Integer> orderIds = accountOrders.stream().map(ao -> ao.getOrder().getId()).collect(Collectors.toList());
-        List<DateStatusOrder> dateStatusOrders = dateStatusOrderRepository.findAllByOrderIdsAndYear(orderIds, year);
+        List<DateStatusOrder> dateStatusOrders = dateStatusOrderRepository.findAllByYearAndStatuses(year);
 
-        Map<String, Object> result = new HashMap<>();
-        Map<Integer, Map<Integer, Long>> accountMonthlyOrderCount = new HashMap<>();
+        Map<Integer, Map<Integer, Long>> confirmedOrdersByMonth = new HashMap<>();
+        Map<Integer, Map<Integer, Long>> deliveringOrdersByMonth = new HashMap<>();
 
         for (DateStatusOrder dso : dateStatusOrders) {
             int month = dso.getDateStatus().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getMonthValue();
-            int accountId = accountOrders.stream()
-                    .filter(ao -> ao.getOrder().getId().equals(dso.getOrder().getId()))
-                    .findFirst().orElseThrow().getAccount().getId();
+            String status = dso.getStatus();
 
-            accountMonthlyOrderCount
-                    .computeIfAbsent(accountId, k -> new HashMap<>())
-                    .merge(month, 1L, Long::sum);
+            if ("Confirmed".equals(status)) {
+                confirmedOrdersByMonth.computeIfAbsent(dso.getOrder().getId(), k -> new HashMap<>())
+                        .merge(month, 1L, Long::sum);
+            } else if ("Delivering".equals(status)) {
+                deliveringOrdersByMonth.computeIfAbsent(dso.getOrder().getId(), k -> new HashMap<>())
+                        .merge(month, 1L, Long::sum);
+            }
         }
+
+        List<Account> accounts = accountRepo.findAllByRoles();
+        List<Integer> accountIds = accounts.stream().map(Account::getId).collect(Collectors.toList());
+        List<AccountOrder> accountOrders = accountOrderRepo.findAllByAccountIds(accountIds);
+
+        Map<String, Object> result = new HashMap<>();
         for (Account account : accounts) {
-            Map<Integer, Long> monthlyOrderCount = accountMonthlyOrderCount.getOrDefault(account.getId(), new HashMap<>());
+            Map<Integer, Long> monthlyOrderCount = new HashMap<>();
+            for (AccountOrder ao : accountOrders) {
+                if (ao.getAccount().getId().equals(account.getId())) {
+                    int orderId = ao.getOrder().getId();
+                    if (account.getRole() == Role.SALE_STAFF) {
+                        if (confirmedOrdersByMonth.containsKey(orderId)) {
+                            confirmedOrdersByMonth.get(orderId).forEach((month, count) ->
+                                    monthlyOrderCount.merge(month, count, Long::sum));
+                        }
+                    } else if (account.getRole() == Role.DELIVERY_STAFF) {
+                        if (deliveringOrdersByMonth.containsKey(orderId)) {
+                            deliveringOrdersByMonth.get(orderId).forEach((month, count) ->
+                                    monthlyOrderCount.merge(month, count, Long::sum));
+                        }
+                    }
+                }
+            }
             Map<String, Object> accountData = new HashMap<>();
             accountData.put("username", account.getUsername());
             accountData.put("role", account.getRole().name());

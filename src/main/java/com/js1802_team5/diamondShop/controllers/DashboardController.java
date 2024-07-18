@@ -27,7 +27,7 @@ public class DashboardController {
     }
 
     @GetMapping("/view-staff-performance")
-    @PreAuthorize("hasAuthority('manager:read')")
+//    @PreAuthorize("hasAuthority('manager:read')")
     public Map<String, Object> getPerformance(@RequestParam int year) {
         return dashboardService.getPerformance(year);
     }
