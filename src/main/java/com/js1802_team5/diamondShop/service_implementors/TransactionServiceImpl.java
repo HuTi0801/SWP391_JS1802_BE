@@ -57,6 +57,14 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Transaction transaction = transactionInfo.get();
+
+        if ("The transaction has been successfully refunded".equals(transaction.getOrderInfo())) {
+            response.setMessage("Transaction has already been refunded and cannot be refunded again.");
+            response.setSuccess(false);
+            response.setStatusCode(400); // Bad Request
+            return response;
+        }
+
         transaction.setOrderInfo("The transaction has been successfully refunded");
         transactionRepo.save(transaction);
 
