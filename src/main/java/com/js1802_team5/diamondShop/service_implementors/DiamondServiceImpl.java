@@ -130,7 +130,7 @@ public class DiamondServiceImpl implements DiamondService {
             var diamonds = diamondRepo.findAll();
 
             List<Diamond> filteredDiamonds = diamonds.stream()
-                    .filter(Diamond::isStatusDiamond)
+                    .filter(diamond -> diamond.isStatusDiamond() && diamond.getQuantity() > 0)
                     .toList();
 
             if (diamonds.isEmpty()) {
