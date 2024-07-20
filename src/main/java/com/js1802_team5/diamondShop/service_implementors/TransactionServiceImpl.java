@@ -22,7 +22,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final StatusOrderRepo statusOrderRepo;
 
     @Override
-    public TransactionResponse updateOrderInfo(Integer orderId){
+    public TransactionResponse updateOrderInfo(Integer orderId) {
         TransactionResponse response = new TransactionResponse();
         Optional<Transaction> transactionInfo = transactionRepo.findByOrderId(orderId);
 
@@ -62,7 +62,8 @@ public class TransactionServiceImpl implements TransactionService {
             response.setMessage("Transaction has already been refunded and cannot be refunded again.");
             response.setSuccess(false);
             response.setStatusCode(400); // Bad Request
-            return response
+            return response;
+        }
         transaction.setOrderInfo("The transaction has been successfully refunded");
         transactionRepo.save(transaction);
 
