@@ -119,7 +119,7 @@ DiamondShellServiceImpl implements DiamondShellService {
             var diamondShells = diamondShellRepo.findAll();
 
             List<DiamondShell> filteredDiamondShells = diamondShells.stream()
-                    .filter(DiamondShell::isStatusDiamondShell)
+                    .filter(diamondShell -> diamondShell.isStatusDiamondShell() && diamondShell.getQuantity() > 0)
                     .toList();
 
             if (diamondShells.isEmpty()) {
