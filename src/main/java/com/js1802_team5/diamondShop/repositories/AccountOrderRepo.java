@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface AccountOrderRepo extends JpaRepository<AccountOrder, Integer> {
     List<AccountOrder> findByAccount_Id(Integer accountId);
+
     boolean existsByAccount_IdAndOrder_Id(Integer accountId, Integer orderId);
 
     @Query("SELECT ao FROM AccountOrder ao WHERE ao.account.id IN :accountIds")

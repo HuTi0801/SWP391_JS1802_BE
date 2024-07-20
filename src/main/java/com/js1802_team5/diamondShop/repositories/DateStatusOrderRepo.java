@@ -15,8 +15,8 @@ public interface DateStatusOrderRepo extends JpaRepository<DateStatusOrder, Inte
     @Query("SELECT dso FROM DateStatusOrder dso WHERE YEAR(dso.dateStatus) = :year")
     List<DateStatusOrder> findByYear(@Param("year") int year);
 
-    @Query("SELECT dso FROM DateStatusOrder dso WHERE dso.order.id IN :orderIds AND FUNCTION('YEAR', dso.dateStatus) = :year ORDER BY dso.dateStatus DESC")
-    List<DateStatusOrder> findAllByOrderIdsAndYear(List<Integer> orderIds, int year);
+    @Query("SELECT dso FROM DateStatusOrder dso WHERE YEAR(dso.dateStatus) = :year AND (dso.status = 'Confirmed' OR dso.status = 'Delivering')")
+    List<DateStatusOrder> findAllByYearAndStatuses(int year);
 
     @Query("SELECT dso FROM DateStatusOrder dso " +
             "WHERE dso.order = :order " +

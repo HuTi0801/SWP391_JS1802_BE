@@ -49,6 +49,7 @@ public class CartServiceImpl implements CartService {
             }
 
             CartResponse cartResponse = null;
+
             if (cartStorage.isEmpty()) {
                 String newCartID = generateCartId();
                 cartResponse = new CartResponse(newCartID, customerID, new ArrayList<>());
@@ -79,11 +80,31 @@ public class CartServiceImpl implements CartService {
                 return response;
             }
 
+            int totalQuantityInCart = cartResponse.getItems().stream()
+                    .filter(item -> item.getProductId() == productID && item.getProductType() == productType)
+                    .mapToInt(CartItemResponse::getQuantity)
+                    .sum();
+
+            if (totalQuantityInCart >= product.getQuantity()) {
+                response.setSuccess(false);
+                response.setMessage("Requested quantity exceeds available stock");
+                response.setStatusCode(400);
+                response.setResult(null);
+                return response;
+            }
+
             boolean itemAdded = false;
             if (productType == ProductType.DIAMOND_SHELL) {
                 for (CartItemResponse item : cartResponse.getItems()) {
                     if (item.getProductId() == productID && item.getProductType() == productType) {
-                        if (item.getSize() == (size)) {
+                        if (item.getSize() == size) {
+                            if (item.getQuantity() + 1 > product.getQuantity()) {
+                                response.setSuccess(false);
+                                response.setMessage("Requested quantity exceeds available stock");
+                                response.setStatusCode(400);
+                                response.setResult(null);
+                                return response;
+                            }
                             item.setQuantity(item.getQuantity() + 1);
                             item.setAmount(item.getAmount() + item.getUnitPrice());
                             itemAdded = true;
@@ -109,6 +130,13 @@ public class CartServiceImpl implements CartService {
 
                 if (existingItemOptional.isPresent()) {
                     CartItemResponse existingItem = existingItemOptional.get();
+                    if (existingItem.getQuantity() + 1 > product.getQuantity()) {
+                        response.setSuccess(false);
+                        response.setMessage("Requested quantity exceeds available stock");
+                        response.setStatusCode(400);
+                        response.setResult(null);
+                        return response;
+                    }
                     existingItem.setQuantity(existingItem.getQuantity() + 1);
                     existingItem.setAmount(existingItem.getAmount() + existingItem.getUnitPrice());
                 } else {
@@ -200,16 +228,13 @@ public class CartServiceImpl implements CartService {
         return response;
     }
 
-
     private void updateDiamondQuantity(CartResponse cartResponse, int productID, int quantity) {
         updateProductQuantity(cartResponse, productID, quantity, ProductType.DIAMOND, null);
     }
 
-
     private void updateDiamondShellQuantity(CartResponse cartResponse, int productID, int quantity, Integer size) {
         updateProductQuantity(cartResponse, productID, quantity, ProductType.DIAMOND_SHELL, size);
     }
-
 
     private void updateProductQuantity(CartResponse cartResponse, int productID, int quantity, ProductType productType, Integer size) {
         Product product = findProductById(productID, productType);
@@ -237,7 +262,6 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("Product not found in cart: productID=" + productID + ", productType=" + productType + (size != null ? ", size=" + size : ""));
         }
     }
-
 
     @Override
     public Response deleteCart(int customerID, int productID, ProductType productType) {
