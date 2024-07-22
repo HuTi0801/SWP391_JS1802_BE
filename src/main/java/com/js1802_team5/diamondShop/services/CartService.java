@@ -15,5 +15,6 @@ public interface CartService {
     void resetCart(int customerID);
     Response applyPromotion(String cartId, String promotionCode, Integer customerID);
     Response removePromotion(String cartId, Integer customerId);
-    Response refreshCart(int customerID)(Integer customerId);
+    Response refreshCart(int customerID);
+    public void clearCart(Integer customerId);
 }
