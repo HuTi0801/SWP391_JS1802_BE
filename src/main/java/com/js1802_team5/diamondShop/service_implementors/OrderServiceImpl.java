@@ -168,6 +168,9 @@ public class OrderServiceImpl implements OrderService {
             accountOrder.setOrder(order);
             accountOrderRepo.save(accountOrder);
 
+            // Xóa giỏ hàng của khách hàng
+            cartService.clearCart(customerId);
+
             // Cấu hình phản hồi thành công
             response.setSuccess(true);
             response.setMessage("Create order successfully!");

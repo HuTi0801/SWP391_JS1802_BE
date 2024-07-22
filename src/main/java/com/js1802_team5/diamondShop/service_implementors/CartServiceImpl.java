@@ -558,4 +558,10 @@ public class CartServiceImpl implements CartService {
         }
         return false;
     }
+    @Override
+    public void clearCart(Integer customerId) {
+        // Tìm và xóa giỏ hàng của khách hàng
+        cartStorage.entrySet().removeIf(entry -> entry.getValue().getCustomerID().equals(customerId));
+        System.out.println("Cart cleared for customer: " + customerId);
+    }
 }
